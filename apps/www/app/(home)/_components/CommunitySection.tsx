@@ -31,6 +31,7 @@ export function CommunitySection() {
             </Link>
           </Button>
         </div>
+
         <div
           className="relative overflow-hidden max-h-[600px] pt-24"
           style={{

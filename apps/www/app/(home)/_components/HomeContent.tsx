@@ -4,7 +4,7 @@ import getContent from '~/data/home/content'
 import dynamic from 'next/dynamic'
 
 import { BuiltWithSupabaseSection } from './BuiltWithSupabaseSection'
-import { CommunitySection } from './CommunitySection'
+import { CommunitySectionV2 as CommunitySection } from './CommunitySectionV2'
 import { CTASection } from './CTASection'
 import { CustomerStoriesSection } from './CustomerStoriesSection'
 import { DashboardFeaturesSection } from './DashboardFeaturesSection'
@@ -45,10 +45,10 @@ export function HomeContent({ frameworksSlot }: { frameworksSlot: React.ReactNod
         <CustomerStoriesSection />
       </section>
       <section>
-        <OpenSourceSection />
+        <CommunitySection />
       </section>
       <section>
-        <CommunitySection />
+        <OpenSourceSection />
       </section>
       <section>
         <CTASection />

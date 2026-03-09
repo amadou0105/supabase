@@ -1,10 +1,10 @@
 'use client'
 
+import { useSendTelemetryEvent } from '~/lib/telemetry'
 import { useInView } from 'framer-motion'
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { Button } from 'ui'
-import { useSendTelemetryEvent } from '~/lib/telemetry'
 
 interface GitHubContributor {
   id: number
