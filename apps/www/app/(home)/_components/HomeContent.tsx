@@ -1,7 +1,8 @@
 'use client'
 
-import dynamic from 'next/dynamic'
 import getContent from '~/data/home/content'
+import dynamic from 'next/dynamic'
+
 import { BuiltWithSupabaseSection } from './BuiltWithSupabaseSection'
 import { CommunitySection } from './CommunitySection'
 import { CTASection } from './CTASection'

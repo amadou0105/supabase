@@ -1,9 +1,7 @@
 'use client'
 
 import { useSendTelemetryEvent } from '~/lib/telemetry'
-import { motion, useInView } from 'framer-motion'
 import Link from 'next/link'
-import { useRef } from 'react'
 import { Button } from 'ui'
 
 // ── Contribution graph ──────────────────────────────────────────────────────
@@ -41,7 +39,7 @@ const GRID = makeGrid()
 const SVG_W = COLS * (CELL + GAP) - GAP
 const SVG_H = ROWS * (CELL + GAP) - GAP
 
-function ContribGraph({ inView }: { inView: boolean }) {
+function ContribGraph() {
   return (
     <svg
       viewBox={`0 0 ${SVG_W} ${SVG_H}`}
@@ -51,26 +49,14 @@ function ContribGraph({ inView }: { inView: boolean }) {
     >
       {GRID.map((col, c) =>
         col.map((level, r) => (
-          <motion.rect
+          <rect
             key={`${c}-${r}`}
             x={c * (CELL + GAP)}
             y={r * (CELL + GAP)}
             width={CELL}
             height={CELL}
             rx={2}
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={inView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.96 }}
-            transition={{
-              delay: c * 0.02 + r * 0.007,
-              type: 'spring',
-              duration: 0.45,
-              bounce: 0.15,
-            }}
-            style={{
-              fill: LEVELS[level],
-              transformBox: 'fill-box',
-              transformOrigin: 'center',
-            }}
+            fill={LEVELS[level]}
           />
         ))
       )}
@@ -81,8 +67,6 @@ function ContribGraph({ inView }: { inView: boolean }) {
 // ── Component ───────────────────────────────────────────────────────────────
 
 export function OpenSourceSection() {
-  const panelRef = useRef<HTMLDivElement>(null)
-  const inView = useInView(panelRef, { once: true, amount: 0.4 })
   const sendTelemetryEvent = useSendTelemetryEvent()
 
   const stars = '98.4K'
@@ -130,10 +114,9 @@ export function OpenSourceSection() {
           </div>
 
           <div
-            ref={panelRef}
             className="relative flex flex-col items-start justify-end gap-2 overflow-hidden bg-surface-75 p-6 border-l border-border"
           >
-            <ContribGraph inView={inView} />
+            <ContribGraph />
             <div className="absolute inset-0 bg-gradient-to-t from-background from-15% via-background/50 via-60% to-transparent" />
             <span className="relative z-10 uppercase text-xs text-foreground-lighter">
               GitHub Stars

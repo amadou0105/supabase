@@ -127,9 +127,10 @@ export function DashboardFeaturesSection({
                   {story.quote} <span className="text-foreground-muted">{story.author}</span>
                 </p>
               </div>
+
               <Link
                 href={`/customers/${story.slug}`}
-                className="shrink-0 text-sm text-foreground-lighter hover:text-foreground transition-colors whitespace-nowrap"
+                className="shrink-0 self-end text-sm text-foreground-lighter hover:text-foreground transition-colors whitespace-nowrap"
               >
                 View more about {story.name}
               </Link>

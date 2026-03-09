@@ -1,4 +1,7 @@
-import { ComponentProps } from 'react'
+'use client'
+
+import { AnimatePresence, motion } from 'framer-motion'
+import { ComponentProps, useEffect, useState } from 'react'
 
 import {
   BetasharesLogo,
@@ -54,7 +57,22 @@ const gridLogos: { name: string; Logo: (props: ComponentProps<'svg'>) => React.J
   { name: 'v0', Logo: V0Logo },
 ]
 
+const LOGOS_PER_PAGE = 12
+
 export function LogosGrid() {
+  const [page, setPage] = useState(0)
+  const totalPages = Math.ceil(gridLogos.length / LOGOS_PER_PAGE)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPage((p) => (p + 1) % totalPages)
+    }, 10000)
+    return () => clearInterval(interval)
+  }, [totalPages])
+
+  const start = page * LOGOS_PER_PAGE
+  const currentLogos = gridLogos.slice(start, start + LOGOS_PER_PAGE)
+
   return (
     <div>
       <div className="mx-auto max-w-[var(--container-max-w,75rem)] px-6 py-6">
@@ -65,16 +83,29 @@ export function LogosGrid() {
 
       <div className="border-y border-border">
         <div className="mx-auto max-w-[var(--container-max-w,75rem)] px-6 border-x border-border py-10">
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-y-10 gap-x-6 opacity-70">
-            {gridLogos.map(({ name, Logo }) => (
-              <div
-                key={name}
-                className="flex items-center justify-center h-10 text-foreground-lighter"
-              >
-                <Logo className="h-8 lg:h-12 w-auto" />
-              </div>
-            ))}
-          </div>
+          <AnimatePresence mode="popLayout" initial={false}>
+            <motion.div
+              key={page}
+              className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-y-10 gap-x-6"
+            >
+              {currentLogos.map(({ name, Logo }, i) => (
+                <motion.div
+                  key={name}
+                  initial={{ opacity: 0, scale: 0.95, filter: 'blur(2px)' }}
+                  animate={{ opacity: 0.7, scale: 1, filter: 'blur(0px)' }}
+                  exit={{ opacity: 0, scale: 0.95, filter: 'blur(2px)' }}
+                  transition={{
+                    duration: 0.45,
+                    delay: i * 0.03,
+                    ease: [0.25, 0.46, 0.45, 0.94],
+                  }}
+                  className="flex items-center justify-center h-10 text-foreground-lighter"
+                >
+                  <Logo className="h-8 lg:h-12 w-auto" />
+                </motion.div>
+              ))}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
     </div>

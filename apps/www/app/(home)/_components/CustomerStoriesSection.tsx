@@ -77,7 +77,7 @@ export function CustomerStoriesSection() {
       {/* Header row */}
       <div className="border-b border-border">
         <div className="mx-auto max-w-[var(--container-max-w,75rem)] px-6 border-x border-border">
-          <div className="flex items-end justify-between pt-20 pb-8">
+          <div className="flex items-end justify-between pt-16 pb-8">
             <h3 className="text-2xl md:text-4xl text-foreground-lighter max-w-xl">
               How industry leaders <br />{' '}
               <span className="text-foreground">are building with Supabase</span>
@@ -93,8 +93,8 @@ export function CustomerStoriesSection() {
       </div>
 
       {/* Cards row */}
-      <div className="border-b border-border">
-        <div className="mx-auto max-w-[var(--container-max-w,75rem)] border-x border-border">
+      <div className="border-b border-border mx-auto max-w-[var(--container-max-w,75rem)]">
+        <div className="border-x border-border">
           <motion.div
             className="grid min-h-[480px]"
             initial={false}
@@ -112,7 +112,7 @@ export function CustomerStoriesSection() {
                   key={story.slug}
                   onClick={() => setActiveIdx(index)}
                   className={cn(
-                    'text-left border-r border-border last:border-r-0 p-6 flex flex-col gap-3 overflow-hidden',
+                    'text-left border-r border-border last:border-r-0 p-6 flex flex-col gap-8 overflow-hidden',
                     isActive ? 'bg-surface-75' : 'hover:bg-surface-75/50'
                   )}
                 >
