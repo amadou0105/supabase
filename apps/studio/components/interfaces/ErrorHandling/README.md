@@ -6,6 +6,7 @@
 
 ```tsx
 import { MappedErrorDisplay } from 'components/interfaces/ErrorHandling'
+
 ;<MappedErrorDisplay
   error={error.message}
   onRestartProject={handleRestart}
