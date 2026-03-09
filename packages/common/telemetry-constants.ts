@@ -2555,7 +2555,7 @@ export interface RequestUpgradeSubmittedEvent {
 
 /**
  * Triggered when a Studio error UI element is displayed (mounted).
- * This includes error Admonitions and Toast notifications.
+ * This includes error Admonitions, Toast notifications, and ErrorDisplay components.
  *
  * @group Events
  * @source studio
@@ -2566,7 +2566,61 @@ export interface DashboardErrorCreatedEvent {
     /**
      * Source of the error
      */
-    source?: 'admonition' | 'toast'
+    source?: 'admonition' | 'toast' | 'error_display'
+    /**
+     * Type of error matched (for error_display source)
+     */
+    error_type?: string
+    /**
+     * Whether troubleshooting steps are available (for error_display source)
+     */
+    has_troubleshooting?: boolean
+  }
+  groups: TelemetryGroups
+}
+
+/**
+ * Triggered when a user expands a troubleshooting step in an ErrorDisplay component.
+ *
+ * @group Events
+ * @source studio
+ */
+export interface ErrorTroubleshootingStepExpandedEvent {
+  action: 'error_troubleshooting_step_expanded'
+  properties: {
+    /**
+     * The step number that was expanded
+     */
+    step_number: number
+    /**
+     * Type of error being troubleshooted
+     */
+    error_type?: string
+  }
+  groups: TelemetryGroups
+}
+
+/**
+ * Triggered when a user clicks an action button within a troubleshooting step.
+ *
+ * @group Events
+ * @source studio
+ */
+export interface ErrorTroubleshootingActionClickedEvent {
+  action: 'error_troubleshooting_action_clicked'
+  properties: {
+    /**
+     * The step number containing the action
+     */
+    step_number: number
+    /**
+     * Label of the action button clicked
+     */
+    action_label: string
+    /**
+     * Type of error being troubleshooted
+     */
+    error_type?: string
   }
   groups: TelemetryGroups
 }
@@ -2836,6 +2890,8 @@ export type TelemetryEvent =
   | RequestUpgradeModalOpenedEvent
   | RequestUpgradeSubmittedEvent
   | DashboardErrorCreatedEvent
+  | ErrorTroubleshootingStepExpandedEvent
+  | ErrorTroubleshootingActionClickedEvent
   | IntegrationInstallCompletedEvent
   | IntegrationInstallSubmittedEvent
   | IntegrationUninstallSubmittedEvent
