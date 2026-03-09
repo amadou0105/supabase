@@ -160,7 +160,7 @@ export function CustomerStoriesSection() {
       {/* AI Builder stories */}
       <div className="border-b border-border">
         <div className="mx-auto max-w-[var(--container-max-w,75rem)] px-6 border-x border-border">
-          <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-16 py-20">
+          <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-8 py-20">
             <div className="flex flex-col min-h-[320px] gap-4 justify-between">
               <h3 className="text-2xl md:text-4xl text-foreground-lighter">
                 Powering the next wave
@@ -192,7 +192,9 @@ export function CustomerStoriesSection() {
                   />
                   <div className="absolute bottom-0 left-0 right-0 p-4">
                     <p className="text-white text-sm font-medium mb-1">{story.name}</p>
-                    <p className="text-white/70 text-xs leading-relaxed">{story.description}</p>
+                    <p className="text-white/70 text-xs leading-relaxed text-pretty">
+                      {story.description}
+                    </p>
                   </div>
                 </Link>
               ))}
