@@ -20,7 +20,14 @@ function ConnectionTimeout({
   buildPrompt,
 }: ConnectionTimeoutProps) {
   return (
-    <TroubleshootingAccordion errorType={ERROR_TYPE}>
+    <TroubleshootingAccordion
+      errorType={ERROR_TYPE}
+      stepTitles={{
+        1: 'Try restarting your project',
+        2: 'Try our troubleshooting guide',
+        3: 'Debug with AI',
+      }}
+    >
       <RestartDatabaseTroubleshootingSection
         number={1}
         errorType={ERROR_TYPE}

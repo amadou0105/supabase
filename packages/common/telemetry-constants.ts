@@ -2605,6 +2605,10 @@ export interface InlineErrorTroubleshooterAccordionToggledEvent {
   properties: {
     /** ID of the matched error mapping */
     error_type: string
+    /** Step number that was toggled (1, 2, 3, ...) */
+    step: number
+    /** Title of the step that was toggled */
+    step_title?: string
     /** Whether the step was opened (true) or closed (false) */
     expanded: boolean
   }

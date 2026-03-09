@@ -8,6 +8,8 @@ interface TroubleshootingAccordionProps {
   children: ReactNode
   /** Error mapping ID — used for telemetry */
   errorType: string
+  /** Step titles keyed by step number — used for telemetry */
+  stepTitles?: Record<number, string>
   /** Which step to expand by default (1-indexed), defaults to 1 */
   defaultExpandedStep?: number
   className?: string
@@ -16,6 +18,7 @@ interface TroubleshootingAccordionProps {
 export function TroubleshootingAccordion({
   children,
   errorType,
+  stepTitles,
   defaultExpandedStep = 1,
   className,
 }: TroubleshootingAccordionProps) {
@@ -29,9 +32,13 @@ export function TroubleshootingAccordion({
       defaultValue={defaultValue}
       className={cn('w-full', className)}
       onValueChange={(value) => {
+        const expanded = Boolean(value)
+        const step = expanded ? parseInt(value.replace('step-', ''), 10) : 0
         track('inline_error_troubleshooter_accordion_toggled', {
           error_type: errorType,
-          expanded: Boolean(value),
+          step,
+          step_title: stepTitles?.[step],
+          expanded,
         })
       }}
     >
