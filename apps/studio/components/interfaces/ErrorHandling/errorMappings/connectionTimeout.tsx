@@ -12,7 +12,11 @@ interface ConnectionTimeoutProps {
   buildPrompt?: () => string
 }
 
-function ConnectionTimeout({ onRestartProject, onDebugWithAI, buildPrompt }: ConnectionTimeoutProps) {
+function ConnectionTimeout({
+  onRestartProject,
+  onDebugWithAI,
+  buildPrompt,
+}: ConnectionTimeoutProps) {
   return (
     <TroubleshootingAccordion>
       <RestartDatabaseTroubleshootingSection number={1} onRestartProject={onRestartProject} />

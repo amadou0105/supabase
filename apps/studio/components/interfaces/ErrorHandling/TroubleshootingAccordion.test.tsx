@@ -1,11 +1,12 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it, vi } from 'vitest'
 import {
   AccordionContent_Shadcn_ as AccordionContent,
   AccordionItem_Shadcn_ as AccordionItem,
   AccordionTrigger_Shadcn_ as AccordionTrigger,
 } from 'ui'
+import { describe, expect, it, vi } from 'vitest'
+
 import { TroubleshootingAccordion } from './TroubleshootingAccordion'
 
 function TestSteps({ onActionClick }: { onActionClick?: (label: string) => void }) {
@@ -62,22 +63,6 @@ describe('TroubleshootingAccordion', () => {
       </TroubleshootingAccordion>
     )
     expect(screen.getByText('Second step description')).toBeVisible()
-  })
-
-  it('calls onStepExpand when a step is expanded', async () => {
-    const onStepExpand = vi.fn()
-    const user = userEvent.setup()
-
-    render(
-      <TroubleshootingAccordion onStepExpand={onStepExpand}>
-        <TestSteps />
-      </TroubleshootingAccordion>
-    )
-
-    const secondStepTrigger = screen.getByText('Second step')
-    await user.click(secondStepTrigger)
-
-    expect(onStepExpand).toHaveBeenCalledWith(2)
   })
 
   it('applies custom className', () => {

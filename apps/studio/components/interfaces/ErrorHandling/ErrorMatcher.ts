@@ -1,5 +1,5 @@
-import { ErrorMapping, ErrorMatchResult } from './ErrorMatcher.types'
 import { allErrorMappings } from './errorMappings'
+import { ErrorMapping, ErrorMatchResult } from './ErrorMatcher.types'
 
 /**
  * Matches an error message against registered error patterns

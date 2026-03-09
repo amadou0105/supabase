@@ -1,14 +1,15 @@
 'use client'
 
-import { useState } from 'react'
+import { AiAssistantDropdown } from 'components/ui/AiAssistantDropdown'
 import { ExternalLink } from 'lucide-react'
+import { useState } from 'react'
 import {
   AccordionContent_Shadcn_ as AccordionContent,
   AccordionItem_Shadcn_ as AccordionItem,
   AccordionTrigger_Shadcn_ as AccordionTrigger,
   Button,
 } from 'ui'
-import { AiAssistantDropdown } from 'components/ui/AiAssistantDropdown'
+
 import { RestartProjectDialog } from './RestartProjectDialog'
 
 interface StepTriggerProps {
@@ -104,11 +105,14 @@ export function TroubleshootingGuideSection({
       <AccordionContent className="pb-4 pt-1">
         <div className="px-2">
           {description && <p className="text-sm text-foreground-light mb-3">{description}</p>}
-          <Button asChild type="default" size="tiny" onClick={onActionClick} iconRight={<ExternalLink />}>
-            <a
-              href={href}
-              target="_blank"
-            >
+          <Button
+            asChild
+            type="default"
+            size="tiny"
+            onClick={onActionClick}
+            iconRight={<ExternalLink />}
+          >
+            <a href={href} target="_blank" rel="noopener noreferrer">
               View troubleshooting guide
             </a>
           </Button>

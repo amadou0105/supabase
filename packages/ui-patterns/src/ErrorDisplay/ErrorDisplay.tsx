@@ -1,8 +1,9 @@
 'use client'
 
-import { forwardRef, useEffect, useRef } from 'react'
 import { AlertTriangle, HelpCircle } from 'lucide-react'
+import { forwardRef, useEffect, useRef } from 'react'
 import { Card, CardHeader, cn } from 'ui'
+
 import type { ErrorDisplayProps } from './ErrorDisplay.types'
 
 /**
@@ -52,19 +53,14 @@ export const ErrorDisplay = forwardRef<HTMLDivElement, ErrorDisplayProps>(
     return (
       <Card
         ref={ref}
-        className={cn(
-          'rounded-lg border border-default',
-          className
-        )}
+        className={cn('rounded-lg border border-default', className)}
         role="alert"
         aria-labelledby="error-display-title"
         {...props}
       >
         {/* Header */}
-        <CardHeader className='flex-row items-center gap-4 space-y-0 py-2'>
-          <div className="text-warning-600">
-            {icon ?? <AlertTriangle className="h-4 w-4" />}
-          </div>
+        <CardHeader className="flex-row items-center gap-4 space-y-0 py-2">
+          <div className="text-warning-600">{icon ?? <AlertTriangle className="h-4 w-4" />}</div>
           <h3 id="error-display-title" className="text-sm text-foreground mt-0">
             {title}
           </h3>
@@ -83,9 +79,8 @@ export const ErrorDisplay = forwardRef<HTMLDivElement, ErrorDisplayProps>(
         {/* Footer */}
         {supportUrl && (
           <div className="px-3 py-2 border-t border-default flex items-center gap-2">
-            <div className='flex-shrink-0'>
-
-            <HelpCircle className="h-4 w-4 text-foreground-muted" />
+            <div className="flex-shrink-0">
+              <HelpCircle className="h-4 w-4 text-foreground-muted" />
             </div>
             <span className="text-sm text-foreground-light">Need help?</span>
             <a

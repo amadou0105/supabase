@@ -7,7 +7,7 @@
 ```tsx
 import { MappedErrorDisplay } from 'components/interfaces/ErrorHandling'
 
-<MappedErrorDisplay
+;<MappedErrorDisplay
   error={error.message}
   onRestartProject={handleRestart}
   onDebugWithAI={openAIAssistant}
@@ -21,7 +21,10 @@ import { MappedErrorDisplay } from 'components/interfaces/ErrorHandling'
 
 ```tsx
 import { TroubleshootingAccordion } from '../TroubleshootingAccordion'
-import { TroubleshootingGuideSection, FixWithAITroubleshootingSection } from '../TroubleshootingSections'
+import {
+  FixWithAITroubleshootingSection,
+  TroubleshootingGuideSection,
+} from '../TroubleshootingSections'
 import { ErrorMappingFactory } from './types'
 
 function YourError({ onDebugWithAI }: { onDebugWithAI?: () => void }) {
@@ -53,7 +56,7 @@ import { yourErrorMapping } from './YourError'
 
 export const allMappingFactories: ErrorMappingFactory[] = [
   connectionTimeoutMapping,
-  yourErrorMapping,   // add here
+  yourErrorMapping, // add here
 ]
 ```
 
@@ -61,8 +64,8 @@ That's it. The new pattern will be matched automatically.
 
 ## Available section components
 
-| Component | Props |
-|-----------|-------|
-| `RestartDatabaseTroubleshootingSection` | `number`, `onRestartProject?` |
-| `TroubleshootingGuideSection` | `number`, `href`, `title?`, `description?` |
-| `FixWithAITroubleshootingSection` | `number`, `onDebugWithAI?`, `buildPrompt?` |
+| Component                               | Props                                      |
+| --------------------------------------- | ------------------------------------------ |
+| `RestartDatabaseTroubleshootingSection` | `number`, `onRestartProject?`              |
+| `TroubleshootingGuideSection`           | `number`, `href`, `title?`, `description?` |
+| `FixWithAITroubleshootingSection`       | `number`, `onDebugWithAI?`, `buildPrompt?` |

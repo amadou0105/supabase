@@ -1,7 +1,5 @@
 'use client'
 
-import { useRouter } from 'next/router'
-import { toast } from 'sonner'
 import { PermissionAction } from '@supabase/shared-types/out/constants'
 import { useSetProjectStatus } from 'data/projects/project-detail-query'
 import { useProjectRestartMutation } from 'data/projects/project-restart-mutation'
@@ -9,8 +7,10 @@ import { useProjectRestartServicesMutation } from 'data/projects/project-restart
 import { useAsyncCheckPermissions } from 'hooks/misc/useCheckPermissions'
 import { useSelectedProjectQuery } from 'hooks/misc/useSelectedProject'
 import { PROJECT_STATUS } from 'lib/constants'
-import { ConfirmationModal } from 'ui-patterns/Dialogs/ConfirmationModal'
 import { useTrack } from 'lib/telemetry/track'
+import { useRouter } from 'next/router'
+import { toast } from 'sonner'
+import { ConfirmationModal } from 'ui-patterns/Dialogs/ConfirmationModal'
 
 interface RestartProjectDialogProps {
   visible: boolean

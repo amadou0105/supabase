@@ -1,11 +1,12 @@
 'use client'
 
+import { useTrack } from 'lib/telemetry/track'
 import { useEffect, useMemo, useRef } from 'react'
 import { ErrorDisplay } from 'ui-patterns/ErrorDisplay'
-import { useTrack } from 'lib/telemetry/track'
+
+import { allMappingFactories } from './errorMappings'
 import { matchError } from './ErrorMatcher'
 import type { ErrorMapping } from './ErrorMatcher.types'
-import { allMappingFactories } from './errorMappings'
 
 interface MappedErrorDisplayProps {
   /** The error message to display and match */

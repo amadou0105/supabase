@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
+
 import { ErrorDisplay } from './ErrorDisplay'
 
 describe('ErrorDisplay', () => {
@@ -79,12 +80,7 @@ describe('ErrorDisplay', () => {
   })
 
   it('renders custom icon when provided', () => {
-    render(
-      <ErrorDisplay
-        {...defaultProps}
-        icon={<span data-testid="custom-icon">⚠️</span>}
-      />
-    )
+    render(<ErrorDisplay {...defaultProps} icon={<span data-testid="custom-icon">⚠️</span>} />)
     expect(screen.getByTestId('custom-icon')).toBeInTheDocument()
   })
 

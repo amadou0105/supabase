@@ -2580,27 +2580,6 @@ export interface DashboardErrorCreatedEvent {
 }
 
 /**
- * Triggered when a user expands a troubleshooting step in an ErrorDisplay component.
- *
- * @group Events
- * @source studio
- */
-export interface ErrorTroubleshootingStepExpandedEvent {
-  action: 'error_troubleshooting_step_expanded'
-  properties: {
-    /**
-     * The step number that was expanded
-     */
-    step_number: number
-    /**
-     * Type of error being troubleshooted
-     */
-    error_type?: string
-  }
-  groups: TelemetryGroups
-}
-
-/**
  * Triggered when a user clicks an action button within a troubleshooting step.
  *
  * @group Events
@@ -2890,7 +2869,6 @@ export type TelemetryEvent =
   | RequestUpgradeModalOpenedEvent
   | RequestUpgradeSubmittedEvent
   | DashboardErrorCreatedEvent
-  | ErrorTroubleshootingStepExpandedEvent
   | ErrorTroubleshootingActionClickedEvent
   | IntegrationInstallCompletedEvent
   | IntegrationInstallSubmittedEvent
