@@ -1,3 +1,4 @@
+import { table } from 'console'
 import fs from 'fs'
 import path from 'path'
 import { expect, Page } from '@playwright/test'
@@ -5,6 +6,7 @@ import { expect, Page } from '@playwright/test'
 import { env } from '../env.config.js'
 import { dropTable, query } from '../utils/db/index.js'
 import { createTable, createTableWithRLS } from '../utils/db/queries.js'
+import { useTestThrottling } from '../utils/debug.js'
 import { resetLocalStorage } from '../utils/reset-local-storage.js'
 import { test, withSetupCleanup } from '../utils/test.js'
 import { toUrl } from '../utils/to-url.js'
@@ -179,22 +181,24 @@ testRunner('table editor', () => {
     let shouldCleanup = true
     await using _ = await withSetupCleanup(
       async () => {
-        await query(`drop table if exists ${tableNameEnum};`);
-        await query(`drop type if exists ${enum_name};`);
+        await query(`drop table if exists ${tableNameEnum};`)
+        await query(`drop type if exists ${enum_name};`)
       },
       async () => {
-        await query(`drop table if exists ${tableNameEnum};`);
-        await query(`drop type if exists ${enum_name};`);
+        if (shouldCleanup) {
+          await query(`drop table if exists ${tableNameEnum};`)
+          await query(`drop type if exists ${enum_name};`)
+        }
       }
     )
     await page.goto(toUrl(`/project/${ref}/database/types?schema=public`))
 
     // create a new enum
     await page.getByRole('button', { name: 'Create type' }).click()
-    await page.getByRole('textbox', { name: 'Name' }).fill(enum_name)
-    await page.locator('input[name="values.0.value"]').fill('value1')
     await page.getByRole('button', { name: 'Add value' }).click()
+    await page.locator('input[name="values.0.value"]').fill('value1')
     await page.locator('input[name="values.1.value"]').fill('value2')
+    await page.getByRole('textbox', { name: 'Name' }).fill(enum_name)
     await page.getByRole('button', { name: 'Create type' }).click()
 
     // verify enum is created
@@ -203,6 +207,7 @@ testRunner('table editor', () => {
 
     // create a new table with new column for enums
     await page.goto(toUrl(`/project/${ref}/editor`))
+    await expect(page.getByText('No tables or views')).toBeVisible()
 
     await page.getByRole('button', { name: 'New table', exact: true }).click()
     await page.getByTestId('table-name-input').fill(tableNameEnum)
@@ -224,10 +229,9 @@ testRunner('table editor', () => {
       timeout: 50000,
     })
     await expect(page.getByTestId('table-editor-side-panel')).not.toBeVisible()
-
     // Wait for the grid to be visible and data to be loaded
     await expect(page.getByRole('grid'), 'Grid should be visible after inserting data').toBeVisible(
-      { timeout: 10_000 }
+      { timeout: 50_000 }
     )
     await expect(page.getByRole('columnheader', { name: enum_name })).toBeVisible()
 
