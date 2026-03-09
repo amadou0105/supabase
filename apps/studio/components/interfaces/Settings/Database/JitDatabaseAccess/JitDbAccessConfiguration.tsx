@@ -62,7 +62,7 @@ import { JitDbAccessDeleteDialog } from './JitDbAccessDeleteDialog'
 import { JitDbAccessRuleSheet } from './JitDbAccessRuleSheet'
 import { JitDbAccessRulesTable } from './JitDbAccessRulesTable'
 
-const JitDbAccessConfiguration = () => {
+export const JitDbAccessConfiguration = () => {
   const { ref } = useParams()
   const { data: project } = useSelectedProjectQuery()
   const { data: organization } = useSelectedOrganizationQuery()
@@ -576,5 +576,3 @@ const JitDbAccessConfiguration = () => {
     </>
   )
 }
-
-export default JitDbAccessConfiguration
