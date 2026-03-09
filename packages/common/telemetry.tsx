@@ -9,24 +9,22 @@ import { useLatest } from 'react-use'
 
 import { useUser } from './auth'
 import { hasConsented, useConsentState } from './consent-state'
-import { IS_PLATFORM, IS_PROD, LOCAL_STORAGE_KEYS } from './constants'
+import { IS_PLATFORM } from './constants'
 import { useFeatureFlags } from './feature-flags'
 import { post } from './fetchWrappers'
 import type { FirstReferrerData } from './first-referrer-cookie'
 import { isExternalReferrer, parseFirstReferrerCookie } from './first-referrer-cookie'
 import { ensurePlatformSuffix, isBrowser } from './helpers'
-import { useParams, useTelemetryCookie } from './hooks'
+import { useFirstTouchStore, useParams } from './hooks'
 import { posthogClient, type ClientTelemetryEvent } from './posthog-client'
 import { TelemetryEvent } from './telemetry-constants'
 import {
-  clearTelemetryDataCookie,
-  getSharedTelemetryData,
-  getTelemetryCookieOptions,
-} from './telemetry-utils'
+  clearFirstTouchData,
+  getFirstTouchData,
+} from './telemetry-first-touch-store'
+import { getSharedTelemetryData, getTelemetryCookieOptions } from './telemetry-utils'
 
 export { posthogClient, type ClientTelemetryEvent }
-
-const { TELEMETRY_DATA } = LOCAL_STORAGE_KEYS
 
 // Reexports GoogleTagManager with the right API key set
 export const TelemetryTagManager = () => {
@@ -277,7 +275,7 @@ export const PageTelemetry = ({
 
   const featureFlags = useFeatureFlags()
 
-  useTelemetryCookie({ enabled: enabled && IS_PLATFORM })
+  useFirstTouchStore({ enabled: enabled && IS_PLATFORM })
 
   const pathname =
     pagesPathname ?? appPathname ?? (isBrowser ? window.location.pathname : undefined)
@@ -339,51 +337,20 @@ export const PageTelemetry = ({
       // Read the edge-set first-referrer cookie (cross-app handoff)
       const firstReferrerData = parseFirstReferrerCookie(document.cookie)
 
-      const cookies = document.cookie.split(';')
-      const telemetryCookieValue = cookies
-        .map((cookie) => cookie.trim())
-        .find((cookie) => cookie.startsWith(`${TELEMETRY_DATA}=`))
-        ?.slice(`${TELEMETRY_DATA}=`.length)
+      // Read first-touch attribution data from the in-memory store (set before consent)
+      const firstTouchData = getFirstTouchData()
 
-      if (telemetryCookieValue) {
-        try {
-          const telemetryData = JSON.parse(
-            decodeURIComponent(telemetryCookieValue)
-          ) as SharedTelemetryData
-          handlePageTelemetry({
-            apiUrl: API_URL,
-            pathname: pathnameRef.current,
-            featureFlags: featureFlagsRef.current,
-            slug,
-            ref,
-            telemetryDataOverride: telemetryData,
-            firstReferrerData,
-          })
-        } catch (error) {
-          if (!IS_PROD) {
-            console.warn('Invalid telemetry cookie data:', error)
-          }
-          handlePageTelemetry({
-            apiUrl: API_URL,
-            pathname: pathnameRef.current,
-            featureFlags: featureFlagsRef.current,
-            slug,
-            ref,
-            firstReferrerData,
-          })
-        } finally {
-          clearTelemetryDataCookie()
-        }
-      } else {
-        handlePageTelemetry({
-          apiUrl: API_URL,
-          pathname: pathnameRef.current,
-          featureFlags: featureFlagsRef.current,
-          slug,
-          ref,
-          firstReferrerData,
-        })
-      }
+      handlePageTelemetry({
+        apiUrl: API_URL,
+        pathname: pathnameRef.current,
+        featureFlags: featureFlagsRef.current,
+        slug,
+        ref,
+        ...(firstTouchData && { telemetryDataOverride: firstTouchData }),
+        firstReferrerData,
+      })
+
+      clearFirstTouchData()
 
       hasSentInitialPageTelemetryRef.current = true
     }
