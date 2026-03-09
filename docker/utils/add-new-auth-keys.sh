@@ -150,6 +150,12 @@ echo "JWT_KEYS=${JWT_KEYS}"
 echo ""
 echo "JWT_JWKS=${JWT_JWKS}"
 echo ""
+echo "To enable asymmetric key support, uncomment these lines in docker-compose.yml:"
+echo ""
+echo "  Auth:     GOTRUE_JWT_KEYS: \${JWT_KEYS:-[]}"
+echo "  Realtime: API_JWT_JWKS: \${JWT_JWKS:-{\"keys\":[]}}"
+echo "  Storage:  JWT_JWKS: \${JWT_JWKS:-{\"keys\":[]}}"
+echo ""
 
 if [ "$1" = "--update-env" ]; then
     update_env=true

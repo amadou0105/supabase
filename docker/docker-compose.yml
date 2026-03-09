@@ -145,7 +145,7 @@ services:
       GOTRUE_JWT_SECRET: ${JWT_SECRET}
 
       # JSON array of signing JWKs (EC private + legacy symmetric)
-      #GOTRUE_JWT_KEYS: ${JWT_KEYS:-}
+      #GOTRUE_JWT_KEYS: ${JWT_KEYS:-[]}
 
       GOTRUE_EXTERNAL_EMAIL_ENABLED: ${ENABLE_EMAIL_SIGNUP}
       GOTRUE_EXTERNAL_ANONYMOUS_USERS_ENABLED: ${ENABLE_ANONYMOUS_USERS}
@@ -289,7 +289,7 @@ services:
       API_JWT_SECRET: ${JWT_SECRET}
 
       # JWKS for token verification (EC public + legacy symmetric)
-      #API_JWT_JWKS: ${JWT_JWKS:-}
+      #API_JWT_JWKS: ${JWT_JWKS:-{"keys":[]}}
 
       SECRET_KEY_BASE: ${SECRET_KEY_BASE}
       ERL_AFLAGS: -proto_dist inet_tcp
@@ -335,7 +335,7 @@ services:
       AUTH_JWT_SECRET: ${JWT_SECRET}
 
       # JWKS for token verification (EC public + legacy symmetric)
-      #JWT_JWKS: ${JWT_JWKS:-}
+      #JWT_JWKS: ${JWT_JWKS:-{"keys":[]}}
 
       DATABASE_URL: postgres://supabase_storage_admin:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
       REQUEST_ALLOW_X_FORWARDED_PATH: "true"
