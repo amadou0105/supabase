@@ -129,6 +129,7 @@ export function TroubleshootingGuideSection({
 interface FixWithAITroubleshootingSectionProps {
   number: number
   errorType: string
+  description?: string
   onDebugWithAI?: () => void
   buildPrompt?: () => string
 }
@@ -136,6 +137,7 @@ interface FixWithAITroubleshootingSectionProps {
 export function FixWithAITroubleshootingSection({
   number,
   errorType,
+  description = 'Let our AI assistant help diagnose and suggest solutions.',
   onDebugWithAI,
   buildPrompt,
 }: FixWithAITroubleshootingSectionProps) {
@@ -149,9 +151,7 @@ export function FixWithAITroubleshootingSection({
       <StepTrigger number={number} title="Debug with AI" />
       <AccordionContent className="pb-4 pt-1">
         <div className="px-2">
-          <p className="text-sm text-foreground-light mb-3">
-            Let our AI assistant help diagnose and suggest solutions for your connection issues.
-          </p>
+          <p className="text-sm text-foreground-light mb-3">{description}</p>
           <AiAssistantDropdown
             label="Debug with AI"
             buildPrompt={buildPrompt ?? (() => '')}
