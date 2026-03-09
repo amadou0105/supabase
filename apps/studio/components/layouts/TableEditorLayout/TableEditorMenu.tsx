@@ -9,8 +9,8 @@ import { ExportDialog } from 'components/grid/components/header/ExportDialog'
 import { parseSupaTable } from 'components/grid/SupabaseGrid.utils'
 import { SupaTable } from 'components/grid/types'
 import { ProtectedSchemaWarning } from 'components/interfaces/Database/ProtectedSchemaWarning'
+import { MappedErrorDisplay } from 'components/interfaces/ErrorHandling'
 import EditorMenuListSkeleton from 'components/layouts/TableEditorLayout/EditorMenuListSkeleton'
-import AlertError from 'components/ui/AlertError'
 import { ButtonTooltip } from 'components/ui/ButtonTooltip'
 import { InfiniteListDefault, LoaderForIconMenuItems } from 'components/ui/InfiniteList'
 import SchemaSelector from 'components/ui/SchemaSelector'
@@ -277,9 +277,12 @@ export const TableEditorMenu = () => {
           {isLoading && <EditorMenuListSkeleton />}
 
           {isError && (
-            <div className="mx-4">
-              <AlertError error={(error ?? null) as any} subject="Failed to retrieve tables" />
-            </div>
+            <MappedErrorDisplay
+              error={error?.message ?? 'Failed to retrieve tables'}
+              projectRef={project?.ref}
+              supportUrl={`/support/new${project?.ref ? `?project=${project.ref}` : ''}`}
+              className="mx-4"
+            />
           )}
 
           {isSuccess && (
