@@ -35,7 +35,7 @@ function ConnectionTimeout({ onRestartProject, onDebugWithAI, buildPrompt }: Con
 }
 
 export const connectionTimeoutMapping: ErrorMappingFactory = (params) => ({
-  id: 'connection-timeout',
+  id: ERROR_TYPE,
   pattern: /CONNECTION\s+TERMINATED\s+DUE\s+TO\s+CONNECTION\s+TIMEOUT/i,
   title: 'Failed to retrieve tables',
   priority: 10,
