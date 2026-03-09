@@ -207,7 +207,7 @@ testRunner('table editor', () => {
 
     // create a new table with new column for enums
     await page.goto(toUrl(`/project/${ref}/editor`))
-    await expect(page.getByText('No tables or views')).toBeVisible()
+    await waitForTableToLoad(page, ref) // load tables
 
     await page.getByRole('button', { name: 'New table', exact: true }).click()
     await page.getByTestId('table-name-input').fill(tableNameEnum)
