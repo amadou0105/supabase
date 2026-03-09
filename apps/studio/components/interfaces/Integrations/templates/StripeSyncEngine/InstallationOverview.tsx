@@ -74,6 +74,7 @@ export const StripeSyncInstallationPage = () => {
     schemaComment,
     schemaComment: { status: installationStatus },
     latestAvailableVersion,
+    timedOut,
   } = useStripeSyncStatus({
     projectRef: project?.ref,
     connectionString: project?.connectionString,
@@ -135,11 +136,12 @@ export const StripeSyncInstallationPage = () => {
     })
 
   // Combine schema status with mutation/initiated states for UI
-  const installing = installInProgress || isInstallRequested || isInstallInitiated
-  const uninstalling = uninstallInProgress || isUninstallRequested || isUninstallInitiated
+  const installing = (installInProgress || isInstallRequested || isInstallInitiated) && !timedOut
+  const uninstalling =
+    (uninstallInProgress || isUninstallRequested || isUninstallInitiated) && !timedOut
   const canInstall = checkCanInstall(installationStatus) && !installed && !installing
 
-  const hasError = (uninstallError || installError) && !uninstalling && !installing
+  const hasError = (uninstallError || installError) && ((!uninstalling && !installing) || timedOut)
 
   // Poll for schema changes during transitions
   useSchemasQuery(
@@ -160,6 +162,7 @@ export const StripeSyncInstallationPage = () => {
 
     uninstallStripeSync({
       projectRef: project.ref,
+      startTime: Date.now(),
     })
   }, [project?.ref, uninstallStripeSync])
 
@@ -319,7 +322,11 @@ export const StripeSyncInstallationPage = () => {
               id={formId}
               onSubmit={form.handleSubmit(({ stripeSecretKey }) => {
                 if (!project?.ref) return
-                installStripeSync({ projectRef: project.ref, stripeSecretKey })
+                installStripeSync({
+                  projectRef: project.ref,
+                  stripeSecretKey,
+                  startTime: Date.now(),
+                })
               })}
               className="overflow-auto flex-grow px-0 flex flex-col"
             >

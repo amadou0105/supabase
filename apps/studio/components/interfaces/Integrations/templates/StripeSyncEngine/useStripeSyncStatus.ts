@@ -10,6 +10,9 @@ import {
   type StripeSyncStatusResult,
 } from '@/components/interfaces/Integrations/templates/StripeSyncEngine/stripe-sync-status'
 
+// Maximum time allowed for installation or uninstallation operations before the UI times out
+const OPERATION_TIME_OUT_MS: number = 5 * 60 * 1000 // 5 minutes
+
 /**
  * Unified hook for Stripe Sync installation status.
  *
@@ -48,8 +51,23 @@ export function useStripeSyncStatus({
     return () => clearInterval(interval)
   }, [inProgress, refetch])
 
+  const now = Date.now()
+  const timedOut = schemaComment.startTime
+    ? now - schemaComment.startTime > OPERATION_TIME_OUT_MS
+    : false
+
+  if (timedOut) {
+    if (schemaComment.status == 'installing') {
+      schemaComment.status = 'install error'
+      schemaComment.errorMessage = 'Installation timed out'
+    } else if (schemaComment.status == 'uninstalling') {
+      schemaComment.status = 'uninstall error'
+      schemaComment.errorMessage = 'Uninstallation timed out'
+    }
+  }
+
   // Query sync state only when installed
-  const { data: syncState, isLoading: isSyncStateLoading } = useStripeSyncingState(
+  const { data: syncState } = useStripeSyncingState(
     { projectRef: projectRef!, connectionString },
     {
       refetchInterval: 4000,
@@ -64,5 +82,6 @@ export function useStripeSyncStatus({
     syncState: installed ? syncState : undefined,
     isLoading: isSchemasLoading,
     latestAvailableVersion,
+    timedOut,
   }
 }

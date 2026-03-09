@@ -29,14 +29,6 @@ export const StatusDisplay = ({
   const installing = installInProgress || isInstallRequested
   const uninstalling = uninstallInProgress || isUninstallRequested
 
-  if (uninstalling) {
-    return (
-      <span className="flex items-center gap-2 text-foreground-light text-sm">
-        <RefreshCwIcon size={14} className="animate-spin text-foreground-lighter" />
-        Uninstalling...
-      </span>
-    )
-  }
   if (uninstallError) {
     return (
       <span className="flex items-center gap-2 text-foreground-light text-sm">
@@ -45,11 +37,11 @@ export const StatusDisplay = ({
       </span>
     )
   }
-  if (installing) {
+  if (uninstalling) {
     return (
       <span className="flex items-center gap-2 text-foreground-light text-sm">
         <RefreshCwIcon size={14} className="animate-spin text-foreground-lighter" />
-        {isUpgrade ? 'Upgrading...' : 'Installing...'}
+        Uninstalling...
       </span>
     )
   }
@@ -58,6 +50,14 @@ export const StatusDisplay = ({
       <span className="flex items-center gap-2 text-foreground-light text-sm">
         <AlertCircle size={14} className="text-destructive" />
         {isUpgrade ? 'Upgrade error' : 'Installation error'}
+      </span>
+    )
+  }
+  if (installing) {
+    return (
+      <span className="flex items-center gap-2 text-foreground-light text-sm">
+        <RefreshCwIcon size={14} className="animate-spin text-foreground-lighter" />
+        {isUpgrade ? 'Upgrading...' : 'Installing...'}
       </span>
     )
   }

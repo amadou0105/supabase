@@ -20,6 +20,9 @@ export interface StripeSyncStatusResult {
 
   /** Latest version of stripe sync engine available for installation */
   latestAvailableVersion: string
+
+  /** True when installation or uninstallation has timed out */
+  timedOut: boolean
 }
 
 export function findStripeSchema(schemas: Schema[] | undefined): Schema | undefined {
