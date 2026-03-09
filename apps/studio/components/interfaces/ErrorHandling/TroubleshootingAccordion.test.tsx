@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import {
   AccordionContent_Shadcn_ as AccordionContent,
   AccordionItem_Shadcn_ as AccordionItem,
@@ -9,14 +8,15 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { TroubleshootingAccordion } from './TroubleshootingAccordion'
 
-function TestSteps({ onActionClick }: { onActionClick?: (label: string) => void }) {
+vi.mock('lib/telemetry/track', () => ({ useTrack: () => vi.fn() }))
+
+function TestSteps() {
   return (
     <>
       <AccordionItem value="step-1" className="px-3 py-2">
         <AccordionTrigger>First step</AccordionTrigger>
         <AccordionContent>
           <p>First step description</p>
-          <button onClick={() => onActionClick?.('Action 1')}>Action 1</button>
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="step-2" className="px-3 py-2">
@@ -38,7 +38,7 @@ function TestSteps({ onActionClick }: { onActionClick?: (label: string) => void 
 describe('TroubleshootingAccordion', () => {
   it('renders children', () => {
     render(
-      <TroubleshootingAccordion>
+      <TroubleshootingAccordion errorType="test-error">
         <TestSteps />
       </TroubleshootingAccordion>
     )
@@ -49,7 +49,7 @@ describe('TroubleshootingAccordion', () => {
 
   it('expands first step by default', () => {
     render(
-      <TroubleshootingAccordion>
+      <TroubleshootingAccordion errorType="test-error">
         <TestSteps />
       </TroubleshootingAccordion>
     )
@@ -58,7 +58,7 @@ describe('TroubleshootingAccordion', () => {
 
   it('respects custom defaultExpandedStep', () => {
     render(
-      <TroubleshootingAccordion defaultExpandedStep={2}>
+      <TroubleshootingAccordion errorType="test-error" defaultExpandedStep={2}>
         <TestSteps />
       </TroubleshootingAccordion>
     )
@@ -67,7 +67,7 @@ describe('TroubleshootingAccordion', () => {
 
   it('applies custom className', () => {
     const { container } = render(
-      <TroubleshootingAccordion className="custom-class">
+      <TroubleshootingAccordion errorType="test-error" className="custom-class">
         <TestSteps />
       </TroubleshootingAccordion>
     )

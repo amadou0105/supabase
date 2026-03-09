@@ -10,6 +10,4 @@ export {
 } from './TroubleshootingSections'
 
 export type { ErrorMapping } from './ErrorMatcher.types'
-
-// Re-export error mapping factories for customization
 export * from './errorMappings'
