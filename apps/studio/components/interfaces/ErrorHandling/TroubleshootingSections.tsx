@@ -47,7 +47,10 @@ export function RestartDatabaseTroubleshootingSection({
   const [showDialog, setShowDialog] = useState(false)
 
   const handleClick = () => {
-    track('inline_error_troubleshooter_action_clicked', { error_type: errorType, action: 'restart_db' })
+    track('inline_error_troubleshooter_action_clicked', {
+      error_type: errorType,
+      action: 'restart_db',
+    })
     if (onRestartProject) {
       onRestartProject()
     } else {
@@ -113,7 +116,12 @@ export function TroubleshootingGuideSection({
             asChild
             type="default"
             size="tiny"
-            onClick={() => track('inline_error_troubleshooter_action_clicked', { error_type: errorType, action: 'troubleshooting_guide' })}
+            onClick={() =>
+              track('inline_error_troubleshooter_action_clicked', {
+                error_type: errorType,
+                action: 'troubleshooting_guide',
+              })
+            }
             iconRight={<ExternalLink />}
           >
             <a href={href} target="_blank" rel="noopener noreferrer">
@@ -156,7 +164,10 @@ export function FixWithAITroubleshootingSection({
             label="Debug with AI"
             buildPrompt={buildPrompt ?? (() => '')}
             onOpenAssistant={() => {
-              track('inline_error_troubleshooter_action_clicked', { error_type: errorType, action: 'ask_ai' })
+              track('inline_error_troubleshooter_action_clicked', {
+                error_type: errorType,
+                action: 'ask_ai',
+              })
               onDebugWithAI?.()
             }}
             size="tiny"

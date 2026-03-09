@@ -63,7 +63,12 @@ export function MappedErrorDisplay({
       supportUrl={supportUrl}
       className={className}
       onRender={() => track('inline_error_troubleshooter_shown', { error_type: mapping.id })}
-      onSupportClick={() => track('inline_error_troubleshooter_action_clicked', { error_type: mapping.id, action: 'contact_support' })}
+      onSupportClick={() =>
+        track('inline_error_troubleshooter_action_clicked', {
+          error_type: mapping.id,
+          action: 'contact_support',
+        })
+      }
     >
       {mapping.content}
     </ErrorDisplay>

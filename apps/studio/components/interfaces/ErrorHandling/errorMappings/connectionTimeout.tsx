@@ -14,10 +14,18 @@ interface ConnectionTimeoutProps {
 
 const ERROR_TYPE = 'connection-timeout'
 
-function ConnectionTimeout({ onRestartProject, onDebugWithAI, buildPrompt }: ConnectionTimeoutProps) {
+function ConnectionTimeout({
+  onRestartProject,
+  onDebugWithAI,
+  buildPrompt,
+}: ConnectionTimeoutProps) {
   return (
     <TroubleshootingAccordion errorType={ERROR_TYPE}>
-      <RestartDatabaseTroubleshootingSection number={1} errorType={ERROR_TYPE} onRestartProject={onRestartProject} />
+      <RestartDatabaseTroubleshootingSection
+        number={1}
+        errorType={ERROR_TYPE}
+        onRestartProject={onRestartProject}
+      />
       <TroubleshootingGuideSection
         number={2}
         errorType={ERROR_TYPE}
