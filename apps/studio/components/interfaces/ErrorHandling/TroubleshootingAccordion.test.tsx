@@ -1,44 +1,66 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
+import {
+  AccordionContent_Shadcn_ as AccordionContent,
+  AccordionItem_Shadcn_ as AccordionItem,
+  AccordionTrigger_Shadcn_ as AccordionTrigger,
+} from 'ui'
 import { TroubleshootingAccordion } from './TroubleshootingAccordion'
-import type { TroubleshootingStepConfig } from './ErrorMatcher.types'
+
+function TestSteps({ onActionClick }: { onActionClick?: (label: string) => void }) {
+  return (
+    <>
+      <AccordionItem value="step-1" className="px-3 py-2">
+        <AccordionTrigger>First step</AccordionTrigger>
+        <AccordionContent>
+          <p>First step description</p>
+          <button onClick={() => onActionClick?.('Action 1')}>Action 1</button>
+        </AccordionContent>
+      </AccordionItem>
+      <AccordionItem value="step-2" className="px-3 py-2">
+        <AccordionTrigger>Second step</AccordionTrigger>
+        <AccordionContent>
+          <p>Second step description</p>
+        </AccordionContent>
+      </AccordionItem>
+      <AccordionItem value="step-3" className="px-3 py-2">
+        <AccordionTrigger>Third step</AccordionTrigger>
+        <AccordionContent>
+          <a href="https://example.com">Action 3</a>
+        </AccordionContent>
+      </AccordionItem>
+    </>
+  )
+}
 
 describe('TroubleshootingAccordion', () => {
-  const mockSteps: TroubleshootingStepConfig[] = [
-    {
-      number: 1,
-      title: 'First step',
-      description: 'First step description',
-      actions: [{ label: 'Action 1', onClick: vi.fn() }],
-    },
-    {
-      number: 2,
-      title: 'Second step',
-      description: 'Second step description',
-      actions: [],
-    },
-    {
-      number: 3,
-      title: 'Third step',
-      actions: [{ label: 'Action 3', href: 'https://example.com' }],
-    },
-  ]
-
-  it('renders all steps', () => {
-    render(<TroubleshootingAccordion steps={mockSteps} />)
+  it('renders children', () => {
+    render(
+      <TroubleshootingAccordion>
+        <TestSteps />
+      </TroubleshootingAccordion>
+    )
     expect(screen.getByText('First step')).toBeInTheDocument()
     expect(screen.getByText('Second step')).toBeInTheDocument()
     expect(screen.getByText('Third step')).toBeInTheDocument()
   })
 
   it('expands first step by default', () => {
-    render(<TroubleshootingAccordion steps={mockSteps} />)
+    render(
+      <TroubleshootingAccordion>
+        <TestSteps />
+      </TroubleshootingAccordion>
+    )
     expect(screen.getByText('First step description')).toBeVisible()
   })
 
   it('respects custom defaultExpandedStep', () => {
-    render(<TroubleshootingAccordion steps={mockSteps} defaultExpandedStep={2} />)
+    render(
+      <TroubleshootingAccordion defaultExpandedStep={2}>
+        <TestSteps />
+      </TroubleshootingAccordion>
+    )
     expect(screen.getByText('Second step description')).toBeVisible()
   })
 
@@ -46,7 +68,11 @@ describe('TroubleshootingAccordion', () => {
     const onStepExpand = vi.fn()
     const user = userEvent.setup()
 
-    render(<TroubleshootingAccordion steps={mockSteps} onStepExpand={onStepExpand} />)
+    render(
+      <TroubleshootingAccordion onStepExpand={onStepExpand}>
+        <TestSteps />
+      </TroubleshootingAccordion>
+    )
 
     const secondStepTrigger = screen.getByText('Second step')
     await user.click(secondStepTrigger)
@@ -54,27 +80,11 @@ describe('TroubleshootingAccordion', () => {
     expect(onStepExpand).toHaveBeenCalledWith(2)
   })
 
-  it('calls onActionClick when an action button is clicked', async () => {
-    const onActionClick = vi.fn()
-    const user = userEvent.setup()
-
-    render(<TroubleshootingAccordion steps={mockSteps} onActionClick={onActionClick} />)
-
-    const actionButton = screen.getByRole('button', { name: 'Action 1' })
-    await user.click(actionButton)
-
-    expect(onActionClick).toHaveBeenCalledWith(1, 'Action 1')
-  })
-
-  it('renders step numbers correctly', () => {
-    render(<TroubleshootingAccordion steps={mockSteps} />)
-    const stepNumbers = screen.getAllByText(/^[1-3]$/)
-    expect(stepNumbers).toHaveLength(6) // 3 in triggers + 3 in content
-  })
-
   it('applies custom className', () => {
     const { container } = render(
-      <TroubleshootingAccordion steps={mockSteps} className="custom-class" />
+      <TroubleshootingAccordion className="custom-class">
+        <TestSteps />
+      </TroubleshootingAccordion>
     )
     expect(container.querySelector('.custom-class')).toBeInTheDocument()
   })

@@ -9,14 +9,14 @@ describe('ErrorMatcher', () => {
         id: 'test-timeout',
         pattern: 'CONNECTION TIMEOUT',
         title: 'Connection timeout error',
-        steps: [{ number: 1, title: 'Restart', actions: [] }],
+        content: null,
         priority: 10,
       },
       {
         id: 'test-auth',
         pattern: /AUTHENTICATION\s+FAILED/i,
         title: 'Authentication error',
-        steps: [{ number: 1, title: 'Check credentials', actions: [] }],
+        content: null,
         priority: 5,
       },
     ]
@@ -35,20 +35,8 @@ describe('ErrorMatcher', () => {
 
     it('respects priority ordering', () => {
       const mappings: ErrorMapping[] = [
-        {
-          id: 'low-priority',
-          pattern: 'ERROR',
-          title: 'Generic error',
-          steps: [],
-          priority: 1,
-        },
-        {
-          id: 'high-priority',
-          pattern: 'ERROR',
-          title: 'Specific error',
-          steps: [],
-          priority: 10,
-        },
+        { id: 'low-priority', pattern: 'ERROR', title: 'Generic error', content: null, priority: 1 },
+        { id: 'high-priority', pattern: 'ERROR', title: 'Specific error', content: null, priority: 10 },
       ]
       const result = matchError('ERROR occurred', mappings)
       expect(result?.mapping.id).toBe('high-priority')
@@ -61,12 +49,7 @@ describe('ErrorMatcher', () => {
 
     it('captures regex groups', () => {
       const mappings: ErrorMapping[] = [
-        {
-          id: 'with-capture',
-          pattern: /ERROR: (?<code>\d+)/,
-          title: 'Error with code',
-          steps: [],
-        },
+        { id: 'with-capture', pattern: /ERROR: (?<code>\d+)/, title: 'Error with code', content: null },
       ]
       const result = matchError('ERROR: 500', mappings)
       expect(result?.captures).toEqual({ code: '500' })
@@ -78,12 +61,12 @@ describe('ErrorMatcher', () => {
       expect(result?.originalMessage).toBe(errorMessage)
     })
 
-    it('merges custom mappings with defaults', () => {
+    it('matches custom mappings', () => {
       const customMapping: ErrorMapping = {
         id: 'custom',
         pattern: 'CUSTOM ERROR',
         title: 'Custom',
-        steps: [],
+        content: null,
       }
       const result = matchError('CUSTOM ERROR', [customMapping])
       expect(result?.mapping.id).toBe('custom')
@@ -92,40 +75,22 @@ describe('ErrorMatcher', () => {
 
   describe('createErrorMapping', () => {
     it('creates a mapping with provided id', () => {
-      const mapping = createErrorMapping({
-        id: 'custom-id',
-        pattern: 'TEST',
-        title: 'Test',
-        steps: [],
-      })
+      const mapping = createErrorMapping({ id: 'custom-id', pattern: 'TEST', title: 'Test', content: null })
       expect(mapping.id).toBe('custom-id')
     })
 
     it('generates id when not provided', () => {
-      const mapping = createErrorMapping({
-        pattern: 'TEST',
-        title: 'Test',
-        steps: [],
-      })
+      const mapping = createErrorMapping({ pattern: 'TEST', title: 'Test', content: null })
       expect(mapping.id).toMatch(/^custom-\d+$/)
     })
 
     it('sets default priority to 0', () => {
-      const mapping = createErrorMapping({
-        pattern: 'TEST',
-        title: 'Test',
-        steps: [],
-      })
+      const mapping = createErrorMapping({ pattern: 'TEST', title: 'Test', content: null })
       expect(mapping.priority).toBe(0)
     })
 
     it('respects provided priority', () => {
-      const mapping = createErrorMapping({
-        pattern: 'TEST',
-        title: 'Test',
-        steps: [],
-        priority: 5,
-      })
+      const mapping = createErrorMapping({ pattern: 'TEST', title: 'Test', content: null, priority: 5 })
       expect(mapping.priority).toBe(5)
     })
   })

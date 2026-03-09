@@ -2,7 +2,7 @@
 
 import { forwardRef, useEffect, useRef } from 'react'
 import { AlertTriangle, HelpCircle } from 'lucide-react'
-import { cn } from 'ui'
+import { Card, CardHeader, cn } from 'ui'
 import type { ErrorDisplayProps } from './ErrorDisplay.types'
 
 /**
@@ -50,10 +50,10 @@ export const ErrorDisplay = forwardRef<HTMLDivElement, ErrorDisplayProps>(
     }, [onRender])
 
     return (
-      <div
+      <Card
         ref={ref}
         className={cn(
-          'rounded-lg border border-destructive-400 bg-surface-100 overflow-hidden',
+          'rounded-lg border border-default',
           className
         )}
         role="alert"
@@ -61,14 +61,14 @@ export const ErrorDisplay = forwardRef<HTMLDivElement, ErrorDisplayProps>(
         {...props}
       >
         {/* Header */}
-        <div className="flex items-center gap-3 px-5 py-3.5 border-b border-default bg-surface-75">
-          <div className="flex-shrink-0 text-warning-600">
-            {icon ?? <AlertTriangle className="h-5 w-5" />}
+        <CardHeader className='flex-row items-center gap-4 space-y-0 py-2'>
+          <div className="text-warning-600">
+            {icon ?? <AlertTriangle className="h-4 w-4" />}
           </div>
-          <h3 id="error-display-title" className="text-sm font-medium text-foreground">
+          <h3 id="error-display-title" className="text-sm text-foreground mt-0">
             {title}
           </h3>
-        </div>
+        </CardHeader>
 
         {/* Error Message Display */}
         <div className="px-5 py-3.5 bg-warning-200 border-b border-warning-400">
@@ -78,24 +78,27 @@ export const ErrorDisplay = forwardRef<HTMLDivElement, ErrorDisplayProps>(
         </div>
 
         {/* Troubleshooting Steps (Children) */}
-        {children && <div className="px-5 py-4 bg-surface-100">{children}</div>}
+        {children && <div>{children}</div>}
 
         {/* Footer */}
         {supportUrl && (
-          <div className="px-5 py-3 border-t border-default bg-surface-75 flex items-center gap-2">
+          <div className="px-3 py-2 border-t border-default flex items-center gap-2">
+            <div className='flex-shrink-0'>
+
             <HelpCircle className="h-4 w-4 text-foreground-muted" />
-            <span className="text-sm text-foreground-light">Still need further help?</span>
+            </div>
+            <span className="text-sm text-foreground-light">Need help?</span>
             <a
               href={supportUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-foreground underline hover:text-foreground-light transition-colors"
+              className="text-sm text-foreground flex-shrink-0 underline hover:text-foreground-light transition-colors"
             >
               {supportLabel}
             </a>
           </div>
         )}
-      </div>
+      </Card>
     )
   }
 )

@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { ErrorDisplay } from 'ui-patterns/ErrorDisplay'
 import { useTrack } from 'lib/telemetry/track'
 import { matchError } from './ErrorMatcher'
 import type { ErrorMapping } from './ErrorMatcher.types'
-import { TroubleshootingAccordion } from './TroubleshootingAccordion'
+import { allMappingFactories } from './errorMappings'
 
 interface MappedErrorDisplayProps {
   /** The error message to display and match */
@@ -30,10 +30,7 @@ interface MappedErrorDisplayProps {
  * It uses pattern matching to find the appropriate troubleshooting steps
  * and renders them inside an ErrorDisplay component.
  *
- * Includes PostHog event tracking for:
- * - Error display events (sampled at 10%)
- * - Accordion step expansion
- * - Action button clicks
+ * Tracks error display events via PostHog (10% sampled).
  *
  * @example
  * ```tsx
@@ -60,8 +57,20 @@ export function MappedErrorDisplay({
 
   const errorMessage = typeof error === 'string' ? error : error.message
 
-  // Match error to troubleshooting configuration
-  const matchResult = matchError(errorMessage, customMappings)
+  // Build default mappings with callbacks injected
+  const defaultMappings = useMemo(
+    () =>
+      allMappingFactories.map((factory) =>
+        factory({
+          onRestartProject,
+          onDebugWithAI,
+          buildPrompt: () => errorMessage,
+        })
+      ),
+    [onRestartProject, onDebugWithAI, errorMessage]
+  )
+
+  const matchResult = matchError(errorMessage, [...defaultMappings, ...(customMappings ?? [])])
 
   // Track error display on mount (with sampling)
   useEffect(() => {
@@ -75,25 +84,7 @@ export function MappedErrorDisplay({
     }
   }, [track, matchResult])
 
-  // Track accordion step expansion
-  const handleStepExpand = (stepNumber: number) => {
-    track('error_troubleshooting_step_expanded', {
-      step_number: stepNumber,
-      error_type: matchResult?.mapping.id,
-    })
-  }
-
-  // Track action button clicks
-  const handleActionClick = (stepNumber: number, actionLabel: string) => {
-    track('error_troubleshooting_action_clicked', {
-      step_number: stepNumber,
-      action_label: actionLabel,
-      error_type: matchResult?.mapping.id,
-    })
-  }
-
   if (!matchResult) {
-    // Fallback for unmatched errors - just show the error without specific troubleshooting
     return (
       <ErrorDisplay
         title="An error occurred"
@@ -106,22 +97,6 @@ export function MappedErrorDisplay({
 
   const { mapping } = matchResult
 
-  // Inject dynamic action handlers into steps
-  const stepsWithHandlers = mapping.steps.map((step) => ({
-    ...step,
-    actions: step.actions?.map((action) => {
-      // Inject restart handler
-      if (action.label.toLowerCase().includes('restart') && onRestartProject) {
-        return { ...action, onClick: onRestartProject }
-      }
-      // Inject AI debug handler
-      if (action.label.toLowerCase().includes('ai') && onDebugWithAI) {
-        return { ...action, onClick: onDebugWithAI }
-      }
-      return action
-    }),
-  }))
-
   return (
     <ErrorDisplay
       title={mapping.title}
@@ -129,11 +104,7 @@ export function MappedErrorDisplay({
       supportUrl={supportUrl}
       className={className}
     >
-      <TroubleshootingAccordion
-        steps={stepsWithHandlers}
-        onStepExpand={handleStepExpand}
-        onActionClick={handleActionClick}
-      />
+      {mapping.content}
     </ErrorDisplay>
   )
 }

@@ -4,4 +4,5 @@ export type ErrorMappingFactory = (params?: {
   projectRef?: string
   onRestartProject?: () => void
   onDebugWithAI?: () => void
+  buildPrompt?: () => string
 }) => ErrorMapping
