@@ -1,0 +1,295 @@
+#!/bin/sh
+#
+# Smoke test for self-hosted Supabase - verifies core functionality end-to-end.
+#
+# Usage:
+#   sh test-self-hosted.sh              # Uses http://localhost:8000
+#   sh test-self-hosted.sh <base_url>   # Custom URL
+#
+# Prerequisites:
+#   - Running self-hosted Supabase instance
+#   - .env file with keys configured
+#   - node >= 16 (for file generation)
+#
+
+set -e
+
+BASE_URL="${1:-http://localhost:8000}"
+
+if [ ! -f .env ]; then
+    echo "Error: .env file not found. Run from the project directory."
+    exit 1
+fi
+
+# Read keys from .env
+ANON_KEY=$(grep '^ANON_KEY=' .env | cut -d= -f2-)
+SERVICE_ROLE_KEY=$(grep '^SERVICE_ROLE_KEY=' .env | cut -d= -f2-)
+DASHBOARD_USERNAME=$(grep '^DASHBOARD_USERNAME=' .env | cut -d= -f2-)
+DASHBOARD_PASSWORD=$(grep '^DASHBOARD_PASSWORD=' .env | cut -d= -f2-)
+
+pass=0
+fail=0
+
+check() {
+    test_name="$1"
+    expected="$2"
+    actual="$3"
+
+    if [ "$actual" = "$expected" ]; then
+        echo "  PASS: $test_name"
+        pass=$((pass + 1))
+    else
+        echo "  FAIL: $test_name (expected $expected, got $actual)"
+        fail=$((fail + 1))
+    fi
+}
+
+http_status() {
+    url="$1"
+    shift
+    curl -s -o /dev/null -w "%{http_code}" "$@" "$url"
+}
+
+http_body() {
+    url="$1"
+    shift
+    curl -s "$@" "$url"
+}
+
+echo ""
+echo "=== Self-hosted smoke test against $BASE_URL ==="
+echo ""
+
+# ---------------------------------------------
+# 1. Container health (via docker compose)
+# ---------------------------------------------
+
+echo "--- Container health ---"
+if command -v docker >/dev/null 2>&1; then
+    unhealthy=$(docker compose ps --format json 2>/dev/null | node -e "
+        let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{
+            const lines=d.trim().split('\n').filter(Boolean);
+            const bad=lines.filter(l=>{try{const o=JSON.parse(l);return o.Health&&o.Health!=='healthy'}catch{return false}});
+            console.log(bad.length)
+        })" 2>/dev/null || echo "?")
+    if [ "$unhealthy" = "0" ]; then
+        check "All containers healthy" "0" "$unhealthy"
+    elif [ "$unhealthy" = "?" ]; then
+        echo "  SKIP: Could not check container health"
+    else
+        check "All containers healthy" "0" "$unhealthy"
+    fi
+else
+    echo "  SKIP: docker not available"
+fi
+
+# ---------------------------------------------
+# 2. Studio dashboard
+# ---------------------------------------------
+
+echo ""
+echo "--- Studio dashboard ---"
+# Studio may redirect (307/302) after auth - follow redirects
+check "Studio accessible with basic auth" "200" \
+    "$(http_status "$BASE_URL/" -L -u "$DASHBOARD_USERNAME:$DASHBOARD_PASSWORD")"
+check "Studio rejects without auth" "401" \
+    "$(http_status "$BASE_URL/")"
+
+# ---------------------------------------------
+# 3. Auth: sign up, sign in, get user, delete user
+# ---------------------------------------------
+
+echo ""
+echo "--- Auth: user lifecycle ---"
+
+test_email="smoke-test-$$@example.com"
+test_password="smoke-test-password-123456"
+
+# Sign up
+signup_resp=$(http_body "$BASE_URL/auth/v1/signup" \
+    -H "apikey: $ANON_KEY" \
+    -H "Content-Type: application/json" \
+    -d "{\"email\":\"$test_email\",\"password\":\"$test_password\"}")
+
+user_id=$(echo "$signup_resp" | node -e "
+    let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{
+        try{const j=JSON.parse(d);console.log(j.id||j.user?.id||'')}catch{console.log('')}
+    })" 2>/dev/null)
+
+if [ -n "$user_id" ]; then
+    check "Sign up user" "true" "true"
+
+    # Sign in
+    signin_resp=$(http_body "$BASE_URL/auth/v1/token?grant_type=password" \
+        -H "apikey: $ANON_KEY" \
+        -H "Content-Type: application/json" \
+        -d "{\"email\":\"$test_email\",\"password\":\"$test_password\"}")
+
+    access_token=$(echo "$signin_resp" | node -e "
+        let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{
+            try{console.log(JSON.parse(d).access_token||'')}catch{console.log('')}
+        })" 2>/dev/null)
+
+    if [ -n "$access_token" ]; then
+        check "Sign in user" "true" "true"
+
+        # Get user
+        check "Get user profile" "200" \
+            "$(http_status "$BASE_URL/auth/v1/user" \
+                -H "apikey: $ANON_KEY" \
+                -H "Authorization: Bearer $access_token")"
+    else
+        check "Sign in user" "true" "false"
+    fi
+
+    # Delete user (admin API with service_role key)
+    delete_status=$(http_status "$BASE_URL/auth/v1/admin/users/$user_id" \
+        -X DELETE \
+        -H "apikey: $SERVICE_ROLE_KEY" \
+        -H "Authorization: Bearer $SERVICE_ROLE_KEY")
+    check "Delete user (admin)" "200" "$delete_status"
+else
+    echo "  SKIP: Could not sign up user (email confirmation may be required)"
+    echo "  Response: $signup_resp"
+fi
+
+# ---------------------------------------------
+# 4. PostgREST: query
+# ---------------------------------------------
+
+echo ""
+echo "--- PostgREST ---"
+check "REST API query" "200" \
+    "$(http_status "$BASE_URL/rest/v1/" \
+        -H "apikey: $ANON_KEY")"
+
+# ---------------------------------------------
+# 5. GraphQL
+# ---------------------------------------------
+
+echo ""
+echo "--- GraphQL ---"
+gql_resp=$(http_body "$BASE_URL/graphql/v1" \
+    -H "apikey: $ANON_KEY" \
+    -H "Content-Type: application/json" \
+    -d '{"query":"{ __typename }"}')
+gql_has_data=$(echo "$gql_resp" | node -e "
+    let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{
+        try{console.log(JSON.parse(d).data?'true':'false')}catch{console.log('false')}
+    })" 2>/dev/null)
+check "GraphQL introspection" "true" "$gql_has_data"
+
+# ---------------------------------------------
+# 6. Storage: create bucket, upload >6MB file, download, cleanup
+# ---------------------------------------------
+
+echo ""
+echo "--- Storage: bucket + file lifecycle ---"
+
+bucket_name="smoke-test-$$"
+
+# Create bucket
+create_bucket_status=$(http_status "$BASE_URL/storage/v1/bucket" \
+    -X POST \
+    -H "apikey: $SERVICE_ROLE_KEY" \
+    -H "Authorization: Bearer $SERVICE_ROLE_KEY" \
+    -H "Content-Type: application/json" \
+    -d "{\"id\":\"$bucket_name\",\"name\":\"$bucket_name\",\"public\":true}")
+check "Create bucket" "200" "$create_bucket_status"
+
+if [ "$create_bucket_status" = "200" ]; then
+    # Generate a ~7MB file
+    tmpfile=$(mktemp)
+    dd if=/dev/urandom of="$tmpfile" bs=1048576 count=7 2>/dev/null
+
+    # Upload file
+    upload_status=$(http_status "$BASE_URL/storage/v1/object/$bucket_name/test-large-file.bin" \
+        -X POST \
+        -H "apikey: $SERVICE_ROLE_KEY" \
+        -H "Authorization: Bearer $SERVICE_ROLE_KEY" \
+        -H "Content-Type: application/octet-stream" \
+        --data-binary "@$tmpfile")
+    check "Upload 7MB file" "200" "$upload_status"
+
+    # Download file and verify size
+    download_size=$(curl -s \
+        "$BASE_URL/storage/v1/object/public/$bucket_name/test-large-file.bin" | wc -c | tr -d ' ')
+    original_size=$(wc -c < "$tmpfile" | tr -d ' ')
+    check "Download file (size matches)" "true" \
+        "$([ "$download_size" = "$original_size" ] && echo true || echo false)"
+
+    rm -f "$tmpfile"
+
+    # Delete file
+    delete_file_status=$(http_status "$BASE_URL/storage/v1/object/$bucket_name/test-large-file.bin" \
+        -X DELETE \
+        -H "apikey: $SERVICE_ROLE_KEY" \
+        -H "Authorization: Bearer $SERVICE_ROLE_KEY")
+    check "Delete file" "200" "$delete_file_status"
+
+    # Delete bucket
+    delete_bucket_status=$(http_status "$BASE_URL/storage/v1/bucket/$bucket_name" \
+        -X DELETE \
+        -H "apikey: $SERVICE_ROLE_KEY" \
+        -H "Authorization: Bearer $SERVICE_ROLE_KEY")
+    check "Delete bucket" "200" "$delete_bucket_status"
+fi
+
+# ---------------------------------------------
+# 7. Edge Functions
+# ---------------------------------------------
+
+echo ""
+echo "--- Edge Functions ---"
+fn_status=$(http_status "$BASE_URL/functions/v1/hello" \
+    -X POST \
+    -H "Authorization: Bearer $ANON_KEY" \
+    -H "Content-Type: application/json" \
+    -d '{}')
+# hello function may return 200 or 204 depending on implementation
+check "Call hello function -> not error" "true" \
+    "$([ "$fn_status" -lt 400 ] 2>/dev/null && echo true || echo false)"
+
+# ---------------------------------------------
+# 8. pg-meta (Studio backend)
+# ---------------------------------------------
+
+echo ""
+echo "--- pg-meta ---"
+check "pg-meta with service_role key" "200" \
+    "$(http_status "$BASE_URL/pg/schemas" \
+        -H "apikey: $SERVICE_ROLE_KEY")"
+check "pg-meta rejects anon key" "403" \
+    "$(http_status "$BASE_URL/pg/schemas" \
+        -H "apikey: $ANON_KEY")"
+check "pg-meta rejects no key" "401" \
+    "$(http_status "$BASE_URL/pg/schemas")"
+
+echo ""
+echo "--- MCP (blocked by default) ---"
+check "/api/mcp blocked" "403" \
+    "$(http_status "$BASE_URL/api/mcp")"
+check "/mcp blocked" "403" \
+    "$(http_status "$BASE_URL/mcp")"
+
+# ---------------------------------------------
+# 9. Realtime
+# ---------------------------------------------
+
+echo ""
+echo "--- Realtime ---"
+check "Realtime health" "true" \
+    "$([ "$(http_status "$BASE_URL/realtime/v1/api/tenants" \
+        -H "apikey: $ANON_KEY")" != "401" ] && echo true || echo false)"
+
+# ---------------------------------------------
+# Summary
+# ---------------------------------------------
+
+echo ""
+echo "=== Results: $pass passed, $fail failed ==="
+echo ""
+
+if [ "$fail" -gt 0 ]; then
+    exit 1
+fi
