@@ -279,7 +279,6 @@ export const TableEditorMenu = () => {
           {isError && (
             <MappedErrorDisplay
               error={error?.message ?? 'Failed to retrieve tables'}
-              projectRef={project?.ref}
               supportUrl={`/support/new${project?.ref ? `?project=${project.ref}` : ''}`}
               className="mx-4 mt-3"
             />
