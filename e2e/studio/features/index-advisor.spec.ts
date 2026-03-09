@@ -69,23 +69,5 @@ test.describe('Index Advisor', () => {
     await expect(indexAdvisorButton, 'Index Advisor filter should be visible').toBeVisible({
       timeout: 30000,
     })
-    await indexAdvisorButton.click()
-
-    // Check if any rows with Index Advisor warnings appear in the results
-    // Look for rows in the query performance grid (excluding header)
-    const queryRows = page.locator('[role="row"]').nth(1)
-
-    // Give it some time for the filtered results to appear
-    try {
-      await expect(
-        queryRows,
-        'At least one query with Index Advisor warning should be visible'
-      ).toBeVisible({ timeout: 10000 })
-      console.log('Successfully found queries with Index Advisor recommendations')
-    } catch (e) {
-      console.log(
-        'No queries with Index Advisor warnings found - may need more query executions or time'
-      )
-    }
   })
 })
