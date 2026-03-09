@@ -12,21 +12,21 @@ interface ConnectionTimeoutProps {
   buildPrompt?: () => string
 }
 
-function ConnectionTimeout({
-  onRestartProject,
-  onDebugWithAI,
-  buildPrompt,
-}: ConnectionTimeoutProps) {
+const ERROR_TYPE = 'connection-timeout'
+
+function ConnectionTimeout({ onRestartProject, onDebugWithAI, buildPrompt }: ConnectionTimeoutProps) {
   return (
-    <TroubleshootingAccordion>
-      <RestartDatabaseTroubleshootingSection number={1} onRestartProject={onRestartProject} />
+    <TroubleshootingAccordion errorType={ERROR_TYPE}>
+      <RestartDatabaseTroubleshootingSection number={1} errorType={ERROR_TYPE} onRestartProject={onRestartProject} />
       <TroubleshootingGuideSection
         number={2}
+        errorType={ERROR_TYPE}
         href="https://supabase.com/docs/guides/platform/troubleshooting#connection-timeout"
         description="Follow step-by-step instructions for diagnosing connection timeout issues."
       />
       <FixWithAITroubleshootingSection
         number={3}
+        errorType={ERROR_TYPE}
         onDebugWithAI={onDebugWithAI}
         buildPrompt={buildPrompt}
       />

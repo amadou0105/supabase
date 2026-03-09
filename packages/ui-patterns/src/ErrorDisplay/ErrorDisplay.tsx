@@ -37,6 +37,7 @@ export const ErrorDisplay = forwardRef<HTMLDivElement, ErrorDisplayProps>(
       className,
       icon,
       onRender,
+      onSupportClick,
       ...props
     },
     ref
@@ -88,6 +89,7 @@ export const ErrorDisplay = forwardRef<HTMLDivElement, ErrorDisplayProps>(
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-foreground flex-shrink-0 underline hover:text-foreground-light transition-colors"
+              onClick={onSupportClick}
             >
               {supportLabel}
             </a>

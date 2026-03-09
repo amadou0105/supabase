@@ -2580,26 +2580,51 @@ export interface DashboardErrorCreatedEvent {
 }
 
 /**
- * Triggered when a user clicks an action button within a troubleshooting step.
+ * Triggered when the inline error troubleshooter is shown to the user.
  *
  * @group Events
  * @source studio
  */
-export interface ErrorTroubleshootingActionClickedEvent {
-  action: 'error_troubleshooting_action_clicked'
+export interface InlineErrorTroubleshooterShownEvent {
+  action: 'inline_error_troubleshooter_shown'
   properties: {
-    /**
-     * The step number containing the action
-     */
-    step_number: number
-    /**
-     * Label of the action button clicked
-     */
-    action_label: string
-    /**
-     * Type of error being troubleshooted
-     */
-    error_type?: string
+    /** ID of the matched error mapping */
+    error_type: string
+  }
+  groups: TelemetryGroups
+}
+
+/**
+ * Triggered when a user opens or closes a troubleshooting accordion step.
+ *
+ * @group Events
+ * @source studio
+ */
+export interface InlineErrorTroubleshooterAccordionToggledEvent {
+  action: 'inline_error_troubleshooter_accordion_toggled'
+  properties: {
+    /** ID of the matched error mapping */
+    error_type: string
+    /** Whether the step was opened (true) or closed (false) */
+    expanded: boolean
+  }
+  groups: TelemetryGroups
+}
+
+/**
+ * Triggered when a user clicks an action within the inline error troubleshooter.
+ * Covers all CTAs including the contact support link.
+ *
+ * @group Events
+ * @source studio
+ */
+export interface InlineErrorTroubleshooterActionClickedEvent {
+  action: 'inline_error_troubleshooter_action_clicked'
+  properties: {
+    /** ID of the matched error mapping */
+    error_type: string
+    /** Which action was clicked */
+    action: 'restart_db' | 'troubleshooting_guide' | 'ask_ai' | 'contact_support'
   }
   groups: TelemetryGroups
 }
@@ -2869,7 +2894,9 @@ export type TelemetryEvent =
   | RequestUpgradeModalOpenedEvent
   | RequestUpgradeSubmittedEvent
   | DashboardErrorCreatedEvent
-  | ErrorTroubleshootingActionClickedEvent
+  | InlineErrorTroubleshooterShownEvent
+  | InlineErrorTroubleshooterAccordionToggledEvent
+  | InlineErrorTroubleshooterActionClickedEvent
   | IntegrationInstallCompletedEvent
   | IntegrationInstallSubmittedEvent
   | IntegrationUninstallSubmittedEvent

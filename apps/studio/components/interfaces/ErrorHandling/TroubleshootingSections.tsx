@@ -1,6 +1,7 @@
 'use client'
 
 import { AiAssistantDropdown } from 'components/ui/AiAssistantDropdown'
+import { useTrack } from 'lib/telemetry/track'
 import { ExternalLink } from 'lucide-react'
 import { useState } from 'react'
 import {
@@ -32,20 +33,21 @@ function StepTrigger({ number, title }: StepTriggerProps) {
 
 interface RestartDatabaseTroubleshootingSectionProps {
   number: number
+  errorType: string
   /** Override the restart handler. If not provided, opens the restart dialog internally. */
   onRestartProject?: () => void
-  onActionClick?: () => void
 }
 
 export function RestartDatabaseTroubleshootingSection({
   number,
+  errorType,
   onRestartProject,
-  onActionClick,
 }: RestartDatabaseTroubleshootingSectionProps) {
+  const track = useTrack()
   const [showDialog, setShowDialog] = useState(false)
 
   const handleClick = () => {
-    onActionClick?.()
+    track('inline_error_troubleshooter_action_clicked', { error_type: errorType, action: 'restart_db' })
     if (onRestartProject) {
       onRestartProject()
     } else {
@@ -83,19 +85,21 @@ export function RestartDatabaseTroubleshootingSection({
 
 interface TroubleshootingGuideSectionProps {
   number: number
+  errorType: string
   href: string
   title?: string
   description?: string
-  onActionClick?: () => void
 }
 
 export function TroubleshootingGuideSection({
   number,
+  errorType,
   href,
   title = 'Try our troubleshooting guide',
   description,
-  onActionClick,
 }: TroubleshootingGuideSectionProps) {
+  const track = useTrack()
+
   return (
     <AccordionItem
       value={`step-${number}`}
@@ -109,7 +113,7 @@ export function TroubleshootingGuideSection({
             asChild
             type="default"
             size="tiny"
-            onClick={onActionClick}
+            onClick={() => track('inline_error_troubleshooter_action_clicked', { error_type: errorType, action: 'troubleshooting_guide' })}
             iconRight={<ExternalLink />}
           >
             <a href={href} target="_blank" rel="noopener noreferrer">
@@ -124,15 +128,19 @@ export function TroubleshootingGuideSection({
 
 interface FixWithAITroubleshootingSectionProps {
   number: number
+  errorType: string
   onDebugWithAI?: () => void
   buildPrompt?: () => string
 }
 
 export function FixWithAITroubleshootingSection({
   number,
+  errorType,
   onDebugWithAI,
   buildPrompt,
 }: FixWithAITroubleshootingSectionProps) {
+  const track = useTrack()
+
   return (
     <AccordionItem
       value={`step-${number}`}
@@ -147,7 +155,10 @@ export function FixWithAITroubleshootingSection({
           <AiAssistantDropdown
             label="Debug with AI"
             buildPrompt={buildPrompt ?? (() => '')}
-            onOpenAssistant={onDebugWithAI ?? (() => {})}
+            onOpenAssistant={() => {
+              track('inline_error_troubleshooter_action_clicked', { error_type: errorType, action: 'ask_ai' })
+              onDebugWithAI?.()
+            }}
             size="tiny"
           />
         </div>

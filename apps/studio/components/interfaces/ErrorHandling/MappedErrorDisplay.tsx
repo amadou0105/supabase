@@ -1,7 +1,7 @@
 'use client'
 
 import { useTrack } from 'lib/telemetry/track'
-import { useEffect, useMemo, useRef } from 'react'
+import { useMemo } from 'react'
 import { ErrorDisplay } from 'ui-patterns/ErrorDisplay'
 
 import { allMappingFactories } from './errorMappings'
@@ -54,7 +54,6 @@ export function MappedErrorDisplay({
   className,
 }: MappedErrorDisplayProps) {
   const track = useTrack()
-  const hasTrackedRenderRef = useRef(false)
 
   const errorMessage = typeof error === 'string' ? error : error.message
 
@@ -72,18 +71,6 @@ export function MappedErrorDisplay({
   )
 
   const matchResult = matchError(errorMessage, [...defaultMappings, ...(customMappings ?? [])])
-
-  // Track error display on mount (with sampling)
-  useEffect(() => {
-    if (!hasTrackedRenderRef.current && Math.random() < 0.1) {
-      hasTrackedRenderRef.current = true
-      track('dashboard_error_created', {
-        source: 'error_display',
-        error_type: matchResult?.mapping.id,
-        has_troubleshooting: matchResult ? true : false,
-      })
-    }
-  }, [track, matchResult])
 
   if (!matchResult) {
     return (
@@ -104,6 +91,8 @@ export function MappedErrorDisplay({
       errorMessage={errorMessage}
       supportUrl={supportUrl}
       className={className}
+      onRender={() => track('inline_error_troubleshooter_shown', { error_type: mapping.id })}
+      onSupportClick={() => track('inline_error_troubleshooter_action_clicked', { error_type: mapping.id, action: 'contact_support' })}
     >
       {mapping.content}
     </ErrorDisplay>

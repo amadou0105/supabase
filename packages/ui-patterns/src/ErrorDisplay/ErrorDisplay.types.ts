@@ -47,4 +47,10 @@ export interface ErrorDisplayProps extends ComponentPropsWithoutRef<'div'> {
    * Useful for tracking error display events
    */
   onRender?: () => void
+
+  /**
+   * Callback fired when the contact support link is clicked
+   * Useful for tracking support escalations
+   */
+  onSupportClick?: () => void
 }
