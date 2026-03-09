@@ -3,8 +3,11 @@ on:
   push:
     branches: [master]
   pull_request:
+    paths:
+      - 'apps/studio/**'
+      - 'pnpm-lock.yaml'
 
-# Cancel old builds on new commit for same workflow + branch/PR
+      # Cancel old builds on new commit for same workflow + branch/PR
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true

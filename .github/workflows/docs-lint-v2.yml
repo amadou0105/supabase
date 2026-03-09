@@ -16,6 +16,8 @@ name: docs_lint
 
 on:
   pull_request:
+    paths:
+      - 'apps/docs/**/*.mdx'
 
 env:
   CARGO_NET_GIT_FETCH_WITH_CLI: true
