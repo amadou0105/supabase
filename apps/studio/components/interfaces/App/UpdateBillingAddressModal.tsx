@@ -15,8 +15,7 @@ import { invalidateOrganizationsQuery } from 'data/organizations/organizations-q
 import { useAsyncCheckPermissions } from 'hooks/misc/useCheckPermissions'
 import { useSelectedOrganizationQuery } from 'hooks/misc/useSelectedOrganization'
 import { IS_PLATFORM } from 'lib/constants'
-import { useRouter } from 'next/router'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import {
   Button,
@@ -32,7 +31,6 @@ import {
 import { ShimmeringLoader } from 'ui-patterns/ShimmeringLoader'
 
 export function UpdateBillingAddressModal() {
-  const router = useRouter()
   const queryClient = useQueryClient()
 
   const [dismissed, setDismissed] = useState(false)
@@ -57,26 +55,19 @@ export function UpdateBillingAddressModal() {
     permissionsLoaded &&
     canBillingWrite
 
-  const open = shouldShow && !dismissed
-
-  // Reset dismissed state on navigation so modal re-opens
-  useEffect(() => {
-    setDismissed(false)
-  }, [router.asPath])
-
   const {
     data: customerProfile,
     isSuccess: profileLoaded,
     isError: profileError,
-    refetch: refetchProfile,
-  } = useOrganizationCustomerProfileQuery({ slug }, { enabled: open && !!slug })
+  } = useOrganizationCustomerProfileQuery({ slug }, { enabled: shouldShow && !dismissed && !!slug })
 
   const {
     data: taxId,
     isSuccess: taxIdLoaded,
     isError: taxIdError,
-    refetch: refetchTaxId,
-  } = useOrganizationTaxIdQuery({ slug }, { enabled: open && !!slug })
+  } = useOrganizationTaxIdQuery({ slug }, { enabled: shouldShow && !dismissed && !!slug })
+
+  const open = shouldShow && !dismissed && !profileError && !taxIdError
 
   const initialCustomerData = useMemo<Partial<BillingCustomerDataFormValues>>(
     () => ({
@@ -143,29 +134,12 @@ export function UpdateBillingAddressModal() {
         <DialogHeader>
           <DialogTitle>Billing address required</DialogTitle>
           <DialogDescription>
-            Please provide a billing address for your organization. If you are a registered
-            business, please add a Tax ID too.
+            Please provide a billing address for your organization. If you are a registered business
+            and have a Tax ID, please add your Tax ID too.
           </DialogDescription>
         </DialogHeader>
 
-        {profileError || taxIdError ? (
-          <DialogSection>
-            <div className="flex flex-col items-center gap-3 py-4 text-center">
-              <p className="text-sm text-foreground-light">
-                Failed to load billing data. Please try again.
-              </p>
-              <Button
-                type="default"
-                onClick={() => {
-                  if (profileError) refetchProfile()
-                  if (taxIdError) refetchTaxId()
-                }}
-              >
-                Retry
-              </Button>
-            </div>
-          </DialogSection>
-        ) : !profileLoaded || !taxIdLoaded ? (
+        {!profileLoaded || !taxIdLoaded ? (
           <DialogSection>
             <div className="space-y-2">
               <ShimmeringLoader />
