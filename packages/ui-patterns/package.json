@@ -306,10 +306,6 @@
       "import": "./src/EmptyStatePresentational/index.tsx",
       "types": "./src/EmptyStatePresentational/index.tsx"
     },
-    "./ErrorDisplay/ErrorDisplay.test": {
-      "import": "./src/ErrorDisplay/ErrorDisplay.test.tsx",
-      "types": "./src/ErrorDisplay/ErrorDisplay.test.tsx"
-    },
     "./ErrorDisplay/ErrorDisplay": {
       "import": "./src/ErrorDisplay/ErrorDisplay.tsx",
       "types": "./src/ErrorDisplay/ErrorDisplay.tsx"
@@ -319,8 +315,8 @@
       "types": "./src/ErrorDisplay/ErrorDisplay.types.ts"
     },
     "./ErrorDisplay": {
-      "import": "./src/ErrorDisplay/index.tsx",
-      "types": "./src/ErrorDisplay/index.tsx"
+      "import": "./src/ErrorDisplay/ErrorDisplay.tsx",
+      "types": "./src/ErrorDisplay/ErrorDisplay.tsx"
     },
     "./ExpandableVideo": {
       "import": "./src/ExpandableVideo/index.tsx",

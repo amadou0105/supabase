@@ -36,7 +36,6 @@ export const ErrorDisplay = forwardRef<HTMLDivElement, ErrorDisplayProps>(
         aria-labelledby="error-display-title"
         {...props}
       >
-        {/* Header */}
         <CardHeader className="flex-row items-center gap-2.5 space-y-0 py-2 px-3">
           <div className="bg-warning p-1 text-background rounded-md">
             {icon ?? <WarningIcon className="w-3 h-3" />}
@@ -46,17 +45,14 @@ export const ErrorDisplay = forwardRef<HTMLDivElement, ErrorDisplayProps>(
           </h3>
         </CardHeader>
 
-        {/* Error Message Display */}
         <div className="px-4 py-3 bg-warning-200 border-y border-warning-500">
           <pre className="text-xs font-mono text-warning-600 whitespace-pre-wrap break-words overflow-auto max-h-32">
             {errorMessage}
           </pre>
         </div>
 
-        {/* Troubleshooting Steps (Children) */}
         {children && <div>{children}</div>}
 
-        {/* Footer */}
         {supportUrl && (
           <div className="px-3 py-2 border-t border-default flex items-center gap-2">
             <div className="flex-shrink-0">
