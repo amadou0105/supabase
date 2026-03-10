@@ -5,14 +5,22 @@ import { forwardRef, useEffect } from 'react'
 import { Card, CardHeader, cn } from 'ui'
 
 import { WarningIcon } from '../admonition'
-import type { ErrorDisplayProps } from './ErrorDisplay.types'
+export type { SupportFormParams } from './ErrorDisplay.types'
+import type { ErrorDisplayProps, SupportFormParams } from './ErrorDisplay.types'
+
+function buildSupportUrl(params?: SupportFormParams) {
+  if (!params) return '/support/new'
+  const entries = Object.entries(params).filter(([, v]) => v !== undefined && v !== '')
+  if (entries.length === 0) return '/support/new'
+  return `/support/new?${new URLSearchParams(entries as [string, string][]).toString()}`
+}
 
 export const ErrorDisplay = forwardRef<HTMLDivElement, ErrorDisplayProps>(
   (
     {
       title,
       errorMessage,
-      supportUrl,
+      supportFormParams,
       supportLabel = 'Contact support',
       children,
       className,
@@ -27,6 +35,8 @@ export const ErrorDisplay = forwardRef<HTMLDivElement, ErrorDisplayProps>(
       onRender?.()
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+
+    const supportUrl = buildSupportUrl(supportFormParams)
 
     return (
       <Card
@@ -53,23 +63,21 @@ export const ErrorDisplay = forwardRef<HTMLDivElement, ErrorDisplayProps>(
 
         {children && <div>{children}</div>}
 
-        {supportUrl && (
-          <div className="px-3 py-2 border-t border-default flex items-center gap-2">
-            <div className="flex-shrink-0">
-              <HelpCircle className="h-4 w-4 text-foreground-muted" />
-            </div>
-            <span className="text-sm text-foreground-light">Need help?</span>
-            <a
-              href={supportUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-foreground flex-shrink-0 underline hover:text-foreground-light transition-colors"
-              onClick={onSupportClick}
-            >
-              {supportLabel}
-            </a>
+        <div className="px-3 py-2 border-t border-default flex items-center gap-2">
+          <div className="flex-shrink-0">
+            <HelpCircle className="h-4 w-4 text-foreground-muted" />
           </div>
-        )}
+          <span className="text-sm text-foreground-light">Need help?</span>
+          <a
+            href={supportUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-foreground flex-shrink-0 underline hover:text-foreground-light transition-colors"
+            onClick={onSupportClick}
+          >
+            {supportLabel}
+          </a>
+        </div>
       </Card>
     )
   }

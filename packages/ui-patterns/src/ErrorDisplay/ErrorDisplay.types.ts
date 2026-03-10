@@ -1,5 +1,16 @@
 import { ComponentPropsWithoutRef, ReactNode } from 'react'
 
+export interface SupportFormParams {
+  projectRef?: string
+  orgSlug?: string
+  category?: string
+  subject?: string
+  message?: string
+  error?: string
+  /** Sentry event ID */
+  sid?: string
+}
+
 export interface ErrorDisplayProps extends ComponentPropsWithoutRef<'div'> {
   /**
    * Title displayed in the header with warning icon
@@ -14,10 +25,11 @@ export interface ErrorDisplayProps extends ComponentPropsWithoutRef<'div'> {
   errorMessage: string
 
   /**
-   * URL for the "Contact support" link in the footer
-   * @default undefined - hides the support link if not provided
+   * Typed params for the support form URL. The component builds the URL automatically.
+   * The "Contact support" footer is always shown.
+   * @example { projectRef: 'my-project' }
    */
-  supportUrl?: string
+  supportFormParams?: SupportFormParams
 
   /**
    * Text for the support link

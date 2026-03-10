@@ -5,7 +5,7 @@ export default function ErrorDisplayDemo() {
     <ErrorDisplay
       title="Failed to load tables"
       errorMessage="ERROR: FAILED TO RUN SQL QUERY: CONNECTION TERMINATED DUE TO CONNECTION TIMEOUT."
-      supportUrl="/support/new"
+      supportFormParams={{ projectRef: 'my-project' }}
     />
   )
 }

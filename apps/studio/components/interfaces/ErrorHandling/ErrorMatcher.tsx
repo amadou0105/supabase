@@ -1,18 +1,14 @@
 'use client'
 
-import {
-  createSupportFormUrl,
-  SupportFormUrlKeys,
-} from 'components/interfaces/Support/SupportForm.utils'
 import { useTrack } from 'lib/telemetry/track'
-import { ErrorDisplay } from 'ui-patterns/ErrorDisplay'
+import { ErrorDisplay, SupportFormParams } from 'ui-patterns/ErrorDisplay'
 
 import { ERROR_MAPPINGS } from './error-mappings'
 
 interface ErrorMatcherProps {
   title: string
   error: string | { message: string }
-  supportFormParams?: Partial<SupportFormUrlKeys>
+  supportFormParams?: SupportFormParams
   className?: string
 }
 
@@ -21,14 +17,13 @@ export function ErrorMatcher({ title, error, supportFormParams, className }: Err
 
   const message = typeof error === 'string' ? error : error.message
   const mapping = ERROR_MAPPINGS.find((m) => m.pattern.test(message)) ?? null
-  const supportUrl = createSupportFormUrl(supportFormParams ?? {})
 
   if (!mapping) {
     return (
       <ErrorDisplay
         title={title}
         errorMessage={message}
-        supportUrl={supportUrl}
+        supportFormParams={supportFormParams}
         className={className}
       />
     )
@@ -38,7 +33,7 @@ export function ErrorMatcher({ title, error, supportFormParams, className }: Err
     <ErrorDisplay
       title={title}
       errorMessage={message}
-      supportUrl={supportUrl}
+      supportFormParams={supportFormParams}
       className={className}
       onRender={() => track('inline_error_troubleshooter_shown', { errorType: mapping.id })}
       onSupportClick={() =>
