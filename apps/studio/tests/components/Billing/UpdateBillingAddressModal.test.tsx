@@ -4,13 +4,6 @@ import { UpdateBillingAddressModal } from 'components/interfaces/App/UpdateBilli
 import { createMockOrganization, render } from 'tests/helpers'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const mockRouterAsPath = vi.fn(() => '/org/test-org/settings')
-vi.mock('next/router', () => ({
-  useRouter: () => ({
-    asPath: mockRouterAsPath(),
-  }),
-}))
-
 vi.mock('lib/constants', async (importOriginal) => {
   const original = (await importOriginal()) as any
   return { ...original, IS_PLATFORM: true }
@@ -51,19 +44,23 @@ const mockCustomerProfile = vi.fn(() => ({
   billing_name: '',
 }))
 const mockProfileLoaded = vi.fn(() => true)
+const mockProfileError = vi.fn(() => false)
 vi.mock('data/organizations/organization-customer-profile-query', () => ({
   useOrganizationCustomerProfileQuery: () => ({
     data: mockCustomerProfile(),
     isSuccess: mockProfileLoaded(),
+    isError: mockProfileError(),
   }),
 }))
 
 const mockTaxId = vi.fn(() => null)
 const mockTaxIdLoaded = vi.fn(() => true)
+const mockTaxIdError = vi.fn(() => false)
 vi.mock('data/organizations/organization-tax-id-query', () => ({
   useOrganizationTaxIdQuery: () => ({
     data: mockTaxId(),
     isSuccess: mockTaxIdLoaded(),
+    isError: mockTaxIdError(),
   }),
 }))
 
@@ -106,6 +103,8 @@ describe('UpdateBillingAddressModal', () => {
       billing_name: '',
     })
     mockTaxId.mockReturnValue(null)
+    mockProfileError.mockReturnValue(false)
+    mockTaxIdError.mockReturnValue(false)
   })
 
   it('renders when all conditions are met', async () => {
@@ -155,6 +154,18 @@ describe('UpdateBillingAddressModal', () => {
 
   it('does not render when no org is selected', () => {
     mockOrg.mockReturnValue(undefined as any)
+    render(<UpdateBillingAddressModal />)
+    expect(screen.queryByText('Billing address required')).not.toBeInTheDocument()
+  })
+
+  it('does not render when customer profile query errors', () => {
+    mockProfileError.mockReturnValue(true)
+    render(<UpdateBillingAddressModal />)
+    expect(screen.queryByText('Billing address required')).not.toBeInTheDocument()
+  })
+
+  it('does not render when tax id query errors', () => {
+    mockTaxIdError.mockReturnValue(true)
     render(<UpdateBillingAddressModal />)
     expect(screen.queryByText('Billing address required')).not.toBeInTheDocument()
   })
