@@ -17,14 +17,15 @@ vi.mock('components/layouts/ProjectLayout/LayoutSidebar/LayoutSidebarProvider', 
 describe('ErrorMatcher', () => {
   beforeEach(() => vi.clearAllMocks())
 
-  it('renders matched error title and message', () => {
+  it('renders the provided title and error message', () => {
     render(
       <ErrorMatcher
+        title="Failed to load tables"
         error="ERROR: FAILED TO RUN SQL QUERY: CONNECTION TERMINATED DUE TO CONNECTION TIMEOUT."
         supportUrl="/support"
       />
     )
-    expect(screen.getByText('Failed to retrieve tables')).toBeInTheDocument()
+    expect(screen.getByText('Failed to load tables')).toBeInTheDocument()
     expect(
       screen.getByText(
         'ERROR: FAILED TO RUN SQL QUERY: CONNECTION TERMINATED DUE TO CONNECTION TIMEOUT.'
@@ -34,26 +35,30 @@ describe('ErrorMatcher', () => {
 
   it('renders troubleshooting steps for matched errors', () => {
     render(
-      <ErrorMatcher error="CONNECTION TERMINATED DUE TO CONNECTION TIMEOUT" supportUrl="/support" />
+      <ErrorMatcher
+        title="Failed to load tables"
+        error="CONNECTION TERMINATED DUE TO CONNECTION TIMEOUT"
+        supportUrl="/support"
+      />
     )
     expect(screen.getByText('Try restarting your project')).toBeInTheDocument()
     expect(screen.getByText('Try our troubleshooting guide')).toBeInTheDocument()
     expect(screen.getByText('Debug with AI')).toBeInTheDocument()
   })
 
-  it('renders fallback for unmatched errors', () => {
-    render(<ErrorMatcher error="UNKNOWN ERROR" supportUrl="/support" />)
-    expect(screen.getByText('An error occurred')).toBeInTheDocument()
+  it('renders fallback with provided title for unmatched errors', () => {
+    render(<ErrorMatcher title="Failed to load tables" error="UNKNOWN ERROR" supportUrl="/support" />)
+    expect(screen.getByText('Failed to load tables')).toBeInTheDocument()
     expect(screen.getByText('UNKNOWN ERROR')).toBeInTheDocument()
   })
 
   it('accepts error as object with message property', () => {
-    render(<ErrorMatcher error={{ message: 'UNKNOWN ERROR' }} supportUrl="/support" />)
+    render(<ErrorMatcher title="Failed to load tables" error={{ message: 'UNKNOWN ERROR' }} supportUrl="/support" />)
     expect(screen.getByText('UNKNOWN ERROR')).toBeInTheDocument()
   })
 
   it('renders support link with provided URL', () => {
-    render(<ErrorMatcher error="UNKNOWN ERROR" supportUrl="/custom-support" />)
+    render(<ErrorMatcher title="Failed to load tables" error="UNKNOWN ERROR" supportUrl="/custom-support" />)
     expect(screen.getByRole('link', { name: /contact support/i })).toHaveAttribute(
       'href',
       '/custom-support'
@@ -61,7 +66,7 @@ describe('ErrorMatcher', () => {
   })
 
   it('uses default support URL when not provided', () => {
-    render(<ErrorMatcher error="UNKNOWN ERROR" />)
+    render(<ErrorMatcher title="Failed to load tables" error="UNKNOWN ERROR" />)
     expect(screen.getByRole('link', { name: /contact support/i })).toHaveAttribute(
       'href',
       '/support/new'

@@ -6,12 +6,18 @@ import { ErrorDisplay } from 'ui-patterns/ErrorDisplay'
 import { ERROR_MAPPINGS } from './error-mappings'
 
 interface ErrorMatcherProps {
+  title: string
   error: string | { message: string }
   supportUrl?: string
   className?: string
 }
 
-export function ErrorMatcher({ error, supportUrl = '/support/new', className }: ErrorMatcherProps) {
+export function ErrorMatcher({
+  title,
+  error,
+  supportUrl = '/support/new',
+  className,
+}: ErrorMatcherProps) {
   const track = useTrack()
 
   const message = typeof error === 'string' ? error : error.message
@@ -20,7 +26,7 @@ export function ErrorMatcher({ error, supportUrl = '/support/new', className }: 
   if (!mapping) {
     return (
       <ErrorDisplay
-        title="An error occurred"
+        title={title}
         errorMessage={message}
         supportUrl={supportUrl}
         className={className}
@@ -30,7 +36,7 @@ export function ErrorMatcher({ error, supportUrl = '/support/new', className }: 
 
   return (
     <ErrorDisplay
-      title={mapping.title}
+      title={title}
       errorMessage={message}
       supportUrl={supportUrl}
       className={className}
