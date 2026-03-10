@@ -2570,11 +2570,11 @@ export interface DashboardErrorCreatedEvent {
     /**
      * Type of error matched (for error_display source)
      */
-    error_type?: string
+    errorType?: string
     /**
      * Whether troubleshooting steps are available (for error_display source)
      */
-    has_troubleshooting?: boolean
+    hasTroubleshooting?: boolean
   }
   groups: TelemetryGroups
 }
@@ -2589,7 +2589,7 @@ export interface InlineErrorTroubleshooterShownEvent {
   action: 'inline_error_troubleshooter_shown'
   properties: {
     /** ID of the matched error mapping */
-    error_type: string
+    errorType: string
   }
   groups: TelemetryGroups
 }
@@ -2604,11 +2604,11 @@ export interface InlineErrorTroubleshooterAccordionToggledEvent {
   action: 'inline_error_troubleshooter_accordion_toggled'
   properties: {
     /** ID of the matched error mapping */
-    error_type: string
+    errorType: string
     /** Step number that was toggled (1, 2, 3, ...) */
     step: number
     /** Title of the step that was toggled */
-    step_title?: string
+    stepTitle?: string
     /** Whether the step was opened (true) or closed (false) */
     expanded: boolean
   }
@@ -2626,7 +2626,7 @@ export interface InlineErrorTroubleshooterActionClickedEvent {
   action: 'inline_error_troubleshooter_action_clicked'
   properties: {
     /** ID of the matched error mapping */
-    error_type: string
+    errorType: string
     /** Which action was clicked */
     action: 'restart_db' | 'troubleshooting_guide' | 'ask_ai' | 'contact_support'
   }
