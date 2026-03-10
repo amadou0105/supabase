@@ -1,5 +1,5 @@
 import { ErrorMapping } from '../ErrorMatcher.types'
-import { connectionTimeoutMapping } from './connectionTimeout'
+import { connectionTimeoutMapping } from './ConnectionTimeout'
 import { ErrorMappingFactory } from './types'
 
 export { connectionTimeoutMapping }

@@ -277,8 +277,7 @@ export const TableEditorMenu = () => {
           {isLoading && <EditorMenuListSkeleton />}
 
           {/* 🚨 DELETE BEFORE MERGING */}
-          {process.env.NEXT_PUBLIC_ENVIRONMENT !== 'prod' &&
-            projectRef === 'erppftcfodkcyoftaqvb' && (
+          {process.env.NEXT_PUBLIC_ENVIRONMENT !== 'prod' && (
             <MappedErrorDisplay
               error="ERROR: FAILED TO RUN SQL QUERY: CONNECTION TERMINATED DUE TO CONNECTION TIMEOUT."
               supportUrl={`/support/new?project=${projectRef}`}
