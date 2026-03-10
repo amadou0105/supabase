@@ -4,8 +4,12 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { ErrorMatcher } from './ErrorMatcher'
 
 vi.mock('lib/telemetry/track', () => ({ useTrack: () => vi.fn() }))
-vi.mock('state/ai-assistant-state', () => ({ useAiAssistantStateSnapshot: () => ({ newChat: vi.fn() }) }))
-vi.mock('state/sidebar-manager-state', () => ({ useSidebarManagerSnapshot: () => ({ openSidebar: vi.fn() }) }))
+vi.mock('state/ai-assistant-state', () => ({
+  useAiAssistantStateSnapshot: () => ({ newChat: vi.fn() }),
+}))
+vi.mock('state/sidebar-manager-state', () => ({
+  useSidebarManagerSnapshot: () => ({ openSidebar: vi.fn() }),
+}))
 vi.mock('components/layouts/ProjectLayout/LayoutSidebar/LayoutSidebarProvider', () => ({
   SIDEBAR_KEYS: { AI_ASSISTANT: 'ai-assistant' },
 }))
@@ -30,10 +34,7 @@ describe('ErrorMatcher', () => {
 
   it('renders troubleshooting steps for matched errors', () => {
     render(
-      <ErrorMatcher
-        error="CONNECTION TERMINATED DUE TO CONNECTION TIMEOUT"
-        supportUrl="/support"
-      />
+      <ErrorMatcher error="CONNECTION TERMINATED DUE TO CONNECTION TIMEOUT" supportUrl="/support" />
     )
     expect(screen.getByText('Try restarting your project')).toBeInTheDocument()
     expect(screen.getByText('Try our troubleshooting guide')).toBeInTheDocument()

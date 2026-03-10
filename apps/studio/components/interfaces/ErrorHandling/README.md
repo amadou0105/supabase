@@ -15,11 +15,15 @@ import { ErrorMatcher } from 'components/interfaces/ErrorHandling/ErrorMatcher'
 **1. Create `errorMappings/YourError.tsx`**
 
 ```tsx
-import { TroubleshootingAccordion } from '../TroubleshootingAccordion'
-import { TroubleshootingGuideSection, FixWithAITroubleshootingSection } from '../TroubleshootingSections'
+import { SIDEBAR_KEYS } from 'components/layouts/ProjectLayout/LayoutSidebar/LayoutSidebarProvider'
 import { useAiAssistantStateSnapshot } from 'state/ai-assistant-state'
 import { useSidebarManagerSnapshot } from 'state/sidebar-manager-state'
-import { SIDEBAR_KEYS } from 'components/layouts/ProjectLayout/LayoutSidebar/LayoutSidebarProvider'
+
+import { TroubleshootingAccordion } from '../TroubleshootingAccordion'
+import {
+  FixWithAITroubleshootingSection,
+  TroubleshootingGuideSection,
+} from '../TroubleshootingSections'
 
 const ERROR_TYPE = 'your-error'
 const BUILD_PROMPT = () => `Describe the issue for the AI assistant.`
@@ -29,13 +33,23 @@ export function YourErrorTroubleshooting() {
   const aiSnap = useAiAssistantStateSnapshot()
 
   return (
-    <TroubleshootingAccordion errorType={ERROR_TYPE} stepTitles={{ 1: 'Troubleshooting guide', 2: 'Debug with AI' }}>
-      <TroubleshootingGuideSection number={1} errorType={ERROR_TYPE} href="https://supabase.com/docs/guides/..." />
+    <TroubleshootingAccordion
+      errorType={ERROR_TYPE}
+      stepTitles={{ 1: 'Troubleshooting guide', 2: 'Debug with AI' }}
+    >
+      <TroubleshootingGuideSection
+        number={1}
+        errorType={ERROR_TYPE}
+        href="https://supabase.com/docs/guides/..."
+      />
       <FixWithAITroubleshootingSection
         number={2}
         errorType={ERROR_TYPE}
         buildPrompt={BUILD_PROMPT}
-        onDebugWithAI={(prompt) => { openSidebar(SIDEBAR_KEYS.AI_ASSISTANT); aiSnap.newChat({ initialMessage: prompt }) }}
+        onDebugWithAI={(prompt) => {
+          openSidebar(SIDEBAR_KEYS.AI_ASSISTANT)
+          aiSnap.newChat({ initialMessage: prompt })
+        }}
       />
     </TroubleshootingAccordion>
   )
@@ -62,8 +76,8 @@ That's it. `ErrorMatcher` picks it up automatically.
 
 ## Available section components
 
-| Component                               | Props                                                    |
-| --------------------------------------- | -------------------------------------------------------- |
-| `RestartDatabaseTroubleshootingSection` | `number`, `errorType`, `onRestartProject?`               |
-| `TroubleshootingGuideSection`           | `number`, `errorType`, `href`, `title?`, `description?`  |
-| `FixWithAITroubleshootingSection`       | `number`, `errorType`, `buildPrompt`, `onDebugWithAI?`   |
+| Component                               | Props                                                   |
+| --------------------------------------- | ------------------------------------------------------- |
+| `RestartDatabaseTroubleshootingSection` | `number`, `errorType`, `onRestartProject?`              |
+| `TroubleshootingGuideSection`           | `number`, `errorType`, `href`, `title?`, `description?` |
+| `FixWithAITroubleshootingSection`       | `number`, `errorType`, `buildPrompt`, `onDebugWithAI?`  |
