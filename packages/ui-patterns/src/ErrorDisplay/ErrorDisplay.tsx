@@ -42,7 +42,9 @@ export const ErrorDisplay = forwardRef<HTMLDivElement, ErrorDisplayProps>(
       >
         {/* Header */}
         <CardHeader className="flex-row items-center gap-2.5 space-y-0 py-2 px-3">
-          <div className="bg-warning p-1 text-background rounded-md">{icon ?? <WarningIcon className="w-3 h-3" />}</div>
+          <div className="bg-warning p-1 text-background rounded-md">
+            {icon ?? <WarningIcon className="w-3 h-3" />}
+          </div>
           <h3 id="error-display-title" className="text-sm text-foreground mt-0">
             {title}
           </h3>
