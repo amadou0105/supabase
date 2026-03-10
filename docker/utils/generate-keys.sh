@@ -45,7 +45,7 @@ fi
 
 jwt_secret="$(gen_base64 30)"
 
-# Used in get_token()
+# Used in gen_token()
 header='{"alg":"HS256","typ":"JWT"}'
 iat=$(date +%s)
 exp=$((iat + 5 * 3600 * 24 * 365)) # 5 years
