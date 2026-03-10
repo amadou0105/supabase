@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import z from 'zod'
 
@@ -8,11 +8,14 @@ import AlertError from 'components/ui/AlertError'
 import { InlineLink } from 'components/ui/InlineLink'
 import { UpgradeToPro } from 'components/ui/UpgradeToPro'
 import { useSSOConfigCreateMutation } from 'data/sso/sso-config-create-mutation'
+import { useSSOConfigDeleteMutation } from 'data/sso/sso-config-delete-mutation'
 import { useOrgSSOConfigQuery } from 'data/sso/sso-config-query'
 import { useSSOConfigUpdateMutation } from 'data/sso/sso-config-update-mutation'
 import { useCheckEntitlements } from 'hooks/misc/useCheckEntitlements'
 import { useSelectedOrganizationQuery } from 'hooks/misc/useSelectedOrganization'
 import { DOCS_URL } from 'lib/constants'
+import { Trash } from 'lucide-react'
+import { toast } from 'sonner'
 import {
   Button,
   Card,
@@ -23,6 +26,7 @@ import {
   Form_Shadcn_,
   Switch,
 } from 'ui'
+import ConfirmationModal from 'ui-patterns/Dialogs/ConfirmationModal'
 import { FormItemLayout } from 'ui-patterns/form/FormItemLayout/FormItemLayout'
 import { GenericSkeletonLoader } from 'ui-patterns/ShimmeringLoader'
 import { AttributeMapping } from './AttributeMapping'
@@ -78,20 +82,21 @@ export const SSOConfig = () => {
 
   const isSSOProviderNotFound = ssoConfig === null
 
+  const defaultValues = {
+    enabled: false,
+    domains: [{ value: '' }],
+    metadataXmlUrl: '',
+    metadataXmlFile: '',
+    emailMapping: [{ value: '' }],
+    userNameMapping: [{ value: '' }],
+    firstNameMapping: [{ value: '' }],
+    lastNameMapping: [{ value: '' }],
+    joinOrgOnSignup: false,
+    roleOnJoin: 'Developer',
+  }
   const form = useForm<SSOConfigFormSchema>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {
-      enabled: false,
-      domains: [{ value: '' }],
-      metadataXmlUrl: '',
-      metadataXmlFile: '',
-      emailMapping: [{ value: '' }],
-      userNameMapping: [{ value: '' }],
-      firstNameMapping: [{ value: '' }],
-      lastNameMapping: [{ value: '' }],
-      joinOrgOnSignup: false,
-      roleOnJoin: 'Developer',
-    },
+    defaultValues,
   })
 
   const isSSOEnabled = form.watch('enabled')
@@ -102,6 +107,16 @@ export const SSOConfig = () => {
 
   const { mutate: updateSSOConfig, isPending: isUpdating } = useSSOConfigUpdateMutation({
     onSuccess: () => form.reset(),
+  })
+
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false)
+
+  const { mutate: deleteSSOConfig, isPending: isDeleting } = useSSOConfigDeleteMutation({
+    onSuccess: () => {
+      toast.success('Successfully deleted SSO configuration')
+      setIsDeleteModalVisible(false)
+      form.reset(defaultValues)
+    },
   })
 
   const onSubmit: SubmitHandler<SSOConfigFormSchema> = (values) => {
@@ -133,6 +148,11 @@ export const SSOConfig = () => {
     } else {
       createSSOConfig(payload)
     }
+  }
+
+  const onDeleteSSOConfig = () => {
+    if (!organization?.slug) return
+    deleteSSOConfig({ slug: organization.slug })
   }
 
   useEffect(() => {
@@ -172,8 +192,9 @@ export const SSOConfig = () => {
             featureProposition="enable Single Sign-on (SSO)"
           />
         ) : isSuccess || isSSOProviderNotFound ? (
-          <Form_Shadcn_ {...form}>
-            <form id={FORM_ID} onSubmit={form.handleSubmit(onSubmit)}>
+          <>
+            <Form_Shadcn_ {...form}>
+              <form id={FORM_ID} onSubmit={form.handleSubmit(onSubmit)}>
               <Card>
                 <CardContent>
                   <FormField_Shadcn_
@@ -234,28 +255,60 @@ export const SSOConfig = () => {
                   </>
                 )}
 
-                <CardFooter className="justify-end space-x-2">
-                  {form.formState.isDirty && (
+                <CardFooter className="justify-between space-x-2">
+                  <div>
+                    {!!ssoConfig && (
+                      <Button
+                        type="danger"
+                        icon={<Trash />}
+                        onClick={() => setIsDeleteModalVisible(true)}
+                        disabled={isCreating || isUpdating || isDeleting}
+                      >
+                        Delete SSO Provider
+                      </Button>
+                    )}
+                  </div>
+                  <div className="flex space-x-2">
+                    {form.formState.isDirty && (
+                      <Button
+                        type="default"
+                        disabled={isCreating || isUpdating}
+                        onClick={() => form.reset()}
+                      >
+                        Cancel
+                      </Button>
+                    )}
                     <Button
-                      type="default"
-                      disabled={isCreating || isUpdating}
-                      onClick={() => form.reset()}
+                      type="primary"
+                      htmlType="submit"
+                      loading={isCreating || isUpdating}
+                      disabled={!form.formState.isDirty || isCreating || isUpdating}
                     >
-                      Cancel
+                      Save changes
                     </Button>
-                  )}
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    loading={isCreating || isUpdating}
-                    disabled={!form.formState.isDirty || isCreating || isUpdating}
-                  >
-                    Save changes
-                  </Button>
+                  </div>
                 </CardFooter>
               </Card>
             </form>
           </Form_Shadcn_>
+
+          <ConfirmationModal
+            visible={isDeleteModalVisible}
+            variant="destructive"
+            title="Delete SSO Provider"
+            confirmLabel="Delete"
+            confirmLabelLoading="Deleting"
+            loading={isDeleting}
+            onCancel={() => setIsDeleteModalVisible(false)}
+            onConfirm={onDeleteSSOConfig}
+          >
+            <p className="text-sm">
+              Are you sure you want to delete the SSO provider for your organization? SSO will be
+              disabled and users will no longer be able to sign in via SSO.{' '}
+              <span className="text-foreground">This action cannot be undone.</span>
+            </p>
+          </ConfirmationModal>
+          </>
         ) : null}
       </ScaffoldSection>
     </ScaffoldContainer>
