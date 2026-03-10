@@ -276,6 +276,16 @@ export const TableEditorMenu = () => {
 
           {isLoading && <EditorMenuListSkeleton />}
 
+          {/* 🚨 DELETE BEFORE MERGING */}
+          {process.env.NEXT_PUBLIC_ENVIRONMENT !== 'prod' &&
+            projectRef === 'erppftcfodkcyoftaqvb' && (
+            <MappedErrorDisplay
+              error="ERROR: FAILED TO RUN SQL QUERY: CONNECTION TERMINATED DUE TO CONNECTION TIMEOUT."
+              supportUrl={`/support/new?project=${projectRef}`}
+              className="mx-4 mt-3"
+            />
+          )}
+
           {isError && (
             <MappedErrorDisplay
               error={error?.message ?? 'Failed to retrieve tables'}
