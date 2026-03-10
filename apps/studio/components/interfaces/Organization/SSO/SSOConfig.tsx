@@ -7,6 +7,7 @@ import { ScaffoldContainer, ScaffoldSection } from 'components/layouts/Scaffold'
 import AlertError from 'components/ui/AlertError'
 import { InlineLink } from 'components/ui/InlineLink'
 import { UpgradeToPro } from 'components/ui/UpgradeToPro'
+import { useOrganizationMembersQuery } from 'data/organizations/organization-members-query'
 import { useSSOConfigCreateMutation } from 'data/sso/sso-config-create-mutation'
 import { useSSOConfigDeleteMutation } from 'data/sso/sso-config-delete-mutation'
 import { useOrgSSOConfigQuery } from 'data/sso/sso-config-query'
@@ -26,7 +27,7 @@ import {
   Form_Shadcn_,
   Switch,
 } from 'ui'
-import ConfirmationModal from 'ui-patterns/Dialogs/ConfirmationModal'
+import { TextConfirmModal } from 'components/ui/TextConfirmModalWrapper'
 import { FormItemLayout } from 'ui-patterns/form/FormItemLayout/FormItemLayout'
 import { GenericSkeletonLoader } from 'ui-patterns/ShimmeringLoader'
 import { AttributeMapping } from './AttributeMapping'
@@ -80,6 +81,12 @@ export const SSOConfig = () => {
     error: configError,
   } = useOrgSSOConfigQuery({ orgSlug: organization?.slug }, { enabled: !!organization })
 
+  const { data: members = [] } = useOrganizationMembersQuery(
+    { slug: organization?.slug },
+    { enabled: !!organization?.slug }
+  )
+
+  const ssoMemberCount = members.filter((m) => m.is_sso_user === true).length
   const isSSOProviderNotFound = ssoConfig === null
 
   const defaultValues = {
@@ -195,119 +202,149 @@ export const SSOConfig = () => {
           <>
             <Form_Shadcn_ {...form}>
               <form id={FORM_ID} onSubmit={form.handleSubmit(onSubmit)}>
-              <Card>
-                <CardContent>
-                  <FormField_Shadcn_
-                    control={form.control}
-                    name="enabled"
-                    render={({ field }) => (
-                      <FormItemLayout
-                        layout="flex"
-                        label="Enable Single Sign-On"
-                        description={
-                          <>
-                            Enable and configure SSO for your organization. Learn more about SSO{' '}
-                            <InlineLink
-                              className="text-foreground-lighter hover:text-foreground"
-                              href={`${DOCS_URL}/guides/platform/sso`}
-                            >
-                              here
-                            </InlineLink>
-                            .
-                          </>
-                        }
+                <Card>
+                  <CardContent>
+                    <FormField_Shadcn_
+                      control={form.control}
+                      name="enabled"
+                      render={({ field }) => (
+                        <FormItemLayout
+                          layout="flex"
+                          label="Enable Single Sign-On"
+                          description={
+                            <>
+                              Enable and configure SSO for your organization. Learn more about SSO{' '}
+                              <InlineLink
+                                className="text-foreground-lighter hover:text-foreground"
+                                href={`${DOCS_URL}/guides/platform/sso`}
+                              >
+                                here
+                              </InlineLink>
+                              .
+                            </>
+                          }
+                        >
+                          <FormControl_Shadcn_>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              size="large"
+                            />
+                          </FormControl_Shadcn_>
+                        </FormItemLayout>
+                      )}
+                    />
+                  </CardContent>
+
+                  {(isSSOEnabled || ssoConfig) && (
+                    <>
+                      <CardContent>
+                        <SSODomains form={form} />
+                      </CardContent>
+
+                      <CardContent>
+                        <SSOMetadata form={form} />
+                      </CardContent>
+
+                      <CardContent>
+                        <AttributeMapping
+                          form={form}
+                          emailField="emailMapping"
+                          userNameField="userNameMapping"
+                          firstNameField="firstNameMapping"
+                          lastNameField="lastNameMapping"
+                        />
+                      </CardContent>
+
+                      <CardContent>
+                        <JoinOrganizationOnSignup form={form} />
+                      </CardContent>
+                    </>
+                  )}
+
+                  <CardFooter className="justify-between space-x-2">
+                    <div>
+                      {!!ssoConfig && (
+                        <Button
+                          type="danger"
+                          icon={<Trash />}
+                          onClick={() => setIsDeleteModalVisible(true)}
+                          disabled={isCreating || isUpdating || isDeleting}
+                        >
+                          Delete SSO Provider
+                        </Button>
+                      )}
+                    </div>
+                    <div className="flex space-x-2">
+                      {form.formState.isDirty && (
+                        <Button
+                          type="default"
+                          disabled={isCreating || isUpdating}
+                          onClick={() => form.reset()}
+                        >
+                          Cancel
+                        </Button>
+                      )}
+                      <Button
+                        type="primary"
+                        htmlType="submit"
+                        loading={isCreating || isUpdating}
+                        disabled={!form.formState.isDirty || isCreating || isUpdating}
                       >
-                        <FormControl_Shadcn_>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                            size="large"
-                          />
-                        </FormControl_Shadcn_>
-                      </FormItemLayout>
-                    )}
-                  />
-                </CardContent>
+                        Save changes
+                      </Button>
+                    </div>
+                  </CardFooter>
+                </Card>
+              </form>
+            </Form_Shadcn_>
 
-                {(isSSOEnabled || ssoConfig) && (
-                  <>
-                    <CardContent>
-                      <SSODomains form={form} />
-                    </CardContent>
+            <TextConfirmModal
+              visible={isDeleteModalVisible}
+              size="small"
+              variant="destructive"
+              title="Delete SSO Provider"
+              loading={isDeleting}
+              confirmString={ssoConfig?.domains?.[0] ?? ''}
+              confirmPlaceholder="Type the domain above to confirm"
+              confirmLabel="I understand, delete SSO provider and members"
+              onConfirm={onDeleteSSOConfig}
+              onCancel={() => setIsDeleteModalVisible(false)}
+            >
+              <div className="space-y-3">
+                <p className="text-sm text-foreground-lighter">
+                  You are about to delete the SSO provider for{' '}
+                  <span className="text-foreground font-semibold">{ssoConfig?.domains?.[0]}</span>.
+                </p>
 
-                    <CardContent>
-                      <SSOMetadata form={form} />
-                    </CardContent>
-
-                    <CardContent>
-                      <AttributeMapping
-                        form={form}
-                        emailField="emailMapping"
-                        userNameField="userNameMapping"
-                        firstNameField="firstNameMapping"
-                        lastNameField="lastNameMapping"
-                      />
-                    </CardContent>
-
-                    <CardContent>
-                      <JoinOrganizationOnSignup form={form} />
-                    </CardContent>
-                  </>
+                {ssoMemberCount > 0 && (
+                  <div className="rounded-md bg-destructive/10 border border-destructive/30 p-3">
+                    <p className="text-sm text-foreground">
+                      <span className="font-semibold">
+                        {ssoMemberCount} organization member{ssoMemberCount !== 1 ? 's' : ''}
+                      </span>{' '}
+                      who authenticate via SSO will be{' '}
+                      <span className="font-semibold">permanently removed</span> from this
+                      organization.
+                    </p>
+                  </div>
                 )}
 
-                <CardFooter className="justify-between space-x-2">
-                  <div>
-                    {!!ssoConfig && (
-                      <Button
-                        type="danger"
-                        icon={<Trash />}
-                        onClick={() => setIsDeleteModalVisible(true)}
-                        disabled={isCreating || isUpdating || isDeleting}
-                      >
-                        Delete SSO Provider
-                      </Button>
-                    )}
-                  </div>
-                  <div className="flex space-x-2">
-                    {form.formState.isDirty && (
-                      <Button
-                        type="default"
-                        disabled={isCreating || isUpdating}
-                        onClick={() => form.reset()}
-                      >
-                        Cancel
-                      </Button>
-                    )}
-                    <Button
-                      type="primary"
-                      htmlType="submit"
-                      loading={isCreating || isUpdating}
-                      disabled={!form.formState.isDirty || isCreating || isUpdating}
-                    >
-                      Save changes
-                    </Button>
-                  </div>
-                </CardFooter>
-              </Card>
-            </form>
-          </Form_Shadcn_>
+                <p className="text-sm text-foreground-lighter">This action will:</p>
+                <ul className="text-sm text-foreground-lighter list-disc list-inside space-y-1 ml-2">
+                  <li>Disable SSO authentication for this organization</li>
+                  <li>Remove all members who signed up using SSO</li>
+                  <li>Prevent future SSO-based sign-ins</li>
+                </ul>
 
-          <ConfirmationModal
-            visible={isDeleteModalVisible}
-            variant="destructive"
-            title="Delete SSO Provider"
-            confirmLabel="Delete"
-            confirmLabelLoading="Deleting"
-            loading={isDeleting}
-            onCancel={() => setIsDeleteModalVisible(false)}
-            onConfirm={onDeleteSSOConfig}
-          >
-            <p className="text-sm">
-              Are you sure you want to delete the SSO provider for your organization? SSO will be
-              disabled and users will no longer be able to sign in via SSO.{' '}
-              <span className="text-foreground">This action cannot be undone.</span>
-            </p>
-          </ConfirmationModal>
+                <p className="text-sm text-foreground-lighter">
+                  <span className="text-foreground font-semibold">
+                    This action cannot be undone.
+                  </span>{' '}
+                  Members will need to be re-invited if you wish to restore their access.
+                </p>
+              </div>
+            </TextConfirmModal>
           </>
         ) : null}
       </ScaffoldSection>

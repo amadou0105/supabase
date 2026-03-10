@@ -5022,6 +5022,7 @@ export interface components {
     }
     CreateInvitationBody: {
       email: string
+      require_sso?: boolean
       role_id: number
       role_scoped_projects?: string[]
     }
