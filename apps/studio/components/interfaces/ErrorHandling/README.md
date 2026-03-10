@@ -5,7 +5,7 @@
 ## Usage
 
 ```tsx
-import { MappedErrorDisplay } from 'components/interfaces/ErrorHandling'
+import { MappedErrorDisplay } from 'components/interfaces/ErrorHandling/MappedErrorDisplay'
 
 ;<MappedErrorDisplay
   error={error.message}
