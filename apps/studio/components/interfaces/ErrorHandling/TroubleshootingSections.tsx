@@ -109,7 +109,7 @@ export function TroubleshootingGuideSection({
       className="border-b border-default last:border-b-0 px-3 py-2"
     >
       <StepTrigger number={number} title={title} />
-      <AccordionContent>
+      <AccordionContent className="pt-1">
         <div className="px-2">
           {description && <p className="text-sm text-foreground-light mb-3">{description}</p>}
           <Button
@@ -157,7 +157,7 @@ export function FixWithAITroubleshootingSection({
       className="border-b border-default last:border-b-0 px-3 py-2"
     >
       <StepTrigger number={number} title="Debug with AI" />
-      <AccordionContent>
+      <AccordionContent className="pt-1">
         <div className="px-2">
           <p className="text-sm text-foreground-light mb-3">{description}</p>
           <AiAssistantDropdown
