@@ -108,7 +108,7 @@ New variables default to empty values in `.env.example`. When empty, the API gat
 | `SUPABASE_PUBLISHABLE_KEY` | Opaque | **New:** Short random key with checksum. Replaces `ANON_KEY` for **client-side** use. |
 | `SUPABASE_SECRET_KEY` | Opaque | **New:** Short random key with checksum. Replaces `SERVICE_ROLE_KEY` for **server-side** use. |
 | `JWT_KEYS` | JSON array | **New:** JSON array of signing JWKs containing the new asymmetric key pair and the legacy symmetric key. Used by Auth to sign tokens. |
-| `JWT_JWKS` | JWKS (JSON) | **New:** Contains the new asymmetric key pair and the legacy symmetric key. Used by PostgREST, Realtime, and Storage to verify tokens. |
+| `JWT_JWKS` | JWKS (JSON) | **New:** Contains the new public key and the legacy symmetric key. Used by PostgREST, Realtime, and Storage to verify tokens. |
 
 ### Backward compatibility
 
