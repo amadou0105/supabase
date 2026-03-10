@@ -1,22 +1,23 @@
+import { SIDEBAR_KEYS } from 'components/layouts/ProjectLayout/LayoutSidebar/LayoutSidebarProvider'
+import { useAiAssistantStateSnapshot } from 'state/ai-assistant-state'
+import { useSidebarManagerSnapshot } from 'state/sidebar-manager-state'
+
 import { TroubleshootingAccordion } from '../TroubleshootingAccordion'
 import {
   FixWithAITroubleshootingSection,
   RestartDatabaseTroubleshootingSection,
   TroubleshootingGuideSection,
 } from '../TroubleshootingSections'
-import { ErrorMappingFactory } from './types'
-
-interface ConnectionTimeoutProps {
-  onRestartProject?: () => void
-  onDebugWithAI?: (prompt: string) => void
-}
 
 const ERROR_TYPE = 'connection-timeout'
 
 const BUILD_PROMPT = () =>
   `The user is encountering connection timeout errors. The error message is: "CONNECTION TERMINATED DUE TO CONNECTION TIMEOUT". What are the most likely causes of this issue and how can the user resolve it?`
 
-function ConnectionTimeout({ onRestartProject, onDebugWithAI }: ConnectionTimeoutProps) {
+export function ConnectionTimeoutTroubleshooting() {
+  const { openSidebar } = useSidebarManagerSnapshot()
+  const aiSnap = useAiAssistantStateSnapshot()
+
   return (
     <TroubleshootingAccordion
       errorType={ERROR_TYPE}
@@ -26,11 +27,7 @@ function ConnectionTimeout({ onRestartProject, onDebugWithAI }: ConnectionTimeou
         3: 'Debug with AI',
       }}
     >
-      <RestartDatabaseTroubleshootingSection
-        number={1}
-        errorType={ERROR_TYPE}
-        onRestartProject={onRestartProject}
-      />
+      <RestartDatabaseTroubleshootingSection number={1} errorType={ERROR_TYPE} />
       <TroubleshootingGuideSection
         number={2}
         errorType={ERROR_TYPE}
@@ -40,22 +37,12 @@ function ConnectionTimeout({ onRestartProject, onDebugWithAI }: ConnectionTimeou
       <FixWithAITroubleshootingSection
         number={3}
         errorType={ERROR_TYPE}
-        onDebugWithAI={onDebugWithAI}
+        onDebugWithAI={(prompt) => {
+          openSidebar(SIDEBAR_KEYS.AI_ASSISTANT)
+          aiSnap.newChat({ initialMessage: prompt })
+        }}
         buildPrompt={BUILD_PROMPT}
       />
     </TroubleshootingAccordion>
   )
 }
-
-export const connectionTimeoutMapping: ErrorMappingFactory = (params) => ({
-  id: ERROR_TYPE,
-  pattern: /CONNECTION\s+TERMINATED\s+DUE\s+TO\s+CONNECTION\s+TIMEOUT/i,
-  title: 'Failed to retrieve tables',
-  priority: 10,
-  content: (
-    <ConnectionTimeout
-      onRestartProject={params?.onRestartProject}
-      onDebugWithAI={params?.onDebugWithAI}
-    />
-  ),
-})

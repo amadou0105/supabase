@@ -1,18 +1,13 @@
 # Error Handling
 
-`MappedErrorDisplay` matches error messages to troubleshooting UI. Unmatched errors fall back to a generic error display.
+`ErrorMatcher` matches error messages to troubleshooting UI. Unmatched errors fall back to a generic error display.
 
 ## Usage
 
 ```tsx
-import { MappedErrorDisplay } from 'components/interfaces/ErrorHandling/MappedErrorDisplay'
+import { ErrorMatcher } from 'components/interfaces/ErrorHandling/ErrorMatcher'
 
-;<MappedErrorDisplay
-  error={error.message}
-  onRestartProject={handleRestart}
-  onDebugWithAI={openAIAssistant}
-  supportUrl={`/support/new?project=${projectRef}`}
-/>
+;<ErrorMatcher error={error.message} supportUrl={`/support/new?project=${projectRef}`} />
 ```
 
 ## Adding a new error mapping
@@ -21,51 +16,54 @@ import { MappedErrorDisplay } from 'components/interfaces/ErrorHandling/MappedEr
 
 ```tsx
 import { TroubleshootingAccordion } from '../TroubleshootingAccordion'
-import {
-  FixWithAITroubleshootingSection,
-  TroubleshootingGuideSection,
-} from '../TroubleshootingSections'
-import { ErrorMappingFactory } from './types'
+import { TroubleshootingGuideSection, FixWithAITroubleshootingSection } from '../TroubleshootingSections'
+import { useAiAssistantStateSnapshot } from 'state/ai-assistant-state'
+import { useSidebarManagerSnapshot } from 'state/sidebar-manager-state'
+import { SIDEBAR_KEYS } from 'components/layouts/ProjectLayout/LayoutSidebar/LayoutSidebarProvider'
 
-function YourError({ onDebugWithAI }: { onDebugWithAI?: () => void }) {
+const ERROR_TYPE = 'your-error'
+const BUILD_PROMPT = () => `Describe the issue for the AI assistant.`
+
+export function YourErrorTroubleshooting() {
+  const { openSidebar } = useSidebarManagerSnapshot()
+  const aiSnap = useAiAssistantStateSnapshot()
+
   return (
-    <TroubleshootingAccordion>
-      <TroubleshootingGuideSection
-        number={1}
-        href="https://supabase.com/docs/guides/..."
-        description="Step-by-step instructions for this error."
+    <TroubleshootingAccordion errorType={ERROR_TYPE} stepTitles={{ 1: 'Troubleshooting guide', 2: 'Debug with AI' }}>
+      <TroubleshootingGuideSection number={1} errorType={ERROR_TYPE} href="https://supabase.com/docs/guides/..." />
+      <FixWithAITroubleshootingSection
+        number={2}
+        errorType={ERROR_TYPE}
+        buildPrompt={BUILD_PROMPT}
+        onDebugWithAI={(prompt) => { openSidebar(SIDEBAR_KEYS.AI_ASSISTANT); aiSnap.newChat({ initialMessage: prompt }) }}
       />
-      <FixWithAITroubleshootingSection number={2} onDebugWithAI={onDebugWithAI} />
     </TroubleshootingAccordion>
   )
 }
-
-export const yourErrorMapping: ErrorMappingFactory = (params) => ({
-  id: 'your-error',
-  pattern: /YOUR_ERROR_PATTERN/i,
-  title: 'Human-readable error title',
-  priority: 10,
-  content: <YourError onDebugWithAI={params?.onDebugWithAI} />,
-})
 ```
 
-**2. Register it in `errorMappings/index.ts`**
+**2. Add it to `errorMappings/index.tsx`**
 
-```ts
-import { yourErrorMapping } from './YourError'
+```tsx
+import { YourErrorTroubleshooting } from './YourError'
 
-export const allMappingFactories: ErrorMappingFactory[] = [
-  connectionTimeoutMapping,
-  yourErrorMapping, // add here
+export const ERROR_MAPPINGS: ErrorMapping[] = [
+  // existing...
+  {
+    id: 'your-error',
+    pattern: /YOUR_ERROR_PATTERN/i,
+    title: 'Human-readable error title',
+    troubleshooting: <YourErrorTroubleshooting />,
+  },
 ]
 ```
 
-That's it. The new pattern will be matched automatically.
+That's it. `ErrorMatcher` picks it up automatically.
 
 ## Available section components
 
-| Component                               | Props                                      |
-| --------------------------------------- | ------------------------------------------ |
-| `RestartDatabaseTroubleshootingSection` | `number`, `onRestartProject?`              |
-| `TroubleshootingGuideSection`           | `number`, `href`, `title?`, `description?` |
-| `FixWithAITroubleshootingSection`       | `number`, `onDebugWithAI?`, `buildPrompt?` |
+| Component                               | Props                                                    |
+| --------------------------------------- | -------------------------------------------------------- |
+| `RestartDatabaseTroubleshootingSection` | `number`, `errorType`, `onRestartProject?`               |
+| `TroubleshootingGuideSection`           | `number`, `errorType`, `href`, `title?`, `description?`  |
+| `FixWithAITroubleshootingSection`       | `number`, `errorType`, `buildPrompt`, `onDebugWithAI?`   |
