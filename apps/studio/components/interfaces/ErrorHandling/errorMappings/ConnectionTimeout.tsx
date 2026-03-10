@@ -8,17 +8,15 @@ import { ErrorMappingFactory } from './types'
 
 interface ConnectionTimeoutProps {
   onRestartProject?: () => void
-  onDebugWithAI?: () => void
-  buildPrompt?: () => string
+  onDebugWithAI?: (prompt: string) => void
 }
 
 const ERROR_TYPE = 'connection-timeout'
 
-function ConnectionTimeout({
-  onRestartProject,
-  onDebugWithAI,
-  buildPrompt,
-}: ConnectionTimeoutProps) {
+const BUILD_PROMPT = () =>
+  `The user is encountering connection timeout errors. The error message is: "CONNECTION TERMINATED DUE TO CONNECTION TIMEOUT". What are the most likely causes of this issue and how can the user resolve it?`
+
+function ConnectionTimeout({ onRestartProject, onDebugWithAI }: ConnectionTimeoutProps) {
   return (
     <TroubleshootingAccordion
       errorType={ERROR_TYPE}
@@ -36,14 +34,14 @@ function ConnectionTimeout({
       <TroubleshootingGuideSection
         number={2}
         errorType={ERROR_TYPE}
-        href="https://supabase.com/docs/guides/platform/troubleshooting#connection-timeout"
+        href="https://supabase.com/docs/guides/troubleshooting/failed-to-run-sql-query-connection-terminated-due-to-connection-timeout"
         description="Follow step-by-step instructions for diagnosing connection timeout issues."
       />
       <FixWithAITroubleshootingSection
         number={3}
         errorType={ERROR_TYPE}
         onDebugWithAI={onDebugWithAI}
-        buildPrompt={buildPrompt}
+        buildPrompt={BUILD_PROMPT}
       />
     </TroubleshootingAccordion>
   )
@@ -58,7 +56,6 @@ export const connectionTimeoutMapping: ErrorMappingFactory = (params) => ({
     <ConnectionTimeout
       onRestartProject={params?.onRestartProject}
       onDebugWithAI={params?.onDebugWithAI}
-      buildPrompt={params?.buildPrompt}
     />
   ),
 })

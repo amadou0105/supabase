@@ -65,7 +65,7 @@ export function RestartDatabaseTroubleshootingSection({
         className="border-b border-default last:border-b-0 px-3 py-2"
       >
         <StepTrigger number={number} title="Try restarting your project" />
-        <AccordionContent className="pb-4 pt-1">
+        <AccordionContent className="pt-1">
           <div className="px-2">
             <p className="text-sm text-foreground-light mb-3">
               Restarting your project can help resolve timeout errors or stale connections.
@@ -109,7 +109,7 @@ export function TroubleshootingGuideSection({
       className="border-b border-default last:border-b-0 px-3 py-2"
     >
       <StepTrigger number={number} title={title} />
-      <AccordionContent className="pb-4 pt-1">
+      <AccordionContent>
         <div className="px-2">
           {description && <p className="text-sm text-foreground-light mb-3">{description}</p>}
           <Button
@@ -138,8 +138,8 @@ interface FixWithAITroubleshootingSectionProps {
   number: number
   errorType: string
   description?: string
-  onDebugWithAI?: () => void
-  buildPrompt?: () => string
+  onDebugWithAI?: (prompt: string) => void
+  buildPrompt: () => string
 }
 
 export function FixWithAITroubleshootingSection({
@@ -157,18 +157,18 @@ export function FixWithAITroubleshootingSection({
       className="border-b border-default last:border-b-0 px-3 py-2"
     >
       <StepTrigger number={number} title="Debug with AI" />
-      <AccordionContent className="pb-4 pt-1">
+      <AccordionContent>
         <div className="px-2">
           <p className="text-sm text-foreground-light mb-3">{description}</p>
           <AiAssistantDropdown
             label="Debug with AI"
-            buildPrompt={buildPrompt ?? (() => '')}
+            buildPrompt={buildPrompt}
             onOpenAssistant={() => {
               track('inline_error_troubleshooter_action_clicked', {
                 error_type: errorType,
                 action: 'ask_ai',
               })
-              onDebugWithAI?.()
+              onDebugWithAI?.(buildPrompt())
             }}
             size="tiny"
           />

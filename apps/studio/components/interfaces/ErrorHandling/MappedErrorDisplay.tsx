@@ -13,7 +13,7 @@ interface MappedErrorDisplayProps {
   customMappings?: ErrorMapping[]
   supportUrl?: string
   onRestartProject?: () => void
-  onDebugWithAI?: () => void
+  onDebugWithAI?: (prompt: string) => void
   className?: string
 }
 
@@ -35,10 +35,9 @@ export function MappedErrorDisplay({
         factory({
           onRestartProject,
           onDebugWithAI,
-          buildPrompt: () => errorMessage,
         })
       ),
-    [onRestartProject, onDebugWithAI, errorMessage]
+    [onRestartProject, onDebugWithAI]
   )
 
   const matchResult = matchError(errorMessage, [...defaultMappings, ...(customMappings ?? [])])

@@ -7,6 +7,7 @@ import { parseSupaTable } from 'components/grid/SupabaseGrid.utils'
 import { SupaTable } from 'components/grid/types'
 import { ProtectedSchemaWarning } from 'components/interfaces/Database/ProtectedSchemaWarning'
 import { MappedErrorDisplay } from 'components/interfaces/ErrorHandling/MappedErrorDisplay'
+import { SIDEBAR_KEYS } from 'components/layouts/ProjectLayout/LayoutSidebar/LayoutSidebarProvider'
 import EditorMenuListSkeleton from 'components/layouts/TableEditorLayout/EditorMenuListSkeleton'
 import { ButtonTooltip } from 'components/ui/ButtonTooltip'
 import { InfiniteListDefault, LoaderForIconMenuItems } from 'components/ui/InfiniteList'
@@ -22,6 +23,8 @@ import { useSelectedProjectQuery } from 'hooks/misc/useSelectedProject'
 import { useIsProtectedSchema } from 'hooks/useProtectedSchemas'
 import { Filter, Plus } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useAiAssistantStateSnapshot } from 'state/ai-assistant-state'
+import { useSidebarManagerSnapshot } from 'state/sidebar-manager-state'
 import { useTableEditorStateSnapshot } from 'state/table-editor'
 import {
   Button,
@@ -59,6 +62,8 @@ export const TableEditorMenu = () => {
   )
 
   const { data: project } = useSelectedProjectQuery()
+  const { openSidebar } = useSidebarManagerSnapshot()
+  const aiSnap = useAiAssistantStateSnapshot()
   const {
     data,
     isLoading,
@@ -282,6 +287,10 @@ export const TableEditorMenu = () => {
               error="ERROR: FAILED TO RUN SQL QUERY: CONNECTION TERMINATED DUE TO CONNECTION TIMEOUT."
               supportUrl={`/support/new?project=${projectRef}`}
               className="mx-4 mt-3"
+              onDebugWithAI={(prompt) => {
+                openSidebar(SIDEBAR_KEYS.AI_ASSISTANT)
+                aiSnap.newChat({ initialMessage: prompt })
+              }}
             />
           )}
 
@@ -290,6 +299,10 @@ export const TableEditorMenu = () => {
               error={error?.message ?? 'Failed to retrieve tables'}
               supportUrl={`/support/new${project?.ref ? `?project=${project.ref}` : ''}`}
               className="mx-4 mt-3"
+              onDebugWithAI={(prompt) => {
+                openSidebar(SIDEBAR_KEYS.AI_ASSISTANT)
+                aiSnap.newChat({ initialMessage: prompt })
+              }}
             />
           )}
 
