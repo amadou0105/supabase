@@ -55,11 +55,11 @@ const InfoIcon = () => (
   </svg>
 )
 
-const WarningIcon = () => (
+export const WarningIcon = ({ className = 'w-6 h-6' }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 22 20"
-    className="w-6 h-6"
+    className={className}
     fill="currentColor"
   >
     <path

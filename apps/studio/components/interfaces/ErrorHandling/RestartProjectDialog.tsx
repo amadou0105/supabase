@@ -7,7 +7,6 @@ import { useProjectRestartServicesMutation } from 'data/projects/project-restart
 import { useAsyncCheckPermissions } from 'hooks/misc/useCheckPermissions'
 import { useSelectedProjectQuery } from 'hooks/misc/useSelectedProject'
 import { PROJECT_STATUS } from 'lib/constants'
-import { useTrack } from 'lib/telemetry/track'
 import { useRouter } from 'next/router'
 import { toast } from 'sonner'
 import { ConfirmationModal } from 'ui-patterns/Dialogs/ConfirmationModal'
@@ -19,17 +18,12 @@ interface RestartProjectDialogProps {
   restartType?: 'project' | 'database'
 }
 
-/**
- * Reusable dialog for restarting a project or database.
- * Extracted from Settings > General > RestartServerButton
- */
 export function RestartProjectDialog({
   visible,
   onClose,
   restartType = 'database',
 }: RestartProjectDialogProps) {
   const router = useRouter()
-  const track = useTrack()
   const { data: project } = useSelectedProjectQuery()
   const { setProjectStatus } = useSetProjectStatus()
 

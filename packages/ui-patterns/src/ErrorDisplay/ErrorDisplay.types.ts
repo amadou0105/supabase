@@ -37,8 +37,7 @@ export interface ErrorDisplayProps extends ComponentPropsWithoutRef<'div'> {
   className?: string
 
   /**
-   * Custom icon to display in the header
-   * @default AlertTriangle from lucide-react
+   * Custom icon to display in the header. Defaults to a filled warning triangle SVG.
    */
   icon?: ReactNode
 
