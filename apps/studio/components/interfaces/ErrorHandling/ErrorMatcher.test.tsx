@@ -47,13 +47,21 @@ describe('ErrorMatcher', () => {
   })
 
   it('renders fallback with provided title for unmatched errors', () => {
-    render(<ErrorMatcher title="Failed to load tables" error="UNKNOWN ERROR" supportFormParams={{}} />)
+    render(
+      <ErrorMatcher title="Failed to load tables" error="UNKNOWN ERROR" supportFormParams={{}} />
+    )
     expect(screen.getByText('Failed to load tables')).toBeInTheDocument()
     expect(screen.getByText('UNKNOWN ERROR')).toBeInTheDocument()
   })
 
   it('accepts error as object with message property', () => {
-    render(<ErrorMatcher title="Failed to load tables" error={{ message: 'UNKNOWN ERROR' }} supportFormParams={{}} />)
+    render(
+      <ErrorMatcher
+        title="Failed to load tables"
+        error={{ message: 'UNKNOWN ERROR' }}
+        supportFormParams={{}}
+      />
+    )
     expect(screen.getByText('UNKNOWN ERROR')).toBeInTheDocument()
   })
 

@@ -11,13 +11,13 @@ Full docs and code examples: `apps/studio/components/interfaces/ErrorHandling/RE
 
 ## Key files
 
-| File | Purpose |
-| ---- | ------- |
-| `ErrorMatcher.tsx` | Component — match error message + render |
-| `error-mappings.tsx` | Array of `{ id, pattern, troubleshooting: <JSX> }` |
-| `errorMappings/ConnectionTimeout.tsx` | Reference troubleshooting component |
-| `TroubleshootingSections.tsx` | Reusable accordion section components |
-| `TroubleshootingAccordion.tsx` | Accordion wrapper with telemetry |
+| File                                  | Purpose                                            |
+| ------------------------------------- | -------------------------------------------------- |
+| `ErrorMatcher.tsx`                    | Component — match error message + render           |
+| `error-mappings.tsx`                  | Array of `{ id, pattern, troubleshooting: <JSX> }` |
+| `errorMappings/ConnectionTimeout.tsx` | Reference troubleshooting component                |
+| `TroubleshootingSections.tsx`         | Reusable accordion section components              |
+| `TroubleshootingAccordion.tsx`        | Accordion wrapper with telemetry                   |
 
 ## What NOT to do
 

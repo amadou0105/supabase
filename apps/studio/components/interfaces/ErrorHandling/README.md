@@ -9,23 +9,25 @@ The `title` always comes from the caller — the same error pattern (e.g. connec
 ```tsx
 import { ErrorMatcher } from 'components/interfaces/ErrorHandling/ErrorMatcher'
 
-{isError && (
-  <ErrorMatcher
-    title="Failed to load tables"
-    error={error.message}
-    supportFormParams={{ projectRef }}
-  />
-)}
+{
+  isError && (
+    <ErrorMatcher
+      title="Failed to load tables"
+      error={error.message}
+      supportFormParams={{ projectRef }}
+    />
+  )
+}
 ```
 
 ### Props
 
-| Prop                | Type                           | Description                                                      |
-| ------------------- | ------------------------------ | ---------------------------------------------------------------- |
-| `title`             | `string`                       | Displayed in the error card header. Set by the caller.           |
-| `error`             | `string \| { message: string }`| The raw API error message to match against.                      |
-| `supportFormParams` | `Partial<SupportFormUrlKeys>`  | Typed params for the support form URL (projectRef, category…).   |
-| `className`         | `string?`                      | Extra classes on the card.                                       |
+| Prop                | Type                            | Description                                                    |
+| ------------------- | ------------------------------- | -------------------------------------------------------------- |
+| `title`             | `string`                        | Displayed in the error card header. Set by the caller.         |
+| `error`             | `string \| { message: string }` | The raw API error message to match against.                    |
+| `supportFormParams` | `Partial<SupportFormUrlKeys>`   | Typed params for the support form URL (projectRef, category…). |
+| `className`         | `string?`                       | Extra classes on the card.                                     |
 
 `supportFormParams` is typed as `Partial<SupportFormUrlKeys>` — autocomplete shows all available fields (`projectRef`, `orgSlug`, `category`, `subject`, `message`, `error`, `sid`). The URL is built by `createSupportFormUrl()` from `SupportForm.utils.tsx`.
 
@@ -39,7 +41,10 @@ import { useAiAssistantStateSnapshot } from 'state/ai-assistant-state'
 import { useSidebarManagerSnapshot } from 'state/sidebar-manager-state'
 
 import { TroubleshootingAccordion } from '../TroubleshootingAccordion'
-import { FixWithAITroubleshootingSection, TroubleshootingGuideSection } from '../TroubleshootingSections'
+import {
+  FixWithAITroubleshootingSection,
+  TroubleshootingGuideSection,
+} from '../TroubleshootingSections'
 
 const ERROR_TYPE = 'your-error'
 const BUILD_PROMPT = () => `Describe the issue for the AI assistant.`
@@ -49,8 +54,15 @@ export function YourErrorTroubleshooting() {
   const aiSnap = useAiAssistantStateSnapshot()
 
   return (
-    <TroubleshootingAccordion errorType={ERROR_TYPE} stepTitles={{ 1: 'Troubleshooting guide', 2: 'Debug with AI' }}>
-      <TroubleshootingGuideSection number={1} errorType={ERROR_TYPE} href="https://supabase.com/docs/guides/..." />
+    <TroubleshootingAccordion
+      errorType={ERROR_TYPE}
+      stepTitles={{ 1: 'Troubleshooting guide', 2: 'Debug with AI' }}
+    >
+      <TroubleshootingGuideSection
+        number={1}
+        errorType={ERROR_TYPE}
+        href="https://supabase.com/docs/guides/..."
+      />
       <FixWithAITroubleshootingSection
         number={2}
         errorType={ERROR_TYPE}
