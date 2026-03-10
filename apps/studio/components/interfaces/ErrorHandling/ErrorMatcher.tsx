@@ -3,25 +3,25 @@
 import { useTrack } from 'lib/telemetry/track'
 import { ErrorDisplay } from 'ui-patterns/ErrorDisplay'
 
+import {
+  createSupportFormUrl,
+  SupportFormUrlKeys,
+} from 'components/interfaces/Support/SupportForm.utils'
 import { ERROR_MAPPINGS } from './error-mappings'
 
 interface ErrorMatcherProps {
   title: string
   error: string | { message: string }
-  supportUrl?: string
+  supportFormParams?: Partial<SupportFormUrlKeys>
   className?: string
 }
 
-export function ErrorMatcher({
-  title,
-  error,
-  supportUrl = '/support/new',
-  className,
-}: ErrorMatcherProps) {
+export function ErrorMatcher({ title, error, supportFormParams, className }: ErrorMatcherProps) {
   const track = useTrack()
 
   const message = typeof error === 'string' ? error : error.message
   const mapping = ERROR_MAPPINGS.find((m) => m.pattern.test(message)) ?? null
+  const supportUrl = createSupportFormUrl(supportFormParams ?? {})
 
   if (!mapping) {
     return (

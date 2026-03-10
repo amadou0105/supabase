@@ -1,6 +1,8 @@
 # Error Handling
 
-`ErrorMatcher` matches an API error message against known patterns. If matched, it shows the relevant troubleshooting steps. If not, it shows a generic error. The `title` always comes from the caller — the same error pattern can appear on different pages with different titles.
+`ErrorMatcher` matches an API error message against known patterns. If matched, it shows relevant troubleshooting steps. If not, it shows a generic error card.
+
+The `title` always comes from the caller — the same error pattern (e.g. connection timeout) can appear on different pages with different titles.
 
 ## Usage
 
@@ -11,10 +13,21 @@ import { ErrorMatcher } from 'components/interfaces/ErrorHandling/ErrorMatcher'
   <ErrorMatcher
     title="Failed to load tables"
     error={error.message}
-    supportUrl={`/support/new?project=${projectRef}`}
+    supportFormParams={{ projectRef }}
   />
 )}
 ```
+
+### Props
+
+| Prop                | Type                           | Description                                                      |
+| ------------------- | ------------------------------ | ---------------------------------------------------------------- |
+| `title`             | `string`                       | Displayed in the error card header. Set by the caller.           |
+| `error`             | `string \| { message: string }`| The raw API error message to match against.                      |
+| `supportFormParams` | `Partial<SupportFormUrlKeys>`  | Typed params for the support form URL (projectRef, category…).   |
+| `className`         | `string?`                      | Extra classes on the card.                                       |
+
+`supportFormParams` is typed as `Partial<SupportFormUrlKeys>` — autocomplete shows all available fields (`projectRef`, `orgSlug`, `category`, `subject`, `message`, `error`, `sid`). The URL is built by `createSupportFormUrl()` from `SupportForm.utils.tsx`.
 
 ## Adding a new error mapping
 

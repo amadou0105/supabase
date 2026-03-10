@@ -281,7 +281,7 @@ export const TableEditorMenu = () => {
             <ErrorMatcher
               title="Failed to load tables"
               error="ERROR: FAILED TO RUN SQL QUERY: CONNECTION TERMINATED DUE TO CONNECTION TIMEOUT."
-              supportUrl={`/support/new?project=${projectRef}`}
+              supportFormParams={{ projectRef }}
               className="mx-4 mt-3"
             />
           )}
@@ -290,7 +290,7 @@ export const TableEditorMenu = () => {
             <ErrorMatcher
               title="Failed to load tables"
               error={error?.message ?? 'Failed to load tables'}
-              supportUrl={`/support/new${project?.ref ? `?project=${project.ref}` : ''}`}
+              supportFormParams={{ projectRef: project?.ref }}
               className="mx-4 mt-3"
             />
           )}

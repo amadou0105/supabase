@@ -22,7 +22,7 @@ describe('ErrorMatcher', () => {
       <ErrorMatcher
         title="Failed to load tables"
         error="ERROR: FAILED TO RUN SQL QUERY: CONNECTION TERMINATED DUE TO CONNECTION TIMEOUT."
-        supportUrl="/support"
+        supportFormParams={{}}
       />
     )
     expect(screen.getByText('Failed to load tables')).toBeInTheDocument()
@@ -38,7 +38,7 @@ describe('ErrorMatcher', () => {
       <ErrorMatcher
         title="Failed to load tables"
         error="CONNECTION TERMINATED DUE TO CONNECTION TIMEOUT"
-        supportUrl="/support"
+        supportFormParams={{}}
       />
     )
     expect(screen.getByText('Try restarting your project')).toBeInTheDocument()
@@ -47,25 +47,31 @@ describe('ErrorMatcher', () => {
   })
 
   it('renders fallback with provided title for unmatched errors', () => {
-    render(<ErrorMatcher title="Failed to load tables" error="UNKNOWN ERROR" supportUrl="/support" />)
+    render(<ErrorMatcher title="Failed to load tables" error="UNKNOWN ERROR" supportFormParams={{}} />)
     expect(screen.getByText('Failed to load tables')).toBeInTheDocument()
     expect(screen.getByText('UNKNOWN ERROR')).toBeInTheDocument()
   })
 
   it('accepts error as object with message property', () => {
-    render(<ErrorMatcher title="Failed to load tables" error={{ message: 'UNKNOWN ERROR' }} supportUrl="/support" />)
+    render(<ErrorMatcher title="Failed to load tables" error={{ message: 'UNKNOWN ERROR' }} supportFormParams={{}} />)
     expect(screen.getByText('UNKNOWN ERROR')).toBeInTheDocument()
   })
 
-  it('renders support link with provided URL', () => {
-    render(<ErrorMatcher title="Failed to load tables" error="UNKNOWN ERROR" supportUrl="/custom-support" />)
+  it('builds support link with projectRef param', () => {
+    render(
+      <ErrorMatcher
+        title="Failed to load tables"
+        error="UNKNOWN ERROR"
+        supportFormParams={{ projectRef: 'my-project' }}
+      />
+    )
     expect(screen.getByRole('link', { name: /contact support/i })).toHaveAttribute(
       'href',
-      '/custom-support'
+      '/support/new?projectRef=my-project'
     )
   })
 
-  it('uses default support URL when not provided', () => {
+  it('builds support link with no params when supportFormParams is omitted', () => {
     render(<ErrorMatcher title="Failed to load tables" error="UNKNOWN ERROR" />)
     expect(screen.getByRole('link', { name: /contact support/i })).toHaveAttribute(
       'href',
