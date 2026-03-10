@@ -35,9 +35,9 @@ export function TroubleshootingAccordion({
         const expanded = Boolean(value)
         const step = expanded ? parseInt(value.replace('step-', ''), 10) : 0
         track('inline_error_troubleshooter_accordion_toggled', {
-          error_type: errorType,
+          errorType,
           step,
-          step_title: stepTitles?.[step],
+          stepTitle: stepTitles?.[step],
           expanded,
         })
       }}

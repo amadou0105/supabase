@@ -13,6 +13,9 @@ vi.mock('state/sidebar-manager-state', () => ({
 vi.mock('components/layouts/ProjectLayout/LayoutSidebar/LayoutSidebarProvider', () => ({
   SIDEBAR_KEYS: { AI_ASSISTANT: 'ai-assistant' },
 }))
+vi.mock('./RestartProjectDialog', () => ({
+  RestartProjectDialog: () => null,
+}))
 
 describe('ErrorMatcher', () => {
   beforeEach(() => vi.clearAllMocks())

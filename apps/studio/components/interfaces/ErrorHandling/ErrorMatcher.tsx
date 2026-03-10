@@ -40,10 +40,10 @@ export function ErrorMatcher({ title, error, supportFormParams, className }: Err
       errorMessage={message}
       supportUrl={supportUrl}
       className={className}
-      onRender={() => track('inline_error_troubleshooter_shown', { error_type: mapping.id })}
+      onRender={() => track('inline_error_troubleshooter_shown', { errorType: mapping.id })}
       onSupportClick={() =>
         track('inline_error_troubleshooter_action_clicked', {
-          error_type: mapping.id,
+          errorType: mapping.id,
           action: 'contact_support',
         })
       }
