@@ -21,7 +21,6 @@ const WarningIcon = () => (
   </svg>
 )
 
-
 /**
  * ErrorDisplay component for displaying error messages with troubleshooting steps.
  *
