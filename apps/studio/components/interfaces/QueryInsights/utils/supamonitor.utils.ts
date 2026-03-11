@@ -125,13 +125,20 @@ export function aggregateLogsByQuery(parsedLogs: ParsedLogEntry[]): QueryPerform
       totalCalls += logCalls
       totalExecTime += parseFloat(String(log.total_exec_time ?? 0))
       totalPlanTime += parseFloat(String(log.total_plan_time ?? 0))
-      const logP95 = (log.p95_exec_time ?? 0) + (log.p95_plan_time ?? 0)
+      const logP95 =
+        parseFloat(String(log.p95_exec_time ?? 0)) + parseFloat(String(log.p95_plan_time ?? 0))
       if (logP95 > 0) {
         p95Sum += logP95
         p95Count++
       }
-      minTime = Math.min(minTime, (log.min_exec_time ?? 0) + (log.min_plan_time ?? 0))
-      maxTime = Math.max(maxTime, (log.max_exec_time ?? 0) + (log.max_plan_time ?? 0))
+      minTime = Math.min(
+        minTime,
+        parseFloat(String(log.min_exec_time ?? 0)) + parseFloat(String(log.min_plan_time ?? 0))
+      )
+      maxTime = Math.max(
+        maxTime,
+        parseFloat(String(log.max_exec_time ?? 0)) + parseFloat(String(log.max_plan_time ?? 0))
+      )
     })
 
     const totalTime = totalExecTime + totalPlanTime
