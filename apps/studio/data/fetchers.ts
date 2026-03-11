@@ -8,6 +8,7 @@ import { ResponseError } from 'types'
 
 import type { paths } from './api'
 import { ErrorMetadata } from '@/types/base'
+import { ERROR_PATTERNS } from './error-patterns'
 
 // generated from openapi-typescript
 
@@ -172,7 +173,7 @@ export const handleError = (error: unknown, options: HandleErrorOptions = {}): n
         : undefined
 
     if (errorMessage) {
-      throw new ResponseError(
+      const responseError = new ResponseError(
         errorMessage,
         errorCode,
         requestId,
@@ -180,6 +181,8 @@ export const handleError = (error: unknown, options: HandleErrorOptions = {}): n
         requestPathname,
         metadata
       )
+      const matched = ERROR_PATTERNS.find(({ pattern }) => pattern.test(errorMessage))
+      throw matched ? Object.assign(responseError, { errorType: matched.errorType }) : responseError
     }
   }
 

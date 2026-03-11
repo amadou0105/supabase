@@ -1,6 +1,7 @@
 'use client'
 
 import { useTrack } from 'lib/telemetry/track'
+import type { ClassifiedError } from 'types/api-errors'
 import { ErrorDisplay, SupportFormParams } from 'ui-patterns/ErrorDisplay'
 
 import { ERROR_MAPPINGS } from './error-mappings'
@@ -16,18 +17,12 @@ export function ErrorMatcher({ title, error, supportFormParams, className }: Err
   const track = useTrack()
 
   const message = typeof error === 'string' ? error : error.message
-  const mapping = ERROR_MAPPINGS.find((m) => m.pattern.test(message)) ?? null
-
-  if (!mapping) {
-    return (
-      <ErrorDisplay
-        title={title}
-        errorMessage={message}
-        supportFormParams={supportFormParams}
-        className={className}
-      />
-    )
-  }
+  const errorType =
+    typeof error === 'object' && 'errorType' in error
+      ? (error as ClassifiedError).errorType
+      : undefined
+  const mapping = errorType ? (ERROR_MAPPINGS[errorType] ?? null) : null
+  const Troubleshooting = mapping?.Troubleshooting
 
   return (
     <ErrorDisplay
@@ -35,15 +30,20 @@ export function ErrorMatcher({ title, error, supportFormParams, className }: Err
       errorMessage={message}
       supportFormParams={supportFormParams}
       className={className}
-      onRender={() => track('inline_error_troubleshooter_shown', { errorType: mapping.id })}
-      onSupportClick={() =>
-        track('inline_error_troubleshooter_action_clicked', {
-          errorType: mapping.id,
-          action: 'contact_support',
-        })
+      onRender={
+        mapping ? () => track('inline_error_troubleshooter_shown', { errorType: mapping.id }) : undefined
+      }
+      onSupportClick={
+        mapping
+          ? () =>
+              track('inline_error_troubleshooter_action_clicked', {
+                errorType: mapping.id,
+                action: 'contact_support',
+              })
+          : undefined
       }
     >
-      {mapping.troubleshooting}
+      {Troubleshooting && <Troubleshooting />}
     </ErrorDisplay>
   )
 }

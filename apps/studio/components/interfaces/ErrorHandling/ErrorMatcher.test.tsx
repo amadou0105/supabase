@@ -1,4 +1,6 @@
 import { render, screen } from '@testing-library/react'
+import { ResponseError } from 'types/base'
+import type { ClassifiedError } from 'types/api-errors'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ErrorMatcher } from './ErrorMatcher'
@@ -16,6 +18,10 @@ vi.mock('components/layouts/ProjectLayout/LayoutSidebar/LayoutSidebarProvider', 
 vi.mock('./RestartProjectDialog', () => ({
   RestartProjectDialog: () => null,
 }))
+
+function makeClassifiedError(message: string, errorType: 'connection-timeout') {
+  return Object.assign(new ResponseError(message), { errorType })
+}
 
 describe('ErrorMatcher', () => {
   beforeEach(() => vi.clearAllMocks())
@@ -36,17 +42,29 @@ describe('ErrorMatcher', () => {
     ).toBeInTheDocument()
   })
 
-  it('renders troubleshooting steps for matched errors', () => {
+  it('renders troubleshooting steps for classified errors', () => {
+    const error = makeClassifiedError(
+      'CONNECTION TERMINATED DUE TO CONNECTION TIMEOUT',
+      'connection-timeout'
+    )
     render(
-      <ErrorMatcher
-        title="Failed to load tables"
-        error="CONNECTION TERMINATED DUE TO CONNECTION TIMEOUT"
-        supportFormParams={{}}
-      />
+      <ErrorMatcher title="Failed to load tables" error={error} supportFormParams={{}} />
     )
     expect(screen.getByText('Try restarting your project')).toBeInTheDocument()
     expect(screen.getByText('Try our troubleshooting guide')).toBeInTheDocument()
     expect(screen.getByText('Debug with AI')).toBeInTheDocument()
+  })
+
+  it('renders fallback for unclassified ResponseError (no errorType)', () => {
+    render(
+      <ErrorMatcher
+        title="Failed to load tables"
+        error={new ResponseError('CONNECTION TERMINATED DUE TO CONNECTION TIMEOUT')}
+        supportFormParams={{}}
+      />
+    )
+    expect(screen.getByText('Failed to load tables')).toBeInTheDocument()
+    expect(screen.queryByText('Try restarting your project')).not.toBeInTheDocument()
   })
 
   it('renders fallback with provided title for unmatched errors', () => {

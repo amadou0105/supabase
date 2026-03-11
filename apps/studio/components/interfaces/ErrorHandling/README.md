@@ -1,8 +1,10 @@
 # Error Handling
 
-`ErrorMatcher` matches an API error message against known patterns. If matched, it shows relevant troubleshooting steps. If not, it shows a generic error card.
+`ErrorMatcher` displays a typed API error. If the error was classified by `handleError` (i.e. it carries an `errorType`), it shows matching troubleshooting steps. Otherwise it shows a generic error card.
 
-The `title` always comes from the caller — the same error pattern (e.g. connection timeout) can appear on different pages with different titles.
+Classification happens in the data layer — `handleError` in `data/fetchers.ts` matches the error message against patterns and stamps `errorType` onto the thrown `ResponseError`. The component never does regex matching itself.
+
+The `title` always comes from the caller — the same error type can appear on different pages with different titles.
 
 ## Usage
 
@@ -13,19 +15,21 @@ import { ErrorMatcher } from 'components/interfaces/ErrorHandling/ErrorMatcher'
   isError && (
     <ErrorMatcher
       title="Failed to load tables"
-      error={error.message}
+      error={error}
       supportFormParams={{ projectRef }}
     />
   )
 }
 ```
 
+Pass the full `error` object from React Query — not `error.message`. This lets `ErrorMatcher` read the `errorType` stamped by `handleError`.
+
 ### Props
 
 | Prop                | Type                            | Description                                                    |
 | ------------------- | ------------------------------- | -------------------------------------------------------------- |
 | `title`             | `string`                        | Displayed in the error card header. Set by the caller.         |
-| `error`             | `string \| { message: string }` | The raw API error message to match against.                    |
+| `error`             | `string \| { message: string }` | The error from React Query (pass the full object, not `.message`). |
 | `supportFormParams` | `Partial<SupportFormUrlKeys>`   | Typed params for the support form URL (projectRef, category…). |
 | `className`         | `string?`                       | Extra classes on the card.                                     |
 
@@ -33,7 +37,27 @@ import { ErrorMatcher } from 'components/interfaces/ErrorHandling/ErrorMatcher'
 
 ## Adding a new error mapping
 
-**1. Create `errorMappings/YourError.tsx`**
+**1. Add the error type to `KnownErrorType` in `types/base.ts`**
+
+```ts
+export type KnownErrorType = 'connection-timeout' | 'your-error'
+```
+
+**2. Add a pattern entry to `data/error-patterns.ts`**
+
+```ts
+export const ERROR_PATTERNS: ErrorPattern[] = [
+  // existing...
+  {
+    pattern: /YOUR_ERROR_PATTERN/i,
+    errorType: 'your-error',
+  },
+]
+```
+
+`handleError` picks this up automatically — any matching API error will be thrown as a `ClassifiedError` with `errorType: 'your-error'`.
+
+**3. Create `errorMappings/YourError.tsx`**
 
 ```tsx
 import { SIDEBAR_KEYS } from 'components/layouts/ProjectLayout/LayoutSidebar/LayoutSidebarProvider'
@@ -77,19 +101,18 @@ export function YourErrorTroubleshooting() {
 }
 ```
 
-**2. Add it to `error-mappings.tsx`**
+**4. Add it to `error-mappings.tsx`**
 
 ```tsx
 import { YourErrorTroubleshooting } from './errorMappings/YourError'
 
-export const ERROR_MAPPINGS: ErrorMapping[] = [
+export const ERROR_MAPPINGS: Record<KnownErrorType, ErrorMapping> = {
   // existing...
-  {
+  'your-error': {
     id: 'your-error',
-    pattern: /YOUR_ERROR_PATTERN/i,
     troubleshooting: <YourErrorTroubleshooting />,
   },
-]
+}
 ```
 
 That's it. `ErrorMatcher` picks it up automatically.

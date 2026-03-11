@@ -118,6 +118,7 @@ export class ResponseError extends Error {
   }
 }
 
+
 export interface Dictionary<T> {
   [Key: string]: T
 }

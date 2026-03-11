@@ -36,6 +36,8 @@ import {
   toTableHeadSortValue,
 } from './ProjectListSort.utils'
 import { ProjectTableRow } from './ProjectTableRow'
+import { ErrorMatcher } from '../../ErrorHandling/ErrorMatcher'
+import { TroubleshootingAccordion } from '../../ErrorHandling/TroubleshootingAccordion'
 
 export interface ProjectListProps {
   organization?: Organization
@@ -140,12 +142,15 @@ export const ProjectList = ({ organization: organization_, rewriteHref }: Projec
     )
   }
 
-  if (isErrorProjects) {
+  if (isErrorProjects || true) {
     return (
-      <AlertError
-        subject={`Failed to retrieve projects under ${organization?.name}`}
-        error={projectsError}
-      />
+        <ErrorMatcher title={`Failed to retrieve projects under ${organization?.name}`}
+          error={projectsError ?? 'An unknown error occurred while fetching projects.'}
+        />
+      // <AlertError
+      //   subject={`Failed to retrieve projects under ${organization?.name}`}
+      //   error={projectsError}
+      // />
     )
   }
 

@@ -1,17 +1,21 @@
-import { ReactNode } from 'react'
+import { ComponentType } from 'react'
+
+import type { KnownErrorType } from 'types/api-errors'
 
 import { ConnectionTimeoutTroubleshooting } from './errorMappings/ConnectionTimeout'
 
 export interface ErrorMapping {
-  id: string
-  pattern: RegExp
-  troubleshooting: ReactNode
+  id: KnownErrorType
+  Troubleshooting: ComponentType
 }
 
-export const ERROR_MAPPINGS: ErrorMapping[] = [
-  {
+export const ERROR_MAPPINGS: Record<KnownErrorType, ErrorMapping> = {
+  'connection-timeout': {
     id: 'connection-timeout',
-    pattern: /CONNECTION\s+TERMINATED\s+DUE\s+TO\s+CONNECTION\s+TIMEOUT/i,
-    troubleshooting: <ConnectionTimeoutTroubleshooting />,
+    Troubleshooting: ConnectionTimeoutTroubleshooting
   },
-]
+  'failed-to-retrieve-projects': {
+    id: 'failed-to-re-pr',
+    Troubleshooting: ConnectionTimeoutTroubleshooting
+  }
+}
