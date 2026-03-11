@@ -1,3 +1,5 @@
+import type { CSSProperties } from 'react'
+
 export const DRAG_THRESHOLD_PX = 8
 export const GAP_FROM_BOTTOM = 50
 export const SHEET_OPEN_GAP_FRACTION = 0.15
@@ -52,15 +54,8 @@ export function getNextPosition(
   if (dist < threshold) return null
   const dx = clientX - dragStart.startX
   const dy = clientY - dragStart.startY
-  return clampPosition(
-    { x: dragStart.x, y: dragStart.y },
-    { dx, dy },
-    viewport,
-    navSize
-  )
+  return clampPosition({ x: dragStart.x, y: dragStart.y }, { dx, dy }, viewport, navSize)
 }
-
-import type { CSSProperties } from 'react'
 
 export function getNavbarStyle(params: {
   position: Position | null
@@ -85,8 +80,7 @@ export function getNavbarStyle(params: {
   const centerX = vw > 0 && navW > 0 ? vw / 2 - navW / 2 : 0
   const sheetOpenGapPx = vh * SHEET_OPEN_GAP_FRACTION
   const topWhenSheetOpen = vh > 0 ? sheetOpenGapPx / 2 - navH / 2 : 0
-  const defaultYClosed =
-    vh > 0 ? vh - GAP_FROM_BOTTOM - (navH > 0 ? navH : DEFAULT_NAV_HEIGHT) : 0
+  const defaultYClosed = vh > 0 ? vh - GAP_FROM_BOTTOM - (navH > 0 ? navH : DEFAULT_NAV_HEIGHT) : 0
 
   if (position === null) {
     return {

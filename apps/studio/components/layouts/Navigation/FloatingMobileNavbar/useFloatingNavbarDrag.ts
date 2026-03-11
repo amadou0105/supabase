@@ -20,28 +20,24 @@ export function useFloatingNavbarDrag(navRef: React.RefObject<HTMLElement | null
   const [position, setPosition] = useState<Position | null>(null)
   const dragStartRef = useRef<DragStartState | null>(null)
 
-  const applyMove = useCallback((clientX: number, clientY: number) => {
-    const state = dragStartRef.current
-    if (!state) return
-    const rect = navRef.current?.getBoundingClientRect()
-    const viewport: Viewport = {
-      width: typeof window !== 'undefined' ? window.innerWidth : 0,
-      height: typeof window !== 'undefined' ? window.innerHeight : 0,
-    }
-    const navSize: NavSize = {
-      width: rect?.width ?? 200,
-      height: rect?.height ?? 48,
-    }
-    const next = getNextPosition(
-      state,
-      clientX,
-      clientY,
-      viewport,
-      navSize,
-      DRAG_THRESHOLD_PX
-    )
-    if (next) setPosition(next)
-  }, [navRef])
+  const applyMove = useCallback(
+    (clientX: number, clientY: number) => {
+      const state = dragStartRef.current
+      if (!state) return
+      const rect = navRef.current?.getBoundingClientRect()
+      const viewport: Viewport = {
+        width: typeof window !== 'undefined' ? window.innerWidth : 0,
+        height: typeof window !== 'undefined' ? window.innerHeight : 0,
+      }
+      const navSize: NavSize = {
+        width: rect?.width ?? 200,
+        height: rect?.height ?? 48,
+      }
+      const next = getNextPosition(state, clientX, clientY, viewport, navSize, DRAG_THRESHOLD_PX)
+      if (next) setPosition(next)
+    },
+    [navRef]
+  )
 
   const handlePointerDown = useCallback(
     (e: React.PointerEvent) => {

@@ -41,23 +41,13 @@ describe('clampPosition', () => {
   const navSize = { width: 100, height: 48 }
 
   it('clamps to viewport bounds', () => {
-    const next = clampPosition(
-      { x: 0, y: 0 },
-      { dx: 500, dy: 900 },
-      viewport,
-      navSize
-    )
+    const next = clampPosition({ x: 0, y: 0 }, { dx: 500, dy: 900 }, viewport, navSize)
     expect(next.x).toBe(300)
     expect(next.y).toBe(752)
   })
 
   it('does not go negative', () => {
-    const next = clampPosition(
-      { x: 10, y: 10 },
-      { dx: -20, dy: -20 },
-      viewport,
-      navSize
-    )
+    const next = clampPosition({ x: 10, y: 10 }, { dx: -20, dy: -20 }, viewport, navSize)
     expect(next.x).toBe(0)
     expect(next.y).toBe(0)
   })
@@ -69,9 +59,7 @@ describe('getNextPosition', () => {
   const dragStart = { x: 50, y: 100, startX: 60, startY: 110 }
 
   it('returns null when under threshold', () => {
-    expect(
-      getNextPosition(dragStart, 62, 111, viewport, navSize, 8)
-    ).toBeNull()
+    expect(getNextPosition(dragStart, 62, 111, viewport, navSize, 8)).toBeNull()
   })
 
   it('returns clamped position when over threshold', () => {

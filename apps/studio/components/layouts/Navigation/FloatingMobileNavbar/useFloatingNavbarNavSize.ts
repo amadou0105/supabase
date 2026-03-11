@@ -2,7 +2,10 @@ import { useLayoutEffect, useState } from 'react'
 
 import type { NavSize } from './FloatingMobileNavbar.utils'
 
-function measure(el: HTMLElement | null, setNavSize: React.Dispatch<React.SetStateAction<NavSize>>) {
+function measure(
+  el: HTMLElement | null,
+  setNavSize: React.Dispatch<React.SetStateAction<NavSize>>
+) {
   if (!el) return
   const rect = el.getBoundingClientRect()
   setNavSize((prev) =>
@@ -25,13 +28,13 @@ export function useFloatingNavbarNavSize(
     const ro = new ResizeObserver(() => measure(el, setNavSize))
     ro.observe(el)
     return () => ro.disconnect()
-  }, [])
+  }, [navRef])
 
   useLayoutEffect(() => {
     if (!isSheetOpen) return
     const raf = requestAnimationFrame(() => measure(navRef.current, setNavSize))
     return () => cancelAnimationFrame(raf)
-  }, [isSheetOpen])
+  }, [isSheetOpen, navRef])
 
   return navSize
 }
