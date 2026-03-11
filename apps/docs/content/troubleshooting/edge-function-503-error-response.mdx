@@ -1,0 +1,177 @@
+---
+title = "Edge Function 503 error response"
+topics = [ "functions" ]
+keywords = [ "503", "error" ]
+
+[[errors]]
+http_status_code = 503
+code = "BOOT_ERROR"
+message = "Function failed to start (please check logs"
+---
+
+A 503 HTTP status code from an Edge Function indicates one of three possible events: 
+- the function failed to boot due to [SyntaxError](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SyntaxError)
+- your own code returned a 503
+- the platform itself is having issues. 
+
+These require different fixes, so it is useful to decipher the cause before debugging:
+
+## Step 1: Figure Out Which 503 You Have
+
+If you received back a `BOOT_ERROR` message, like the one below, you can jump to the resolution section [Error Type 1](#error-type-1-boot_error---function-cannot-compile)
+
+```json
+{
+    "code":"BOOT_ERROR",
+    "message":"Function failed to start (please check logs)"
+}
+```
+
+Otherwise, run the below query in your [Log Explorer.](https://supabase.com/dashboard/project/_/logs/explorer?q=SELECT+DISTINCT%0A++++req.pathname+AS+function_name%2C%0A++++res.status_code%0AFROM+function_edge_logs%0ACROSS+JOIN+UNNEST%28metadata%29+AS+metadata+%0ACROSS+JOIN+UNNEST%28metadata.request%29+AS+req+%0ACROSS+JOIN+UNNEST%28metadata.response%29+AS+res+%0AWHERE+%0A++++status_code+%3D+404+%0A++++++++AND+%0A++++metadata.execution_id+IS+NULL%0ALIMIT+10%3B). Make sure you set an appropriate time frame for the query in the explorer first:
+
+```sql
+SELECT
+    req.pathname AS function_name,
+    res.status_code,
+    CASE
+        WHEN metadata.execution_id IS NOT NULL AND metadata.function_id IS NOT NULL THEN 'app_level'
+        WHEN metadata.execution_id IS NULL     AND metadata.function_id IS NOT NULL THEN 'boot_error'
+        WHEN metadata.execution_id IS NULL     AND metadata.function_id IS NULL     THEN 'internal_failure'
+    END AS error_type
+FROM function_edge_logs
+CROSS JOIN UNNEST(metadata) AS metadata 
+CROSS JOIN UNNEST(metadata.request) AS req 
+CROSS JOIN UNNEST(metadata.response) AS res 
+WHERE 
+    status_code = 503 
+LIMIT 50;
+```
+
+The results may look like:
+![image](/docs/img/troubleshooting/log_results.png)
+
+Find your `error_type` in the results, then jump to the matching section below.
+
+## Step 2: Addressing the Error
+
+## Error Type 1: `boot_error` - function cannot compile
+
+A [SyntaxError](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SyntaxError) prevented your code from dynamically compiling.
+
+In the [Function Dashboard](https://supabase.com/dashboard/project/_/functions), under the affected function's `Log` tab, you can filter for the key phrase `worker boot error:`. the log will tell you syntax error occurred:
+
+![image](/docs/img/troubleshooting/filter_503.png)
+
+Alternatively, instead of using the Function Dashboard, you can programmatically find boot failure error messages in the [log explorer](/dashboard/project/_/logs/explorer?q=SELECT%0A++fl.event_message,%0A++content.timestamp,%0A++fel.function_name,%0A++fel.status_code%0AFROM+function_logs+fl%0ALEFT+JOIN+UNNEST(fl.metadata)+AS+content+ON+TRUE%0ALEFT+JOIN+(%0A++SELECT%0A++++em.function_id,%0A++++em.version,%0A++++req.pathname+AS+function_name,%0A++++res.status_code%0A++FROM+function_edge_logs%0A++LEFT+JOIN+UNNEST(metadata)+AS+em+ON+TRUE%0A++LEFT+JOIN+UNNEST(em.request)+AS+req+ON+TRUE%0A++LEFT+JOIN+UNNEST(em.response)+AS+res+ON+TRUE%0A)+fel+ON+content.function_id+=+fel.function_id%0A++AND+content.version+=+fel.version%0AWHERE+%0A++content.event_type+=+%27BootFailure%27%0AORDER+BY+timestamp,+function_name%0ALIMIT+20;&its=&ite=) with the below query:
+
+```sql
+SELECT
+  fl.event_message,
+  content.timestamp,
+  fel.function_name,
+  fel.status_code
+FROM function_logs fl
+LEFT JOIN UNNEST(fl.metadata) AS content ON TRUE
+LEFT JOIN (
+  SELECT
+    em.function_id,
+    em.version,
+    req.pathname AS function_name,
+    res.status_code
+  FROM function_edge_logs
+  LEFT JOIN UNNEST(metadata) AS em ON TRUE
+  LEFT JOIN UNNEST(em.request) AS req ON TRUE
+  LEFT JOIN UNNEST(em.response) AS res ON TRUE
+) fel ON content.function_id = fel.function_id
+  AND content.version = fel.version
+WHERE 
+  content.event_type = 'BootFailure'
+ORDER BY timestamp, function_name
+LIMIT 20;
+```
+
+### Common Causes
+
+### Redeclaring constant variables
+
+```js
+let some_var;
+const some_var; // SyntaxError — already declared
+```
+
+The error message states the error cause `already declared` and the file impacted "source/index.ts"
+```sh
+worker boot error: Uncaught SyntaxError: 
+Identifier 'some_var' has already been declared at file:///var/tmp/sb-compile-edge-runtime/source/index.ts:6:7
+```
+
+### Key word violations
+
+Some key words can only be used in specific contexts. For instance, the `await` key word can only be used inside `async` functions.
+
+```js
+(req: Request) => {
+  const { name } = await req.json(); // await only works inside async functions
+}
+```
+
+The below error message states the cause `Unexpected reserved word` and the file impacted "source/index.ts"
+
+```sh
+worker boot error: Uncaught SyntaxError: 
+Unexpected reserved word at file:///var/tmp/sb-compile-edge-runtime/source/index.ts:6:28
+```
+
+### Bad imports: non-existent modules or named exports
+
+```js
+// importing non-existent module
+import supabase from "does_not_exist"
+```
+
+```js
+// accessing non-existent export
+import { doesNotExist } from "jsr:@supabase/functions-js";
+
+doesNotExist();  
+```
+
+When an import fails, the runtime will throw a 503 and log the error message:
+
+```sh
+worker boot error: Uncaught SyntaxError: The requested module 'jsr:@supabase/functions-js' does not provide an export named 'doesNotExist' at file:///var/tmp/sb-compile-edge-runtime/source/index.ts:2:10”
+```
+
+To fix, check the module and its imports to make sure they exist and are supported by Supabase Deno. 
+
+If the module worked before, check to see if the most recent release had breaking changes and then only import the working version. 
+
+## Error Type 2: `app_level` - your code returned a 503
+
+Somewhere in your function logic, you are returning a 503 response yourself:
+
+### Example:
+```js
+return new Response(JSON.stringify(data), {
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    status: 503 // <-- you set this
+})
+```
+
+Check your function logic and any third-party API responses for where the 503 is originating. 
+
+The [Function Error Handling doc](https://supabase.com/docs/guides/functions/error-handling#error-handling) outlines some best practices for addressing custom error responses that can make debugging easier going forward:
+- use [try/catch](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/try...catch) to control error flow
+- generate useful [console.error()](https://developer.mozilla.org/en-US/docs/Web/API/console/error_static) messages for debugging
+- assign appropriate response codes for the event (500, 503, 404...)
+
+## Error Type 3: `internal_failure` - Platform Issue
+
+The edge function runtime is overwhelmed, or Cloudflare (which Supabase uses as a firewall) is returning its own 503 due to excessive load.
+
+Open a [support ticket](/dashboard/support/new) and include the relevant log output from Step 1.
+
+## Additional resources
+- [Debugging Edge Functions](/docs/guides/functions/logging)
+- [Quickstart Deployment: Dashboard](https://supabase.com/docs/guides/functions/quickstart-dashboard)
+- [Quickstart Deployment: CLI](https://supabase.com/docs/guides/functions/quickstart)
