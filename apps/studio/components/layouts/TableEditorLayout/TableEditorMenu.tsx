@@ -23,7 +23,6 @@ import { useIsProtectedSchema } from 'hooks/useProtectedSchemas'
 import { Filter, Plus } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTableEditorStateSnapshot } from 'state/table-editor'
-import { ResponseError } from 'types/base'
 import {
   Button,
   Checkbox_Shadcn_,
@@ -277,22 +276,7 @@ export const TableEditorMenu = () => {
 
           {isLoading && <EditorMenuListSkeleton />}
 
-          {/* 🚨 DELETE BEFORE MERGING */}
-          {process.env.NEXT_PUBLIC_ENVIRONMENT !== 'prod' && (
-            <ErrorMatcher
-              title="Failed to load tables"
-              error={Object.assign(
-                new ResponseError(
-                  'ERROR: FAILED TO RUN SQL QUERY: CONNECTION TERMINATED DUE TO CONNECTION TIMEOUT.'
-                ),
-                { errorType: 'connection-timeout' as const }
-              )}
-              supportFormParams={{ projectRef }}
-              className="mx-4 mt-3"
-            />
-          )}
-
-          {isError && (
+{isError && (
             <ErrorMatcher
               title="Failed to load tables"
               error={error ?? 'Failed to load tables'}
