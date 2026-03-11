@@ -142,7 +142,7 @@ export const ProjectList = ({ organization: organization_, rewriteHref }: Projec
     )
   }
 
-  if (isErrorProjects || true) {
+  if (isErrorProjects) {
     return (
       <AlertError
         subject={`Failed to retrieve projects under ${organization?.name}`}
