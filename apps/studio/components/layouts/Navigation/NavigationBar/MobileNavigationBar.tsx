@@ -9,7 +9,6 @@ import { useSelectedOrganizationQuery } from 'hooks/misc/useSelectedOrganization
 import { IS_PLATFORM } from 'lib/constants'
 import { ChevronLeft, Menu, Search } from 'lucide-react'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { Button, cn } from 'ui'
 import { CommandMenuTrigger, MobileSheetNav } from 'ui-patterns'
