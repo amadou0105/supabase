@@ -7,7 +7,6 @@ import { parseSupaTable } from 'components/grid/SupabaseGrid.utils'
 import { SupaTable } from 'components/grid/types'
 import { ProtectedSchemaWarning } from 'components/interfaces/Database/ProtectedSchemaWarning'
 import { ErrorMatcher } from 'components/interfaces/ErrorHandling/ErrorMatcher'
-import { ResponseError } from 'types/base'
 import EditorMenuListSkeleton from 'components/layouts/TableEditorLayout/EditorMenuListSkeleton'
 import { ButtonTooltip } from 'components/ui/ButtonTooltip'
 import { InfiniteListDefault, LoaderForIconMenuItems } from 'components/ui/InfiniteList'
@@ -24,6 +23,7 @@ import { useIsProtectedSchema } from 'hooks/useProtectedSchemas'
 import { Filter, Plus } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTableEditorStateSnapshot } from 'state/table-editor'
+import { ResponseError } from 'types/base'
 import {
   Button,
   Checkbox_Shadcn_,

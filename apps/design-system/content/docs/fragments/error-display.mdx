@@ -34,26 +34,26 @@ Pass any content as `children` — typically a `TroubleshootingAccordion` — to
 
 ## Props
 
-| Prop               | Type                  | Default             | Description                                                           |
-| ------------------ | --------------------- | ------------------- | --------------------------------------------------------------------- |
-| `title`            | `string`              | —                   | Displayed in the card header next to the warning icon.                |
-| `errorMessage`     | `string`              | —                   | Raw error string rendered in a monospace code block.                  |
+| Prop                | Type                 | Default             | Description                                                           |
+| ------------------- | -------------------- | ------------------- | --------------------------------------------------------------------- |
+| `title`             | `string`             | —                   | Displayed in the card header next to the warning icon.                |
+| `errorMessage`      | `string`             | —                   | Raw error string rendered in a monospace code block.                  |
 | `supportFormParams` | `SupportFormParams?` | `undefined`         | Typed params for the support form URL. The component builds the URL.  |
-| `supportLabel`     | `string?`             | `"Contact support"` | Override the support link label.                                      |
-| `children`         | `ReactNode`           | `undefined`         | Slot for troubleshooting content rendered between message and footer. |
-| `icon`             | `ReactNode`           | Warning triangle    | Override the header icon.                                             |
-| `onRender`         | `() => void?`         | —                   | Fired once on mount — use for telemetry.                              |
-| `onSupportClick`   | `() => void?`         | —                   | Fired when the support link is clicked — use for telemetry.           |
-| `className`        | `string?`             | —                   | Extra classes on the root `Card`.                                     |
+| `supportLabel`      | `string?`            | `"Contact support"` | Override the support link label.                                      |
+| `children`          | `ReactNode`          | `undefined`         | Slot for troubleshooting content rendered between message and footer. |
+| `icon`              | `ReactNode`          | Warning triangle    | Override the header icon.                                             |
+| `onRender`          | `() => void?`        | —                   | Fired once on mount — use for telemetry.                              |
+| `onSupportClick`    | `() => void?`        | —                   | Fired when the support link is clicked — use for telemetry.           |
+| `className`         | `string?`            | —                   | Extra classes on the root `Card`.                                     |
 
 ### SupportFormParams
 
-| Field        | Type      | Description                     |
-| ------------ | --------- | ------------------------------- |
-| `projectRef` | `string?` | Project reference slug          |
-| `orgSlug`    | `string?` | Organisation slug               |
-| `category`   | `string?` | Pre-selected support category   |
-| `subject`    | `string?` | Pre-filled subject line         |
-| `message`    | `string?` | Pre-filled message body         |
-| `error`      | `string?` | Raw error string for context    |
-| `sid`        | `string?` | Sentry event ID                 |
+| Field        | Type      | Description                   |
+| ------------ | --------- | ----------------------------- |
+| `projectRef` | `string?` | Project reference slug        |
+| `orgSlug`    | `string?` | Organisation slug             |
+| `category`   | `string?` | Pre-selected support category |
+| `subject`    | `string?` | Pre-filled subject line       |
+| `message`    | `string?` | Pre-filled message body       |
+| `error`      | `string?` | Raw error string for context  |
+| `sid`        | `string?` | Sentry event ID               |

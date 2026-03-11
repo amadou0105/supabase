@@ -1,14 +1,14 @@
 import * as Sentry from '@sentry/nextjs'
 import { DEFAULT_PLATFORM_APPLICATION_NAME } from '@supabase/pg-meta/src/constants'
-import { IS_PLATFORM, getAccessToken } from 'common'
+import { getAccessToken, IS_PLATFORM } from 'common'
 import { API_URL } from 'lib/constants'
 import { uuidv4 } from 'lib/helpers'
 import createClient from 'openapi-fetch'
 import { ResponseError } from 'types'
 
 import type { paths } from './api'
-import { ErrorMetadata } from '@/types/base'
 import { ERROR_PATTERNS } from './error-patterns'
+import { ErrorMetadata } from '@/types/base'
 
 // generated from openapi-typescript
 
@@ -175,8 +175,22 @@ export const handleError = (error: unknown, options: HandleErrorOptions = {}): n
     if (errorMessage) {
       const matched = ERROR_PATTERNS.find(({ pattern }) => pattern.test(errorMessage))
       throw matched
-        ? new matched.ErrorClass(errorMessage, errorCode, requestId, retryAfter, requestPathname, metadata)
-        : new ResponseError(errorMessage, errorCode, requestId, retryAfter, requestPathname, metadata)
+        ? new matched.ErrorClass(
+            errorMessage,
+            errorCode,
+            requestId,
+            retryAfter,
+            requestPathname,
+            metadata
+          )
+        : new ResponseError(
+            errorMessage,
+            errorCode,
+            requestId,
+            retryAfter,
+            requestPathname,
+            metadata
+          )
     }
   }
 

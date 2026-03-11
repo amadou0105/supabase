@@ -13,11 +13,7 @@ import { ErrorMatcher } from 'components/interfaces/ErrorHandling/ErrorMatcher'
 
 {
   isError && (
-    <ErrorMatcher
-      title="Failed to load tables"
-      error={error}
-      supportFormParams={{ projectRef }}
-    />
+    <ErrorMatcher title="Failed to load tables" error={error} supportFormParams={{ projectRef }} />
   )
 }
 ```
@@ -26,12 +22,12 @@ Pass the full `error` object from React Query — not `error.message`. This lets
 
 ### Props
 
-| Prop                | Type                            | Description                                                    |
-| ------------------- | ------------------------------- | -------------------------------------------------------------- |
-| `title`             | `string`                        | Displayed in the error card header. Set by the caller.         |
+| Prop                | Type                            | Description                                                        |
+| ------------------- | ------------------------------- | ------------------------------------------------------------------ |
+| `title`             | `string`                        | Displayed in the error card header. Set by the caller.             |
 | `error`             | `string \| { message: string }` | The error from React Query (pass the full object, not `.message`). |
-| `supportFormParams` | `Partial<SupportFormUrlKeys>`   | Typed params for the support form URL (projectRef, category…). |
-| `className`         | `string?`                       | Extra classes on the card.                                     |
+| `supportFormParams` | `Partial<SupportFormUrlKeys>`   | Typed params for the support form URL (projectRef, category…).     |
+| `className`         | `string?`                       | Extra classes on the card.                                         |
 
 `supportFormParams` is typed as `Partial<SupportFormUrlKeys>` — autocomplete shows all available fields (`projectRef`, `orgSlug`, `category`, `subject`, `message`, `error`, `sid`). The URL is built by `createSupportFormUrl()` from `SupportForm.utils.tsx`.
 

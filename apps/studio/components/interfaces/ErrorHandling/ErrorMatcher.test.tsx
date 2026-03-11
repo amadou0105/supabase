@@ -19,7 +19,6 @@ vi.mock('./RestartProjectDialog', () => ({
   RestartProjectDialog: () => null,
 }))
 
-
 describe('ErrorMatcher', () => {
   beforeEach(() => vi.clearAllMocks())
 
@@ -41,9 +40,7 @@ describe('ErrorMatcher', () => {
 
   it('renders troubleshooting steps for classified errors', () => {
     const error = new ConnectionTimeoutError('CONNECTION TERMINATED DUE TO CONNECTION TIMEOUT')
-    render(
-      <ErrorMatcher title="Failed to load tables" error={error} supportFormParams={{}} />
-    )
+    render(<ErrorMatcher title="Failed to load tables" error={error} supportFormParams={{}} />)
     expect(screen.getByText('Try restarting your project')).toBeInTheDocument()
     expect(screen.getByText('Try our troubleshooting guide')).toBeInTheDocument()
     expect(screen.getByText('Debug with AI')).toBeInTheDocument()

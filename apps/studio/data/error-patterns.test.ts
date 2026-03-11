@@ -60,12 +60,9 @@ describe('ERROR_PATTERNS registry', () => {
       matches.map((msg) => ({ msg, sourceClass: className }))
     )
 
-    it.each(allSamples)(
-      '$sourceClass sample "$msg" matches exactly one pattern',
-      ({ msg }) => {
-        const matched = ERROR_PATTERNS.filter(({ pattern }) => pattern.test(msg))
-        expect(matched.length).toBe(1)
-      }
-    )
+    it.each(allSamples)('$sourceClass sample "$msg" matches exactly one pattern', ({ msg }) => {
+      const matched = ERROR_PATTERNS.filter(({ pattern }) => pattern.test(msg))
+      expect(matched.length).toBe(1)
+    })
   })
 })

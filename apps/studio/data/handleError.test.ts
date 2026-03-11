@@ -1,7 +1,6 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-
 import { ConnectionTimeoutError } from 'types/api-errors'
 import { ResponseError } from 'types/base'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@sentry/nextjs', () => ({ captureException: vi.fn() }))
 vi.mock('common', () => ({ IS_PLATFORM: false, getAccessToken: vi.fn() }))

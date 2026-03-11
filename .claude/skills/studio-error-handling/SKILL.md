@@ -19,28 +19,26 @@ handleError() → throws ConnectionTimeoutError → React Query catches → Erro
 
 ## Key files
 
-| File                                  | Purpose                                                        |
-| ------------------------------------- | -------------------------------------------------------------- |
-| `data/error-patterns.ts`             | Array of `{ pattern, ErrorClass }` — the regex lives here      |
-| `types/api-errors.ts`                 | Error classes, `KnownErrorType` union, `ClassifiedError` type  |
-| `ErrorMatcher.tsx`                    | Component — reads `errorType`, looks up mapping, renders       |
-| `error-mappings.tsx`                  | `Record<KnownErrorType, { id, Troubleshooting: ComponentType }>`|
-| `errorMappings/ConnectionTimeout.tsx` | Reference troubleshooting component                            |
-| `TroubleshootingSections.tsx`         | Reusable accordion section components                          |
-| `TroubleshootingAccordion.tsx`        | Accordion wrapper with telemetry                               |
+| File                                  | Purpose                                                          |
+| ------------------------------------- | ---------------------------------------------------------------- |
+| `data/error-patterns.ts`              | Array of `{ pattern, ErrorClass }` — the regex lives here        |
+| `types/api-errors.ts`                 | Error classes, `KnownErrorType` union, `ClassifiedError` type    |
+| `ErrorMatcher.tsx`                    | Component — reads `errorType`, looks up mapping, renders         |
+| `error-mappings.tsx`                  | `Record<KnownErrorType, { id, Troubleshooting: ComponentType }>` |
+| `errorMappings/ConnectionTimeout.tsx` | Reference troubleshooting component                              |
+| `TroubleshootingSections.tsx`         | Reusable accordion section components                            |
+| `TroubleshootingAccordion.tsx`        | Accordion wrapper with telemetry                                 |
 
 ## Usage
 
 Pass the **full error object** from React Query — not `error.message`:
 
 ```tsx
-{isError && (
-  <ErrorMatcher
-    title="Failed to load tables"
-    error={error}
-    supportFormParams={{ projectRef }}
-  />
-)}
+{
+  isError && (
+    <ErrorMatcher title="Failed to load tables" error={error} supportFormParams={{ projectRef }} />
+  )
+}
 ```
 
 ## What NOT to do

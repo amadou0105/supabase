@@ -21,7 +21,7 @@ export function ErrorMatcher({ title, error, supportFormParams, className }: Err
     typeof error === 'object' && 'errorType' in error
       ? (error as ClassifiedError).errorType
       : undefined
-  const mapping = errorType ? (ERROR_MAPPINGS[errorType] ?? null) : null
+  const mapping = errorType ? ERROR_MAPPINGS[errorType] ?? null : null
   const Troubleshooting = mapping?.Troubleshooting
 
   return (
@@ -31,7 +31,9 @@ export function ErrorMatcher({ title, error, supportFormParams, className }: Err
       supportFormParams={supportFormParams}
       className={className}
       onRender={
-        mapping ? () => track('inline_error_troubleshooter_shown', { errorType: mapping.id }) : undefined
+        mapping
+          ? () => track('inline_error_troubleshooter_shown', { errorType: mapping.id })
+          : undefined
       }
       onSupportClick={
         mapping

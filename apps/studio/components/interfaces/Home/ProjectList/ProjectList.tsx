@@ -26,6 +26,8 @@ import {
   TableRow,
 } from 'ui'
 
+import { ErrorMatcher } from '../../ErrorHandling/ErrorMatcher'
+import { TroubleshootingAccordion } from '../../ErrorHandling/TroubleshootingAccordion'
 import { LoadingCardView, LoadingTableView, NoProjectsState } from './EmptyStates'
 import { LoadMoreRows } from './LoadMoreRow'
 import { ProjectCard } from './ProjectCard'
@@ -36,8 +38,6 @@ import {
   toTableHeadSortValue,
 } from './ProjectListSort.utils'
 import { ProjectTableRow } from './ProjectTableRow'
-import { ErrorMatcher } from '../../ErrorHandling/ErrorMatcher'
-import { TroubleshootingAccordion } from '../../ErrorHandling/TroubleshootingAccordion'
 
 export interface ProjectListProps {
   organization?: Organization
