@@ -240,6 +240,8 @@ export const CreateOrUpdateCustomProviderSheet = ({
     },
   })
 
+  const issuerUrlValue = useWatch_Shadcn_({ control: form.control, name: 'issuer' })
+
   return (
     <Sheet open={visible} onOpenChange={handleOpenChange}>
       <SheetContent
@@ -431,7 +433,11 @@ export const CreateOrUpdateCustomProviderSheet = ({
                       <FormControl_Shadcn_>
                         <Input_Shadcn_
                           {...field}
-                          placeholder="https://github.company.com/.well-known/openid-configuration"
+                          placeholder={
+                            issuerUrlValue
+                              ? `${issuerUrlValue}/.well-known/openid-configuration`
+                              : 'https://github.company.com/.well-known/openid-configuration'
+                          }
                         />
                       </FormControl_Shadcn_>
                     </FormItemLayout>
