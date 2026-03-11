@@ -12,17 +12,7 @@ export const getQueryType = (query: string | undefined | null): string | null =>
   const trimmed = query.trim()
   const firstWord = trimmed.split(/\s+/)[0]?.toUpperCase()
 
-  const sqlTypes = [
-    'SELECT',
-    'INSERT',
-    'UPDATE',
-    'DELETE',
-    'CREATE',
-    'DROP',
-    'ALTER',
-    'TRUNCATE',
-    'WITH',
-  ]
+  const sqlTypes = ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'CREATE', 'DROP', 'ALTER', 'TRUNCATE']
 
   if (firstWord && sqlTypes.includes(firstWord)) {
     return firstWord
