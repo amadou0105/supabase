@@ -110,6 +110,11 @@ New variables default to empty values in `.env.example`. When empty, the API gat
 | `JWT_KEYS` | JSON array | **New:** JSON array of signing JWKs containing the new asymmetric key pair and the legacy symmetric key. Used by Auth to sign tokens. |
 | `JWT_JWKS` | JWKS (JSON) | **New:** Contains the new public key and the legacy symmetric key. Used by PostgREST, Realtime, and Storage to verify tokens. |
 
+### Differences from the Supabase platform
+
+- **One key per role.** Self-hosted Supabase supports a single `sb_publishable` and a single `sb_secret`. The platform allows creating multiple `sb_` keys per project.
+- **No checksum validation.** The opaque keys use the same format as the platform (`sb_publishable_<random>_<checksum>`), but the API gateway does not validate the checksum. Keys are matched as opaque strings by the API gateway.
+
 ### Backward compatibility
 
 The new authentication configuration is fully backward compatible:
