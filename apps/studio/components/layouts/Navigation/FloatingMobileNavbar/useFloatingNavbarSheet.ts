@@ -17,9 +17,14 @@ export function useFloatingNavbarSheet(hideMobileMenu?: boolean) {
   const showMenuButton = shouldShowMenuButton(pathname) && !hideMobileMenu
 
   const handleMenuClick = useCallback(() => {
+    if (isMenuOpen) {
+      clearActiveSidebar()
+      setSheetContent(null)
+      return
+    }
     clearActiveSidebar()
     openMenu()
-  }, [clearActiveSidebar, openMenu])
+  }, [isMenuOpen, clearActiveSidebar, openMenu, setSheetContent])
 
   const handleClose = useCallback(() => {
     clearActiveSidebar()
