@@ -1,7 +1,7 @@
 'use client'
 
 import { HelpCircle } from 'lucide-react'
-import { forwardRef, useEffect } from 'react'
+import { forwardRef, useEffect, useRef } from 'react'
 import { Card, CardHeader, cn } from 'ui'
 
 import { WarningIcon } from '../admonition'
@@ -31,7 +31,10 @@ export const ErrorDisplay = forwardRef<HTMLDivElement, ErrorDisplayProps>(
     },
     ref
   ) => {
+    const hasFired = useRef(false)
     useEffect(() => {
+      if (hasFired.current) return
+      hasFired.current = true
       onRender?.()
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
