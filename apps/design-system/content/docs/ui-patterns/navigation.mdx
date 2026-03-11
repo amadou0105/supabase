@@ -28,6 +28,7 @@ Implementation notes (Studio):
 
 - Use the shared title formatter in `apps/studio/lib/page-title.ts`
 - Prefer `ProjectLayout` for project-scoped pages
-- Treat `title` as the section label and `product` as the surface label
+- Prefer `browserTitle.section` and `browserTitle.surface` when composing tab titles
 - Use `browserTitle.entity` for the most specific resource (table/function/query) when available
+- `ProjectLayout.title` remains supported as legacy/deprecated compatibility
 - Avoid assembling `document.title` ad hoc in individual pages/layouts
