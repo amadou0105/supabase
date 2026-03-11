@@ -2,11 +2,13 @@ import '@code-hike/mdx/styles'
 import 'config/code-hike.scss'
 import '../styles/index.css'
 
-import { Metadata } from 'next'
-import localFont from 'next/font/local'
 import { APP_NAME, DEFAULT_META_DESCRIPTION } from '~/lib/constants'
-import Providers from './providers'
+import { Agentation } from 'agentation'
+import { Metadata } from 'next'
 import type { Viewport } from 'next'
+import localFont from 'next/font/local'
+
+import Providers from './providers'
 
 const ktfPrima = localFont({
   src: [
@@ -84,6 +86,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning className={ktfPrima.variable}>
       <body>
         <Providers>{children}</Providers>
+        {process.env.NODE_ENV === 'development' && <Agentation endpoint="http://localhost:4747" />}
       </body>
     </html>
   )

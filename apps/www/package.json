@@ -36,6 +36,7 @@
     "@sentry/nextjs": "catalog:",
     "@supabase/supabase-js": "catalog:",
     "@vercel/og": "^0.6.2",
+    "agentation": "^2.2.1",
     "ai-commands": "workspace:*",
     "animejs": "^4.0.2",
     "class-variance-authority": "^0.7.1",
