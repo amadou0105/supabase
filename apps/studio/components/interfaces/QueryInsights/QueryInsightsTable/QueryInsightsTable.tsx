@@ -105,7 +105,6 @@ export const QueryInsightsTable = ({
 
   const [explainResults, setExplainResults] = useState<Record<string, QueryPlanRow[]>>({})
   const [explainLoadingQuery, setExplainLoadingQuery] = useState<string | null>(null)
-  const explainQueryRef = useRef<string | null>(null)
 
   const { ref } = useParams()
   const router = useRouter()
@@ -114,18 +113,7 @@ export const QueryInsightsTable = ({
 
   const { data: project } = useSelectedProjectQuery()
 
-  const { mutate: executeExplain } = useExecuteSqlMutation({
-    onSuccess(data) {
-      const query = explainQueryRef.current
-      if (query) {
-        setExplainResults((prev) => ({ ...prev, [query]: data.result }))
-      }
-      setExplainLoadingQuery(null)
-    },
-    onError() {
-      setExplainLoadingQuery(null)
-    },
-  })
+  const { mutate: executeExplain } = useExecuteSqlMutation()
 
   const triageItems = useMemo(() => classified.filter((q) => q.issueType !== null), [classified])
 
@@ -186,15 +174,27 @@ export const QueryInsightsTable = ({
   const runExplain = useCallback(
     (query: string) => {
       if (explainResults[query]) return
-      explainQueryRef.current = query
-      setExplainLoadingQuery(query)
-      executeExplain({
-        projectRef: project?.ref,
-        connectionString: project?.connectionString,
-        sql: wrapWithRollback(`EXPLAIN ANALYZE ${query}`),
-      })
+      if (explainLoadingQuery) return
+      const requestQuery = query
+      setExplainLoadingQuery(requestQuery)
+      executeExplain(
+        {
+          projectRef: project?.ref,
+          connectionString: project?.connectionString,
+          sql: wrapWithRollback(`EXPLAIN ANALYZE ${requestQuery}`),
+        },
+        {
+          onSuccess(data) {
+            setExplainResults((prev) => ({ ...prev, [requestQuery]: data.result }))
+            setExplainLoadingQuery(null)
+          },
+          onError() {
+            setExplainLoadingQuery(null)
+          },
+        }
+      )
     },
-    [explainResults, executeExplain, project]
+    [explainResults, explainLoadingQuery, executeExplain, project]
   )
 
   const handleGoToLogs = useCallback(() => {
