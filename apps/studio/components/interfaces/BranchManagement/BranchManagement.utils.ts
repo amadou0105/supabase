@@ -7,6 +7,37 @@ import {
   PLAN_DETAILS,
 } from '../DiskManagement/ui/DiskManagement.constants'
 
+/**
+ * Reserved branch names that typically indicate long-running pre-production environments.
+ * When users create branches with these names, they should be nudged to enable persistent branching
+ * to prevent accidental deletion when PRs are merged/closed.
+ */
+export const RESERVED_BRANCH_NAMES = [
+  'develop',
+  'development',
+  'staging',
+  'stage',
+  'preprod',
+  'pre-prod',
+  'preproduction',
+  'pre-production',
+  'qa',
+  'uat',
+  'test',
+  'testing',
+  'integration',
+  'release',
+  'demo',
+] as const
+
+/**
+ * Checks if a branch name matches one of the reserved branch names (case-insensitive).
+ */
+export const isReservedBranchName = (branchName: string): boolean => {
+  const normalizedName = branchName.toLowerCase().trim()
+  return RESERVED_BRANCH_NAMES.some((reserved) => reserved === normalizedName)
+}
+
 // Ref: https://supabase.com/docs/guides/platform/compute-and-disk
 const maxDiskForCompute = new Map([
   [10, instanceSizeSpecs.micro],

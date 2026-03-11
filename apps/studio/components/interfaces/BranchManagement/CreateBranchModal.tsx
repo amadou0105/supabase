@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { PermissionAction } from '@supabase/shared-types/out/constants'
 import { useQueryClient } from '@tanstack/react-query'
-import { Check, DatabaseZap, DollarSign, GitMerge, Github, Loader2 } from 'lucide-react'
+import { AlertTriangle, Check, DatabaseZap, DollarSign, GitMerge, Github, Loader2 } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -34,6 +34,9 @@ import { useSelectedProjectQuery } from 'hooks/misc/useSelectedProject'
 import { BASE_PATH, IS_PLATFORM } from 'lib/constants'
 import { useAppStateSnapshot } from 'state/app-state'
 import {
+  AlertDescription_Shadcn_,
+  AlertTitle_Shadcn_,
+  Alert_Shadcn_,
   Badge,
   Button,
   Dialog,
@@ -60,6 +63,7 @@ import {
   estimateComputeSize,
   estimateDiskCost,
   estimateRestoreTime,
+  isReservedBranchName,
 } from './BranchManagement.utils'
 
 export const CreateBranchModal = () => {
@@ -120,7 +124,7 @@ export const CreateBranchModal = () => {
     defaultValues: { branchName: '', gitBranchName: '', withData: false, persistent: false },
   })
 
-  const { withData, gitBranchName } = form.watch()
+  const { withData, gitBranchName, branchName, persistent } = form.watch()
   const debouncedGitBranchName = useDebounce(gitBranchName, 500)
 
   const {
@@ -492,6 +496,24 @@ export const CreateBranchModal = () => {
                   </FormItemLayout>
                 )}
               />
+
+              {githubConnection &&
+                !persistent &&
+                branchName &&
+                isReservedBranchName(branchName) && (
+                  <Alert_Shadcn_ variant="warning">
+                    <AlertTriangle strokeWidth={2} />
+                    <AlertTitle_Shadcn_>
+                      This looks like a long-running environment
+                    </AlertTitle_Shadcn_>
+                    <AlertDescription_Shadcn_>
+                      Branch names like "{branchName}" are typically used for persistent pre-production
+                      environments. Since you have GitHub connected, this branch will be deleted when
+                      its associated pull request is merged or closed. Consider enabling "Persistent
+                      branch" above to prevent accidental data loss.
+                    </AlertDescription_Shadcn_>
+                  </Alert_Shadcn_>
+                )}
             </DialogSection>
 
             <DialogSectionSeparator />
