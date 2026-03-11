@@ -13,8 +13,4 @@ export const ERROR_MAPPINGS: Record<KnownErrorType, ErrorMapping> = {
     id: 'connection-timeout',
     Troubleshooting: ConnectionTimeoutTroubleshooting,
   },
-  'failed-to-retrieve-projects': {
-    id: 'failed-to-re-pr',
-    Troubleshooting: ConnectionTimeoutTroubleshooting,
-  },
 }
