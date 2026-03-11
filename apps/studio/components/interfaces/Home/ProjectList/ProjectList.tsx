@@ -144,13 +144,10 @@ export const ProjectList = ({ organization: organization_, rewriteHref }: Projec
 
   if (isErrorProjects || true) {
     return (
-        <ErrorMatcher title={`Failed to retrieve projects under ${organization?.name}`}
-          error={projectsError ?? 'An unknown error occurred while fetching projects.'}
-        />
-      // <AlertError
-      //   subject={`Failed to retrieve projects under ${organization?.name}`}
-      //   error={projectsError}
-      // />
+      <AlertError
+        subject={`Failed to retrieve projects under ${organization?.name}`}
+        error={projectsError}
+      />
     )
   }
 
