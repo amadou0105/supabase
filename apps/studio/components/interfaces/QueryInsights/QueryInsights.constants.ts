@@ -15,8 +15,14 @@ export const TRANSACTION_CONTROL_REGEX =
 export const SCHEMA_INTROSPECTION_REGEX =
   /\bFROM\s+(?:pg_catalog\.|information_schema\.|pg_class\b|pg_attribute\b|pg_type\b|pg_namespace\b)/i
 
-export const getSupamonitorLogsQuery = (startTime: string, endTime: string) =>
-  `
+export const getSupamonitorLogsQuery = (startTime: string, endTime: string) => {
+  // Validate and canonicalize to ISO 8601 UTC before embedding in SQL.
+  // new Date().toISOString() throws RangeError on invalid input and always
+  // produces "YYYY-MM-DDTHH:mm:ss.mmmZ" which contains no SQL special characters.
+  const safeStart = new Date(startTime).toISOString()
+  const safeEnd = new Date(endTime).toISOString()
+
+  return `
 select
   TIMESTAMP_TRUNC(sml.timestamp, MINUTE) as timestamp,
   CAST(sml_parsed.application_name AS STRING) as application_name,
@@ -47,8 +53,9 @@ from supamonitor_logs as sml
 cross join unnest(sml.metadata) as sml_metadata
 cross join unnest(sml_metadata.supamonitor) as sml_parsed
 WHERE sml.event_message = 'log'
-  AND sml.timestamp >= CAST('${startTime}' AS TIMESTAMP)
-  AND sml.timestamp <= CAST('${endTime}' AS TIMESTAMP)
+  AND sml.timestamp >= CAST('${safeStart}' AS TIMESTAMP)
+  AND sml.timestamp <= CAST('${safeEnd}' AS TIMESTAMP)
 GROUP BY timestamp, user_name, database_name, application_name, query_id, query
 ORDER BY timestamp DESC
 `.trim()
+}
