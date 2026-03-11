@@ -21,11 +21,7 @@ const SHEET_OPEN_GAP_FRACTION = 0.15
 const FloatingBottomNavbar = ({ hideMobileMenu }: { hideMobileMenu?: boolean }) => {
   const { content: sheetContent, setContent: setSheetContent } = useMobileSheet()
   const isSheetOpen = sheetContent !== null
-  const {
-    activeSidebar,
-    openSidebar,
-    // clearActiveSidebar
-  } = useSidebarManagerSnapshot()
+  const { activeSidebar, openSidebar, clearActiveSidebar } = useSidebarManagerSnapshot()
   const { ref: projectRef } = useParams()
   const router = useRouter()
   const pathname = router.asPath?.split('?')[0] ?? router.pathname
@@ -248,7 +244,7 @@ const FloatingBottomNavbar = ({ hideMobileMenu }: { hideMobileMenu?: boolean }) 
               )}
               icon={<Menu />}
               onClick={() => {
-                // clearActiveSidebar()
+                clearActiveSidebar()
                 setSheetContent('menu')
               }}
             />
@@ -269,7 +265,7 @@ const FloatingBottomNavbar = ({ hideMobileMenu }: { hideMobileMenu?: boolean }) 
           )}
           icon={<X />}
           onClick={() => {
-            // clearActiveSidebar()
+            clearActiveSidebar()
             setSheetContent(null)
           }}
         />

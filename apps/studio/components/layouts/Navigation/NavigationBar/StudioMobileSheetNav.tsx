@@ -2,8 +2,10 @@ import type { ReactNode } from 'react'
 import { sidebarManagerState, useSidebarManagerSnapshot } from 'state/sidebar-manager-state'
 import { MobileSheetNav } from 'ui-patterns'
 
-import { SIDEBAR_KEYS } from '../LayoutSidebar/LayoutSidebarProvider'
-import type { TYPEOF_SIDEBAR_KEYS } from '../LayoutSidebar/LayoutSidebarProvider'
+import {
+  SIDEBAR_KEYS,
+  type TYPEOF_SIDEBAR_KEYS,
+} from '../../ProjectLayout/LayoutSidebar/LayoutSidebarProvider'
 import type { MobileSheetContentType } from './MobileSheetContext'
 import { useMobileSheet } from './MobileSheetContext'
 

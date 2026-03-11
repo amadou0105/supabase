@@ -1,17 +1,18 @@
 import { useParams } from 'common'
 import { useIsFloatingMobileNavbarEnabled } from 'components/interfaces/App/FeaturePreview/FeaturePreviewContext'
 import { ConnectButton } from 'components/interfaces/ConnectButton/ConnectButton'
+import { LocalDropdown } from 'components/interfaces/LocalDropdown'
 import { SidebarContent } from 'components/interfaces/Sidebar'
 import { UserDropdown } from 'components/interfaces/UserDropdown'
 import FloatingMobileNavbar from 'components/layouts/Navigation/FloatingMobileNavbar/FloatingMobileNavbar'
 import { useSelectedOrganizationQuery } from 'hooks/misc/useSelectedOrganization'
 import { IS_PLATFORM } from 'lib/constants'
 import { Menu, Search } from 'lucide-react'
+import { useRouter } from 'next/router'
+import { useState } from 'react'
 import { Button, cn } from 'ui'
-import { CommandMenuTrigger } from 'ui-patterns'
+import { CommandMenuTrigger, MobileSheetNav } from 'ui-patterns'
 
-import { LocalDropdown } from '../../../interfaces/LocalDropdown'
-import { UserDropdown } from '../../../interfaces/UserDropdown'
 import { HomeIcon } from '../LayoutHeader/HomeIcon'
 import { useMobileSheet } from './MobileSheetContext'
 import { OrgSelector } from './OrgSelector'
@@ -22,6 +23,7 @@ export const ICON_STROKE_WIDTH = 1.5
 
 const MobileNavigationBar = ({ hideMobileMenu }: { hideMobileMenu?: boolean }) => {
   const router = useRouter()
+  const [isSheetOpen, setIsSheetOpen] = useState(false)
   const showFloatingMobileNavbar = useIsFloatingMobileNavbarEnabled()
   const { ref: projectRef, slug } = useParams()
   const { data: selectedOrganization } = useSelectedOrganizationQuery()
@@ -70,7 +72,7 @@ const MobileNavigationBar = ({ hideMobileMenu }: { hideMobileMenu?: boolean }) =
               <Search size={18} strokeWidth={2} />
             </button>
           </CommandMenuTrigger>
-          <UserDropdown />
+          {IS_PLATFORM ? <UserDropdown /> : <LocalDropdown />}
           {!hideMobileMenu && !showFloatingMobileNavbar && (
             <Button
               title="Menu dropdown button"
@@ -80,9 +82,11 @@ const MobileNavigationBar = ({ hideMobileMenu }: { hideMobileMenu?: boolean }) =
               onClick={() => openMenu()}
             />
           )}
-          {showFloatingMobileNavbar && (IS_PLATFORM ? <UserDropdown /> : <LocalDropdown />)}
         </div>
       </nav>
+      <MobileSheetNav open={isSheetOpen} onOpenChange={setIsSheetOpen} data-state="expanded">
+        <SidebarContent />
+      </MobileSheetNav>
       {showFloatingMobileNavbar && <FloatingMobileNavbar hideMobileMenu={hideMobileMenu} />}
     </div>
   )

@@ -13,9 +13,9 @@ import { BannerStackProvider } from '../ui/BannerStack/BannerStackProvider'
 import { LayoutHeader } from './Navigation/LayoutHeader/LayoutHeader'
 import MobileNavigationBar from './Navigation/NavigationBar/MobileNavigationBar'
 import { MobileSheetProvider } from './Navigation/NavigationBar/MobileSheetContext'
+import { StudioMobileSheetNav } from './Navigation/NavigationBar/StudioMobileSheetNav'
 import { LayoutSidebar } from './ProjectLayout/LayoutSidebar'
 import { LayoutSidebarProvider } from './ProjectLayout/LayoutSidebar/LayoutSidebarProvider'
-import { StudioMobileSheetNav } from './ProjectLayout/NavigationBar/StudioMobileSheetNav'
 import { ProjectContextProvider } from './ProjectLayout/ProjectContext'
 
 export interface DefaultLayoutProps {
@@ -41,7 +41,6 @@ export const DefaultLayout = ({
   const { ref } = useParams()
   const router = useRouter()
   const appSnap = useAppStateSnapshot()
-  const showProductMenu = !!ref && router.pathname !== '/project/[ref]'
 
   const [lastVisitedOrganization] = useLocalStorageQuery(
     LOCAL_STORAGE_KEYS.LAST_VISITED_ORGANIZATION,
@@ -84,7 +83,6 @@ export const DefaultLayout = ({
                 <div className="flex-shrink-0">
                   <MobileNavigationBar hideMobileMenu={hideMobileMenu} />
                   <LayoutHeader
-                    showProductMenu={showProductMenu}
                     headerTitle={headerTitle}
                     backToDashboardURL={
                       router.pathname.startsWith('/account') ? backToDashboardURL : undefined

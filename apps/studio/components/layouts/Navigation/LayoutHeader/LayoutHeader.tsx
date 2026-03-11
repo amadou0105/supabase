@@ -1,4 +1,4 @@
-import { LOCAL_STORAGE_KEYS, useFlag, useParams } from 'common'
+import { LOCAL_STORAGE_KEYS, useParams } from 'common'
 import {
   useIsBranching2Enabled,
   useIsFloatingMobileNavbarEnabled,
@@ -28,7 +28,6 @@ import { ChevronLeft } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { ReactNode, useMemo } from 'react'
-import { useAppStateSnapshot } from 'state/app-state'
 import { Badge, cn } from 'ui'
 import { CommandMenuTriggerInput } from 'ui-patterns'
 
@@ -61,7 +60,6 @@ interface LayoutHeaderProps {
   customHeaderComponents?: ReactNode
   breadcrumbs?: any[]
   headerTitle?: string
-  showProductMenu?: boolean
   backToDashboardURL?: string
 }
 
@@ -69,7 +67,6 @@ export const LayoutHeader = ({
   customHeaderComponents,
   breadcrumbs = [],
   headerTitle,
-  showProductMenu,
   backToDashboardURL,
 }: LayoutHeaderProps) => {
   const router = useRouter()

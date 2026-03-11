@@ -25,8 +25,8 @@ import { Branching2Preview } from './Branching2Preview'
 import { CLSPreview } from './CLSPreview'
 import { useFeaturePreviewContext, useFeaturePreviewModal } from './FeaturePreviewContext'
 import { FloatingMobileNavbarPreview } from './FloatingMobileNavbarPreview'
-import { PlatformWebhooksPreview } from './PlatformWebhooksPreview'
 import { PgDeltaDiffPreview } from './PgDeltaDiffPreview'
+import { PlatformWebhooksPreview } from './PlatformWebhooksPreview'
 import { QueueOperationsPreview } from './QueueOperationsPreview'
 import { TableFilterBarPreview } from './TableFilterBarPreview'
 import { UnifiedLogsPreview } from './UnifiedLogsPreview'
@@ -44,8 +44,11 @@ const FEATURE_PREVIEW_KEY_TO_CONTENT: {
   [LOCAL_STORAGE_KEYS.UI_PREVIEW_UNIFIED_LOGS]: <UnifiedLogsPreview />,
   [LOCAL_STORAGE_KEYS.UI_PREVIEW_QUEUE_OPERATIONS]: <QueueOperationsPreview />,
   [LOCAL_STORAGE_KEYS.UI_PREVIEW_TABLE_FILTER_BAR]: <TableFilterBarPreview />,
+  [LOCAL_STORAGE_KEYS.UI_PREVIEW_PLATFORM_WEBHOOKS]: <PlatformWebhooksPreview />,
   [LOCAL_STORAGE_KEYS.UI_PREVIEW_FLOATING_MOBILE_NAVBAR]: <FloatingMobileNavbarPreview />,
+}
 
+export const FeaturePreviewModal = () => {
   const { ref } = useParams()
   const featurePreviews = useFeaturePreviews()
   const {
