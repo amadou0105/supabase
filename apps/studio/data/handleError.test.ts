@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { ConnectionTimeoutError } from 'types/api-errors'
 import { ResponseError } from 'types/base'
-import type { ClassifiedError } from 'types/api-errors'
 
 vi.mock('@sentry/nextjs', () => ({ captureException: vi.fn() }))
 vi.mock('common', () => ({ IS_PLATFORM: false, getAccessToken: vi.fn() }))
@@ -20,39 +20,28 @@ function throwAndCatch(error: unknown): ResponseError {
   throw new Error('handleError did not throw')
 }
 
-function isClassifiedError(e: ResponseError): e is ClassifiedError {
-  return 'errorType' in e
-}
-
 describe('handleError — error classification', () => {
   beforeEach(() => vi.clearAllMocks())
 
   describe('known patterns', () => {
     it('classifies connection timeout via message field', () => {
-      const err = throwAndCatch({
-        message: 'CONNECTION TERMINATED DUE TO CONNECTION TIMEOUT',
-      })
-      expect(isClassifiedError(err)).toBe(true)
-      expect((err as ClassifiedError).errorType).toBe('connection-timeout')
+      const err = throwAndCatch({ message: 'CONNECTION TERMINATED DUE TO CONNECTION TIMEOUT' })
+      expect(err).toBeInstanceOf(ConnectionTimeoutError)
+      expect((err as ConnectionTimeoutError).errorType).toBe('connection-timeout')
     })
 
     it('classifies connection timeout via msg field', () => {
-      const err = throwAndCatch({
-        msg: 'ERROR: CONNECTION TERMINATED DUE TO CONNECTION TIMEOUT',
-      })
-      expect(isClassifiedError(err)).toBe(true)
-      expect((err as ClassifiedError).errorType).toBe('connection-timeout')
+      const err = throwAndCatch({ msg: 'ERROR: CONNECTION TERMINATED DUE TO CONNECTION TIMEOUT' })
+      expect(err).toBeInstanceOf(ConnectionTimeoutError)
     })
 
     it('classification is case-insensitive', () => {
       const err = throwAndCatch({ message: 'connection terminated due to connection timeout' })
-      expect((err as ClassifiedError).errorType).toBe('connection-timeout')
+      expect(err).toBeInstanceOf(ConnectionTimeoutError)
     })
 
     it('classified error is still instanceof ResponseError', () => {
-      const err = throwAndCatch({
-        message: 'CONNECTION TERMINATED DUE TO CONNECTION TIMEOUT',
-      })
+      const err = throwAndCatch({ message: 'CONNECTION TERMINATED DUE TO CONNECTION TIMEOUT' })
       expect(err).toBeInstanceOf(ResponseError)
     })
   })
@@ -61,19 +50,18 @@ describe('handleError — error classification', () => {
     it('throws plain ResponseError for unknown messages', () => {
       const err = throwAndCatch({ message: 'something went wrong' })
       expect(err).toBeInstanceOf(ResponseError)
-      expect(isClassifiedError(err)).toBe(false)
+      expect(err).not.toBeInstanceOf(ConnectionTimeoutError)
     })
 
     it('throws plain ResponseError for empty message', () => {
       const err = throwAndCatch({ message: '' })
-      // empty message falls through to the Sentry path → generic ResponseError
       expect(err).toBeInstanceOf(ResponseError)
     })
 
     it('throws generic ResponseError for null', () => {
       const err = throwAndCatch(null)
       expect(err).toBeInstanceOf(ResponseError)
-      expect(isClassifiedError(err)).toBe(false)
+      expect(err).not.toBeInstanceOf(ConnectionTimeoutError)
     })
 
     it('throws generic ResponseError for non-object', () => {
@@ -99,11 +87,7 @@ describe('handleError — error classification', () => {
     })
 
     it('preserves all ResponseError fields on unclassified errors', () => {
-      const err = throwAndCatch({
-        message: 'some error',
-        code: 500,
-        requestId: 'req-xyz',
-      })
+      const err = throwAndCatch({ message: 'some error', code: 500, requestId: 'req-xyz' })
       expect(err.code).toBe(500)
       expect(err.requestId).toBe('req-xyz')
     })

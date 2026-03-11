@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
+import { ConnectionTimeoutError } from 'types/api-errors'
 import { ResponseError } from 'types/base'
-import type { ClassifiedError } from 'types/api-errors'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ErrorMatcher } from './ErrorMatcher'
@@ -19,9 +19,6 @@ vi.mock('./RestartProjectDialog', () => ({
   RestartProjectDialog: () => null,
 }))
 
-function makeClassifiedError(message: string, errorType: 'connection-timeout') {
-  return Object.assign(new ResponseError(message), { errorType })
-}
 
 describe('ErrorMatcher', () => {
   beforeEach(() => vi.clearAllMocks())
@@ -43,10 +40,7 @@ describe('ErrorMatcher', () => {
   })
 
   it('renders troubleshooting steps for classified errors', () => {
-    const error = makeClassifiedError(
-      'CONNECTION TERMINATED DUE TO CONNECTION TIMEOUT',
-      'connection-timeout'
-    )
+    const error = new ConnectionTimeoutError('CONNECTION TERMINATED DUE TO CONNECTION TIMEOUT')
     render(
       <ErrorMatcher title="Failed to load tables" error={error} supportFormParams={{}} />
     )
@@ -55,7 +49,7 @@ describe('ErrorMatcher', () => {
     expect(screen.getByText('Debug with AI')).toBeInTheDocument()
   })
 
-  it('renders fallback for unclassified ResponseError (no errorType)', () => {
+  it('renders fallback for plain ResponseError (not a classified subclass)', () => {
     render(
       <ErrorMatcher
         title="Failed to load tables"

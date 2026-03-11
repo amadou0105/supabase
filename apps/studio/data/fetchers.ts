@@ -173,16 +173,10 @@ export const handleError = (error: unknown, options: HandleErrorOptions = {}): n
         : undefined
 
     if (errorMessage) {
-      const responseError = new ResponseError(
-        errorMessage,
-        errorCode,
-        requestId,
-        retryAfter,
-        requestPathname,
-        metadata
-      )
       const matched = ERROR_PATTERNS.find(({ pattern }) => pattern.test(errorMessage))
-      throw matched ? Object.assign(responseError, { errorType: matched.errorType }) : responseError
+      throw matched
+        ? new matched.ErrorClass(errorMessage, errorCode, requestId, retryAfter, requestPathname, metadata)
+        : new ResponseError(errorMessage, errorCode, requestId, retryAfter, requestPathname, metadata)
     }
   }
 
