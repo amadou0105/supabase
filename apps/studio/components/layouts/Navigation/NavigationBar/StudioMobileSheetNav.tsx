@@ -41,7 +41,11 @@ const StudioMobileSheetNav = () => {
   }
 
   return (
-    <MobileSheetNav open={content !== null} onOpenChange={handleOpenChange}>
+    <MobileSheetNav
+      open={content !== null}
+      onOpenChange={handleOpenChange}
+      shouldCloseOnViewportResize={!activeSidebar}
+    >
       {sheetChildren}
     </MobileSheetNav>
   )

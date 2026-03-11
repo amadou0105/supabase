@@ -3,14 +3,13 @@ import { useCallback } from 'react'
 import { useSidebarManagerSnapshot } from 'state/sidebar-manager-state'
 
 import { useMobileSheet } from '../NavigationBar/MobileSheetContext'
-
 import { isMenuContent, shouldShowMenuButton } from './FloatingMobileNavbar.utils'
 
 export function useFloatingNavbarSheet(hideMobileMenu?: boolean) {
   const router = useRouter()
   const pathname = router.asPath?.split('?')[0] ?? router.pathname
   const { content: sheetContent, setContent: setSheetContent, openMenu } = useMobileSheet()
-  const { clearActiveSidebar } = useSidebarManagerSnapshot()
+  const { clearActiveSidebar, closeActive, activeSidebar } = useSidebarManagerSnapshot()
 
   const isSheetOpen = sheetContent !== null
   const isMenuOpen = isMenuContent(sheetContent)
@@ -27,9 +26,12 @@ export function useFloatingNavbarSheet(hideMobileMenu?: boolean) {
   }, [isMenuOpen, clearActiveSidebar, openMenu, setSheetContent])
 
   const handleClose = useCallback(() => {
-    clearActiveSidebar()
-    setSheetContent(null)
-  }, [clearActiveSidebar, setSheetContent])
+    if (activeSidebar) {
+      closeActive()
+    } else {
+      setSheetContent(null)
+    }
+  }, [activeSidebar, closeActive, setSheetContent])
 
   return {
     isSheetOpen,
