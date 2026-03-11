@@ -18,14 +18,23 @@ const GAP_FROM_BOTTOM = 50
 /** Fraction of viewport the sheet does not cover when open (sheet is h-[85dvh], so gap is 15%) */
 const SHEET_OPEN_GAP_FRACTION = 0.15
 
+function isMenuContent(content: unknown): boolean {
+  return content !== null && typeof content !== 'string'
+}
+
 const FloatingBottomNavbar = ({ hideMobileMenu }: { hideMobileMenu?: boolean }) => {
-  const { content: sheetContent, setContent: setSheetContent } = useMobileSheet()
+  const { content: sheetContent, setContent: setSheetContent, openMenu } = useMobileSheet()
   const isSheetOpen = sheetContent !== null
+  const isMenuOpen = isMenuContent(sheetContent)
   const { activeSidebar, openSidebar, clearActiveSidebar } = useSidebarManagerSnapshot()
   const { ref: projectRef } = useParams()
   const router = useRouter()
   const pathname = router.asPath?.split('?')[0] ?? router.pathname
-  const showMenuButton = pathname.startsWith('/project/') || pathname.startsWith('/org/')
+
+  const showMenuButton =
+    pathname.startsWith('/project/') ||
+    pathname.startsWith('/org/') ||
+    pathname.startsWith('/account')
 
   const handleNavClickCapture = useCallback(
     (e: React.MouseEvent) => {
@@ -237,15 +246,15 @@ const FloatingBottomNavbar = ({ hideMobileMenu }: { hideMobileMenu?: boolean }) 
           {showMenuButton && !hideMobileMenu && (
             <Button
               title="Menu dropdown button"
-              type={sheetContent === 'menu' ? 'secondary' : 'default'}
+              type={isMenuOpen ? 'secondary' : 'default'}
               className={cn(
                 'flex lg:hidden mr-1 rounded-md min-w-[30px] w-[30px] h-[30px] data-[state=open]:bg-overlay-hover/30',
-                sheetContent !== 'menu' && '!bg-surface-300'
+                !isMenuOpen && '!bg-surface-300'
               )}
               icon={<Menu />}
               onClick={() => {
                 clearActiveSidebar()
-                setSheetContent('menu')
+                openMenu()
               }}
             />
           )}

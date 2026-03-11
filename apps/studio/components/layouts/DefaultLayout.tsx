@@ -47,12 +47,13 @@ export const DefaultLayout = ({
     ''
   )
 
-  const backToDashboardURL =
-    appSnap.lastRouteBeforeVisitingAccountPage.length > 0
+  const backToDashboardURL = router.pathname.startsWith('/account')
+    ? appSnap.lastRouteBeforeVisitingAccountPage.length > 0
       ? appSnap.lastRouteBeforeVisitingAccountPage
       : !!lastVisitedOrganization
         ? `/org/${lastVisitedOrganization}`
         : '/organizations'
+    : undefined
 
   useCheckLatestDeploy()
 
@@ -81,13 +82,11 @@ export const DefaultLayout = ({
                 {/* Top Banner */}
                 <AppBannerWrapper />
                 <div className="flex-shrink-0">
-                  <MobileNavigationBar hideMobileMenu={hideMobileMenu} />
-                  <LayoutHeader
-                    headerTitle={headerTitle}
-                    backToDashboardURL={
-                      router.pathname.startsWith('/account') ? backToDashboardURL : undefined
-                    }
+                  <MobileNavigationBar
+                    hideMobileMenu={hideMobileMenu}
+                    backToDashboardURL={backToDashboardURL}
                   />
+                  <LayoutHeader headerTitle={headerTitle} backToDashboardURL={backToDashboardURL} />
                 </div>
                 {/* Main Content Area */}
                 <div className="flex flex-1 w-full overflow-y-hidden">

@@ -7,7 +7,8 @@ import { UserDropdown } from 'components/interfaces/UserDropdown'
 import FloatingMobileNavbar from 'components/layouts/Navigation/FloatingMobileNavbar/FloatingMobileNavbar'
 import { useSelectedOrganizationQuery } from 'hooks/misc/useSelectedOrganization'
 import { IS_PLATFORM } from 'lib/constants'
-import { Menu, Search } from 'lucide-react'
+import { ChevronLeft, Menu, Search } from 'lucide-react'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { Button, cn } from 'ui'
@@ -21,8 +22,13 @@ import { ProjectBranchSelector } from './ProjectBranchSelector'
 export const ICON_SIZE = 20
 export const ICON_STROKE_WIDTH = 1.5
 
-const MobileNavigationBar = ({ hideMobileMenu }: { hideMobileMenu?: boolean }) => {
-  const router = useRouter()
+const MobileNavigationBar = ({
+  hideMobileMenu,
+  backToDashboardURL,
+}: {
+  hideMobileMenu?: boolean
+  backToDashboardURL?: string
+}) => {
   const [isSheetOpen, setIsSheetOpen] = useState(false)
   const showFloatingMobileNavbar = useIsFloatingMobileNavbarEnabled()
   const { ref: projectRef, slug } = useParams()
@@ -42,6 +48,16 @@ const MobileNavigationBar = ({ hideMobileMenu }: { hideMobileMenu?: boolean }) =
         )}
       >
         <div className={cn('flex min-w-0 flex-shrink items-center gap-2', !IS_PLATFORM && 'pl-2')}>
+          {showFloatingMobileNavbar && backToDashboardURL && (
+            <div className="flex items-center justify-center ml-1 flex-0 md:hidden h-full aspect-square">
+              <Link
+                href={backToDashboardURL}
+                className="flex items-center justify-center !bg-transparent rounded-md min-w-[30px] w-[30px] h-[30px] border text-foreground-lighter hover:text-foreground transition-colors"
+              >
+                <ChevronLeft strokeWidth={1.5} size={16} />
+              </Link>
+            </div>
+          )}
           {!IS_PLATFORM && <HomeIcon />}
           {isProjectScope ? (
             <>
