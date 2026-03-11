@@ -216,18 +216,18 @@ To assist with the authorization flows a specialized configuration in `kong.yml`
 
 The API gateway (Kong) configuration has the logic to decide what `Authorization` header the upstream service, such as Auth, receives. The logic handles two cases: requests that only carry an API key (no user session), and requests that carry a user session JWT.
 
-**Unauthenticated requests (API key only, no user session JWT):**
+#### Unauthenticated requests (API key only, no user session JWT)
 
 When the client sends only an `apikey` header with the API key (no `Authorization` header), or also the API key duplicated in `Authorization` by `supabase-js`:
 
-1. Client sends `apikey: sb_publishable_xxx` (or legacy `apikey: eyJ...`).
-2. API gateway checks the key and identifies the consumer (`anon` or `service_role`).
-3. API gateway inspects the `Authorization` header. Since it is either absent or starts with `Bearer sb_` (an opaque key, not a session JWT), the plugin replaces it:
-   - **New `sb_` key:** `Authorization` header is set to the internal pre-signed ES256 JWT that corresponds to the role.
-   - **Legacy JWT key:** `Authorization` header is set to the legacy HS256 JWT (the `apikey` value is copied as-is).
+1. The client sends `apikey: sb_publishable_xxx` (or legacy `apikey: eyJ...`).
+2. The API gateway checks the key and identifies the consumer (`anon` or `service_role`).
+3. The API gateway inspects the `Authorization` header. Since it is either absent or starts with `Bearer sb_` (an opaque key, not a session JWT), the plugin replaces it:
+   - **The new `sb_` key:** `Authorization` header is set to the internal pre-signed ES256 JWT that corresponds to the role.
+   - **The Legacy JWT key:** `Authorization` header is set to the legacy HS256 JWT (the `apikey` value is copied as-is).
 4. The upstream service receives a valid JWT in `Authorization` and verifies it using `JWT_JWKS` (or `JWT_SECRET`).
 
-**Authenticated requests (user session JWT):**
+#### Authenticated requests (user session JWT)
 
 When the client has previously signed in through Auth and has a valid user session JWT token:
 
