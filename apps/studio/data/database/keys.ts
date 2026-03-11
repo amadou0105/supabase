@@ -27,7 +27,18 @@ export const databaseKeys = {
     projectRef: string | undefined,
     query: string,
     connectionString?: string
-  ) => ['projects', projectRef, 'index-advisor', { query, connectionString }] as const,
+  ) => {
+    // Use only the host (no credentials) as a safe cache discriminator
+    let connectionFingerprint: string | undefined
+    if (connectionString) {
+      try {
+        connectionFingerprint = new URL(connectionString).host
+      } catch {
+        connectionFingerprint = undefined
+      }
+    }
+    return ['projects', projectRef, 'index-advisor', { query, connectionFingerprint }] as const
+  },
   tableConstraints: (projectRef: string | undefined, id?: number) =>
     ['projects', projectRef, 'table-constraints', id] as const,
   foreignKeyConstraints: (projectRef: string | undefined, schema?: string, options = {}) =>
