@@ -231,9 +231,9 @@ When the client sends only an `apikey` header with the API key (no `Authorizatio
 
 When the client has previously signed in through Auth and has a valid user session JWT token:
 
-1. Client sends `Authorization: Bearer eyJ...` (a JWT session token from Auth) alongside `apikey: sb_publishable_xxx` (or legacy `apikey: eyJ...`).
-2. API gateway checks the API key and identifies the consumer.
-3. API gateway inspects the `Authorization` header. Since it exists and does **not** start with `Bearer sb_` (it's a real JWT, not an `sb_` API key), the plugin **passes it through unchanged**. This works the same way regardless of whether the `apikey` is a new `sb_` key or a legacy JWT - the gateway only looks at the `Authorization` header to decide whether a user session is present.
+1. The client sends `Authorization: Bearer eyJ...` (a JWT session token from Auth) alongside `apikey: sb_publishable_xxx` (or legacy `apikey: eyJ...`).
+2. The API gateway checks the API key and identifies the consumer.
+3. The API gateway inspects the `Authorization` header. Since it exists and does **not** start with `Bearer sb_` (it's a real JWT, not an `sb_` API key), the plugin **passes it through unchanged**. This works the same way regardless of whether the `apikey` is a new `sb_` key or a legacy JWT - the gateway only looks at the `Authorization` header to decide whether a user session is present.
 4. The upstream service verifies the session JWT. If Auth signed it with ES256 (when `JWT_KEYS` is configured), verification uses the EC public key. If Auth signed it with HS256 (legacy), verification uses the symmetric key. Both keys are available in `JWT_JWKS`.
 
 The `request-transformer` expression in `kong.yml` implements this as a single Lua conditional:
