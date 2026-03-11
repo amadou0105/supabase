@@ -9,8 +9,9 @@ import type { QueryPerformanceRow } from '../../QueryPerformance/QueryPerformanc
 function isEligibleQuery(query: string): boolean {
   const lower = query.trim().toLowerCase()
   if (!lower.startsWith('select') && !lower.startsWith('with')) return false
-  // Dollar-quoting breaks the single-quoted SQL embedding in getIndexAdvisorResult
-  if (query.includes('$')) return false
+  // Dollar-quoted string literals (e.g. $$...$$ or $tag$...$tag$) break the single-quoted
+  // SQL embedding in getIndexAdvisorResult. Plain parameter markers ($1, $2, …) are fine.
+  if (/\$([A-Za-z_][A-Za-z0-9_]*)?\$/.test(query)) return false
   return true
 }
 
