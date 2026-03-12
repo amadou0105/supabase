@@ -110,7 +110,7 @@ export const useFeaturePreviews = (): FeaturePreview[] => {
       enabled: showFloatingMobileToolbar,
       isNew: true,
       isPlatformOnly: false,
-      isDefaultOptIn: false,
+      isDefaultOptIn: true,
     },
   ].sort((a, b) => Number(b.isNew) - Number(a.isNew))
 }
