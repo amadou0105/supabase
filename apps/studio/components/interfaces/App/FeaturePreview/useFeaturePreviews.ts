@@ -104,7 +104,7 @@ export const useFeaturePreviews = (): FeaturePreview[] => {
       isDefaultOptIn: tableEditorNewFilterBar,
     },
     {
-      key: LOCAL_STORAGE_KEYS.UI_PREVIEW_FLOATING_MOBILE_NAVBAR,
+      key: LOCAL_STORAGE_KEYS.UI_PREVIEW_FLOATING_MOBILE_TOOLBAR,
       name: 'Floating Mobile Toolbar',
       discussionsUrl: undefined,
       enabled: showFloatingMobileToolbar,

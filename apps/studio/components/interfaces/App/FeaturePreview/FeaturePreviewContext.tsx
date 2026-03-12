@@ -128,7 +128,7 @@ export const useIsFloatingMobileToolbarEnabled = () => {
   const { flags } = useFeaturePreviewContext()
   const showFloatingMobileToolbar = useFlag('enableFloatingMobileToolbar')
 
-  return showFloatingMobileToolbar && flags[LOCAL_STORAGE_KEYS.UI_PREVIEW_FLOATING_MOBILE_NAVBAR]
+  return showFloatingMobileToolbar && flags[LOCAL_STORAGE_KEYS.UI_PREVIEW_FLOATING_MOBILE_TOOLBAR]
 }
 
 export const useFeaturePreviewModal = () => {
