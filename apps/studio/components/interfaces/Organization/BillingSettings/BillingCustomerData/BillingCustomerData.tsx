@@ -94,7 +94,9 @@ export const BillingCustomerData = () => {
 
         setIsSubmitting(false)
       } catch (error) {
-        toast.error(`Failed updating billing data: ${error instanceof Error ? error.message : 'Unknown error'}`)
+        toast.error(
+          `Failed updating billing data: ${error instanceof Error ? error.message : 'Unknown error'}`
+        )
         setIsSubmitting(false)
       }
     },
