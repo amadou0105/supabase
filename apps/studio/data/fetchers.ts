@@ -5,9 +5,9 @@ import { API_URL } from 'lib/constants'
 import { uuidv4 } from 'lib/helpers'
 import createClient from 'openapi-fetch'
 import { ResponseError } from 'types'
+import { UnknownError } from 'types/api-errors'
 
 import type { paths } from './api'
-import { UnknownError } from 'types/api-errors'
 import { ERROR_PATTERNS } from './error-patterns'
 import { ErrorMetadata } from '@/types/base'
 
