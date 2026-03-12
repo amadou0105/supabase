@@ -214,14 +214,14 @@ export const TableNode = ({
                   <Hash size={8} strokeWidth={1} className="flex-shrink-0 text-light" />
                 )}
               </div>
-              <div className="flex w-full justify-between">
+              <div className="flex w-full justify-between min-w-0">
                 <span
-                  className="text-ellipsis overflow-hidden whitespace-nowrap max-w-[85px]"
+                  className="text-ellipsis overflow-hidden whitespace-nowrap min-w-0 max-w-[80%]"
                   title={column.name}
                 >
                   {column.name}
                 </span>
-                <span className="pl-2 pr-1 inline-flex justify-end font-mono text-lighter text-[0.4rem] group-hover:hidden">
+                <span className="flex-shrink-0 pl-2 pr-1 inline-flex justify-end font-mono text-lighter text-[0.4rem] group-hover:hidden">
                   {column.format}
                 </span>
               </div>
