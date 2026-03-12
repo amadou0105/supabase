@@ -18,11 +18,11 @@ If you get stuck while working through this guide, refer to the [full example on
 
 ## Building the app
 
-Let's start building the Vue 3 app from scratch.
+Start building the Vue 3 app from scratch.
 
 ### Initialize a Vue 3 app
 
-We can quickly use [Vite with Vue 3 Template](https://vitejs.dev/guide/#scaffolding-your-first-vite-project) to initialize
+This guides uses [Vite with Vue 3 Template](https://vitejs.dev/guide/#scaffolding-your-first-vite-project) to initialize
 an app called `supabase-vue-3`:
 
 ```bash
@@ -35,14 +35,13 @@ npm create vite@latest supabase-vue-3 -- --template vue
 cd supabase-vue-3
 ```
 
-Then let's install the only additional dependency: [supabase-js](https://github.com/supabase/supabase-js)
+Then install the only additional dependency: [supabase-js](https://github.com/supabase/supabase-js)
 
 ```bash
 npm install @supabase/supabase-js
 ```
 
-And finally we want to save the environment variables in a `.env`.
-All we need are the API URL and the key that you copied [earlier](#get-api-details).
+And finally save the environment variables in a `.env` file, you need the API URL and the key that you copied [earlier](#get-api-details).
 
 <$CodeTabs>
 
@@ -54,7 +53,7 @@ VITE_SUPABASE_PUBLISHABLE_KEY=YOUR_SUPABASE_PUBLISHABLE_KEY
 </$CodeTabs>
 
 With the API credentials in place, create an `src/supabase.js` helper file to initialize the Supabase client. These variables are exposed
-on the browser, and that's completely fine since we have [Row Level Security](/docs/guides/auth#row-level-security) enabled on our Database.
+on the browser, and that's fine since you have [Row Level Security](/docs/guides/auth#row-level-security) enabled on the Database.
 
 <$CodeSample
 path="/user-management/vue3-user-management/src/supabase.js"
@@ -66,7 +65,7 @@ Optionally, update [src/style.css](https://raw.githubusercontent.com/supabase/su
 
 ### Set up a login component
 
-Set up an `src/components/Auth.vue` component to manage logins and sign ups. We'll use Magic Links, so users can sign in with their email without using passwords.
+Set up an `src/components/Auth.vue` component to manage logins and sign ups using Magic Links, so users can sign in with their email without using passwords.
 
 <$CodeSample
 path="/user-management/vue3-user-management/src/components/Auth.vue"
@@ -76,7 +75,7 @@ meta="name=src/components/Auth.vue"
 
 ### Account page
 
-After a user is signed in we can allow them to edit their profile details and manage their account.
+After a user is signed in allow them to edit their profile details and manage their account.
 Create a new `src/components/Account.vue` component to handle this.
 
 <$CodeSample
@@ -87,7 +86,7 @@ meta="name=src/components/Account.vue"
 
 ### Launch!
 
-Now that we have all the components in place, let's update `App.vue`:
+Now that you have all the components in place, update `App.vue`:
 
 <$CodeSample
 path="/user-management/vue3-user-management/src/App.vue"
