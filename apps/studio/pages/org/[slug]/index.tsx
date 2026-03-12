@@ -1,4 +1,5 @@
 import { useIsMFAEnabled } from 'common'
+import { PrivacyUpdateBanner } from 'components/interfaces/Account/Preferences/AnalyticsSettings'
 import { ProjectList } from 'components/interfaces/Home/ProjectList/ProjectList'
 import { HomePageActions } from 'components/interfaces/HomePageActions'
 import DefaultLayout from 'components/layouts/DefaultLayout'
@@ -19,6 +20,7 @@ const ProjectsPage: NextPageWithLayout = () => {
 
   return (
     <ScaffoldContainer className="flex-grow flex">
+      <PrivacyUpdateBanner />
       <ScaffoldSection isFullWidth className="pb-0">
         {disableAccessMfa ? (
           <Admonition

@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 
 import { useParams } from 'common'
+import { PrivacyUpdateBanner } from 'components/interfaces/Account/Preferences/AnalyticsSettings'
 import { NoOrganizationsState } from 'components/interfaces/Home/ProjectList/EmptyStates'
 import { OrganizationCard } from 'components/interfaces/Organization/OrganizationCard'
 import AppLayout from 'components/layouts/AppLayout/AppLayout'
@@ -52,6 +53,7 @@ const OrganizationsPage: NextPageWithLayout = () => {
 
   return (
     <ScaffoldContainer>
+      <PrivacyUpdateBanner />
       <ScaffoldSection isFullWidth className="flex flex-col gap-y-4">
         {orgNotFound && (
           <Admonition
