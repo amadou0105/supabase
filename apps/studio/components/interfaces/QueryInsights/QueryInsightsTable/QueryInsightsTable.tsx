@@ -82,7 +82,10 @@ export const QueryInsightsTable = ({
 }: QueryInsightsTableProps) => {
   const [mode, setMode] = useState<Mode>('triage')
   const [filter, setFilter] = useState<IssueFilter>('all')
-  const [{ search: urlSearch, sort: urlSortCol, order: urlSortOrder, source: urlSource }, setQueryStates] = useQueryStates({
+  const [
+    { search: urlSearch, sort: urlSortCol, order: urlSortOrder, source: urlSource },
+    setQueryStates,
+  ] = useQueryStates({
     search: parseAsString.withDefault(''),
     sort: parseAsString,
     order: parseAsString,
@@ -90,10 +93,13 @@ export const QueryInsightsTable = ({
   })
   const [searchQuery, setSearchQuery] = useState(urlSearch || '')
   const appNameFilter = urlSource
-  const setAppNameFilter = (names: string[]) => setQueryStates({ source: names.length ? names : null })
+  const setAppNameFilter = (names: string[]) =>
+    setQueryStates({ source: names.length ? names : null })
 
   const appNameOptions = useMemo(() => {
-    const names = Array.from(new Set(data.map((r) => r.application_name).filter(Boolean))) as string[]
+    const names = Array.from(
+      new Set(data.map((r) => r.application_name).filter(Boolean))
+    ) as string[]
     return names.map((name) => ({ value: name, label: name }))
   }, [data])
 
@@ -117,7 +123,9 @@ export const QueryInsightsTable = ({
       ? { column: urlSortCol, order: urlSortOrder as 'asc' | 'desc' }
       : { column: 'prop_total_time', order: 'desc' }
   const setSort = (config: { column: string; order: 'asc' | 'desc' } | null) =>
-    setQueryStates(config ? { sort: config.column, order: config.order } : { sort: null, order: null })
+    setQueryStates(
+      config ? { sort: config.column, order: config.order } : { sort: null, order: null }
+    )
 
   const [explainResults, setExplainResults] = useState<Record<string, QueryPlanRow[]>>({})
   const [explainLoadingQuery, setExplainLoadingQuery] = useState<string | null>(null)
