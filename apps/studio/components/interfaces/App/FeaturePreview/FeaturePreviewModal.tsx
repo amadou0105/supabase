@@ -156,7 +156,7 @@ export const FeaturePreviewModal = () => {
                 </Select>
               </div>
               <div className="h-auto min-h-0 max-h-auto md:max-h-[550px] p-4 pb-0 flex flex-col">
-                <div className="flex h-auto items-center justify-between border-b pb-3">
+                <div className="flex h-auto items-center justify-between border-b gap-2 pb-3">
                   <p>{selectedFeature?.name}</p>
                   <div className="flex items-center gap-x-2">
                     {selectedFeature?.discussionsUrl !== undefined && (
