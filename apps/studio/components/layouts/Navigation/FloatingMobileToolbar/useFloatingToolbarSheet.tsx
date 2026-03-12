@@ -3,9 +3,9 @@ import { useCallback } from 'react'
 import { useSidebarManagerSnapshot } from 'state/sidebar-manager-state'
 
 import { useMobileSheet } from '../NavigationBar/MobileSheetContext'
-import { isMenuContent, shouldShowMenuButton } from './FloatingMobileNavbar.utils'
+import { isMenuContent, shouldShowMenuButton } from './FloatingMobileToolbar.utils'
 
-export function useFloatingNavbarSheet(hideMobileMenu?: boolean) {
+export function useFloatingToolbarSheet(hideMobileMenu?: boolean) {
   const router = useRouter()
   const pathname = router.asPath?.split('?')[0] ?? router.pathname
   const { content: sheetContent, setContent: setSheetContent, openMenu } = useMobileSheet()
@@ -13,6 +13,7 @@ export function useFloatingNavbarSheet(hideMobileMenu?: boolean) {
 
   const isSheetOpen = sheetContent !== null
   const isMenuOpen = isMenuContent(sheetContent)
+  const isSearchOpen = sheetContent === 'search'
   const showMenuButton = shouldShowMenuButton(pathname) && !hideMobileMenu
 
   const handleMenuClick = useCallback(() => {
@@ -33,11 +34,23 @@ export function useFloatingNavbarSheet(hideMobileMenu?: boolean) {
     }
   }, [activeSidebar, closeActive, setSheetContent])
 
+  const handleSearchClick = useCallback(() => {
+    if (isSearchOpen) {
+      clearActiveSidebar()
+      setSheetContent(null)
+      return
+    }
+    clearActiveSidebar()
+    setSheetContent('search')
+  }, [isSearchOpen, clearActiveSidebar, setSheetContent])
+
   return {
     isSheetOpen,
     isMenuOpen,
+    isSearchOpen,
     showMenuButton,
     handleMenuClick,
     handleClose,
+    handleSearchClick,
   }
 }

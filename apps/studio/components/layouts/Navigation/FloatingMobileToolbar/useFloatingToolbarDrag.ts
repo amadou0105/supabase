@@ -6,7 +6,7 @@ import {
   type NavSize,
   type Position,
   type Viewport,
-} from './FloatingMobileNavbar.utils'
+} from './FloatingMobileToolbar.utils'
 
 type DragStartState = {
   x: number
@@ -16,7 +16,7 @@ type DragStartState = {
   pointerId: number
 }
 
-export function useFloatingNavbarDrag(navRef: React.RefObject<HTMLElement | null>) {
+export function useFloatingToolbarDrag(navRef: React.RefObject<HTMLElement | null>) {
   const [position, setPosition] = useState<Position | null>(null)
   const dragStartRef = useRef<DragStartState | null>(null)
 

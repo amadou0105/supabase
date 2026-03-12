@@ -1,7 +1,7 @@
 import { LOCAL_STORAGE_KEYS, useParams } from 'common'
 import {
   useIsBranching2Enabled,
-  useIsFloatingMobileNavbarEnabled,
+  useIsFloatingMobileToolbarEnabled,
 } from 'components/interfaces/App/FeaturePreview/FeaturePreviewContext'
 import { Connect } from 'components/interfaces/Connect/Connect'
 import { ConnectButton } from 'components/interfaces/ConnectButton/ConnectButton'
@@ -76,7 +76,7 @@ export const LayoutHeader = ({
   const gitlessBranching = useIsBranching2Enabled()
 
   const connectSheetFlag = usePHFlag<string | boolean>('connectSheet')
-  const showFloatingMobileNavbar = useIsFloatingMobileNavbarEnabled()
+  const showFloatingMobileToolbar = useIsFloatingMobileToolbarEnabled()
   const isFlagResolved = connectSheetFlag !== undefined
   const isConnectSheetEnabled = connectSheetFlag === true || connectSheetFlag === 'variation'
 
@@ -106,7 +106,7 @@ export const LayoutHeader = ({
       <header
         className={cn(
           'flex h-11 md:h-12 items-center flex-shrink-0 border-b',
-          showFloatingMobileNavbar && 'hidden md:flex'
+          showFloatingMobileToolbar && 'hidden md:flex'
         )}
       >
         {backToDashboardURL && isAccountPage && (

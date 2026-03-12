@@ -1,6 +1,6 @@
 import { useLayoutEffect, useState } from 'react'
 
-import type { NavSize } from './FloatingMobileNavbar.utils'
+import type { NavSize } from './FloatingMobileToolbar.utils'
 
 function measure(
   el: HTMLElement | null,
@@ -15,7 +15,7 @@ function measure(
   )
 }
 
-export function useFloatingNavbarNavSize(
+export function useFloatingToolbarNavSize(
   navRef: React.RefObject<HTMLElement | null>,
   isSheetOpen: boolean
 ): NavSize {

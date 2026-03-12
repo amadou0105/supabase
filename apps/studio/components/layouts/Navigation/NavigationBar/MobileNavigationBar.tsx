@@ -1,10 +1,10 @@
 import { useParams } from 'common'
-import { useIsFloatingMobileNavbarEnabled } from 'components/interfaces/App/FeaturePreview/FeaturePreviewContext'
+import { useIsFloatingMobileToolbarEnabled } from 'components/interfaces/App/FeaturePreview/FeaturePreviewContext'
 import { ConnectButton } from 'components/interfaces/ConnectButton/ConnectButton'
 import { LocalDropdown } from 'components/interfaces/LocalDropdown'
 import { SidebarContent } from 'components/interfaces/Sidebar'
 import { UserDropdown } from 'components/interfaces/UserDropdown'
-import FloatingMobileNavbar from 'components/layouts/Navigation/FloatingMobileNavbar/FloatingMobileNavbar'
+import FloatingMobileToolbar from 'components/layouts/Navigation/FloatingMobileToolbar/FloatingMobileToolbar'
 import { useSelectedOrganizationQuery } from 'hooks/misc/useSelectedOrganization'
 import { IS_PLATFORM } from 'lib/constants'
 import { ChevronLeft, Menu, Search } from 'lucide-react'
@@ -29,7 +29,7 @@ const MobileNavigationBar = ({
   backToDashboardURL?: string
 }) => {
   const [isSheetOpen, setIsSheetOpen] = useState(false)
-  const showFloatingMobileNavbar = useIsFloatingMobileNavbarEnabled()
+  const showFloatingMobileToolbar = useIsFloatingMobileToolbarEnabled()
   const { ref: projectRef, slug } = useParams()
   const { data: selectedOrganization } = useSelectedOrganizationQuery()
   const isProjectScope = !!projectRef
@@ -41,13 +41,13 @@ const MobileNavigationBar = ({
       <nav
         className={cn(
           'group pr-3 pl-2 z-10 w-full h-12 gap-2',
-          'border-b bg-dash-sidebar border-default shadow-xl',
+          'border-b bg-dash-sidebar border-default shadow-[0_0_30px_0_rgba(0,0,0,0.07)]',
           'transition-width duration-200',
           'hide-scrollbar flex flex-row items-center justify-between overflow-x-auto'
         )}
       >
         <div className={cn('flex min-w-0 flex-shrink items-center gap-2', !IS_PLATFORM && 'pl-2')}>
-          {showFloatingMobileNavbar && backToDashboardURL && (
+          {showFloatingMobileToolbar && backToDashboardURL && (
             <div className="flex items-center justify-center ml-1 flex-0 md:hidden h-full aspect-square">
               <Link
                 href={backToDashboardURL}
@@ -70,25 +70,27 @@ const MobileNavigationBar = ({
           )}
         </div>
         <div className="flex flex-shrink-0 gap-2">
-          <CommandMenuTrigger>
-            <button
-              type="button"
-              className={cn(
-                'group',
-                'flex-grow h-[30px] rounded-md',
-                'p-2',
-                'flex items-center justify-between',
-                'bg-transparent border-none text-foreground-lighter',
-                'hover:bg-opacity-100 hover:border-strong hover:text-foreground-light',
-                'focus-visible:!outline-4 focus-visible:outline-offset-1 focus-visible:outline-brand-600',
-                'transition'
-              )}
-            >
-              <Search size={18} strokeWidth={2} />
-            </button>
-          </CommandMenuTrigger>
+          {!showFloatingMobileToolbar && (
+            <CommandMenuTrigger>
+              <button
+                type="button"
+                className={cn(
+                  'group',
+                  'flex-grow h-[30px] rounded-md',
+                  'p-2',
+                  'flex items-center justify-between',
+                  'bg-transparent border-none text-foreground-lighter',
+                  'hover:bg-opacity-100 hover:border-strong hover:text-foreground-light',
+                  'focus-visible:!outline-4 focus-visible:outline-offset-1 focus-visible:outline-brand-600',
+                  'transition'
+                )}
+              >
+                <Search size={18} strokeWidth={2} />
+              </button>
+            </CommandMenuTrigger>
+          )}
           {IS_PLATFORM ? <UserDropdown /> : <LocalDropdown />}
-          {!hideMobileMenu && !showFloatingMobileNavbar && (
+          {!hideMobileMenu && (
             <Button
               title="Menu dropdown button"
               type="default"
@@ -102,7 +104,7 @@ const MobileNavigationBar = ({
       <MobileSheetNav open={isSheetOpen} onOpenChange={setIsSheetOpen} data-state="expanded">
         <SidebarContent />
       </MobileSheetNav>
-      {showFloatingMobileNavbar && <FloatingMobileNavbar hideMobileMenu={hideMobileMenu} />}
+      {showFloatingMobileToolbar && <FloatingMobileToolbar hideMobileMenu={hideMobileMenu} />}
     </div>
   )
 }

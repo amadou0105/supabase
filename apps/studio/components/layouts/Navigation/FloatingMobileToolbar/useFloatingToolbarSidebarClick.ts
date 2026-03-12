@@ -3,7 +3,7 @@ import { useSidebarManagerSnapshot } from 'state/sidebar-manager-state'
 
 import { useMobileSheet } from '../NavigationBar/MobileSheetContext'
 
-export function useFloatingNavbarSidebarClick() {
+export function useFloatingToolbarSidebarClick() {
   const { setContent: setSheetContent } = useMobileSheet()
   const { activeSidebar, openSidebar } = useSidebarManagerSnapshot()
 

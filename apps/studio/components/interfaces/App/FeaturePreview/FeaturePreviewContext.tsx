@@ -124,11 +124,11 @@ export const useIsTableFilterBarEnabled = () => {
   return flags[LOCAL_STORAGE_KEYS.UI_PREVIEW_TABLE_FILTER_BAR]
 }
 
-export const useIsFloatingMobileNavbarEnabled = () => {
+export const useIsFloatingMobileToolbarEnabled = () => {
   const { flags } = useFeaturePreviewContext()
-  const showFloatingMobileNavbar = useFlag('enableFloatingMobileNavbar')
+  const showFloatingMobileToolbar = useFlag('enableFloatingMobileToolbar')
 
-  return showFloatingMobileNavbar && flags[LOCAL_STORAGE_KEYS.UI_PREVIEW_FLOATING_MOBILE_NAVBAR]
+  return showFloatingMobileToolbar && flags[LOCAL_STORAGE_KEYS.UI_PREVIEW_FLOATING_MOBILE_NAVBAR]
 }
 
 export const useFeaturePreviewModal = () => {

@@ -17,7 +17,7 @@ export const useFeaturePreviews = (): FeaturePreview[] => {
   const isUnifiedLogsPreviewAvailable = useFlag('unifiedLogs')
   const tableEditorNewFilterBar = useFlag('tableEditorNewFilterBar')
   const pgDeltaDiffEnabled = useFlag('pgdeltaDiff')
-  const showFloatingMobileNavbar = useFlag('enableFloatingMobileNavbar')
+  const showFloatingMobileToolbar = useFlag('enableFloatingMobileToolbar')
   const platformWebhooksEnabled = useFlag('platformWebhooks')
 
   return [
@@ -105,9 +105,9 @@ export const useFeaturePreviews = (): FeaturePreview[] => {
     },
     {
       key: LOCAL_STORAGE_KEYS.UI_PREVIEW_FLOATING_MOBILE_NAVBAR,
-      name: 'Floating Mobile Navbar',
+      name: 'Floating Mobile Toolbar',
       discussionsUrl: undefined,
-      enabled: showFloatingMobileNavbar,
+      enabled: showFloatingMobileToolbar,
       isNew: true,
       isPlatformOnly: false,
       isDefaultOptIn: false,

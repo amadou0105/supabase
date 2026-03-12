@@ -57,7 +57,7 @@ export function getNextPosition(
   return clampPosition({ x: dragStart.x, y: dragStart.y }, { dx, dy }, viewport, navSize)
 }
 
-export function getNavbarStyle(params: {
+export function getToolbarStyle(params: {
   position: Position | null
   navSize: NavSize
   isSheetOpen: boolean

@@ -2,11 +2,11 @@ import { describe, expect, it } from 'vitest'
 
 import {
   clampPosition,
-  getNavbarStyle,
+  getToolbarStyle,
   getNextPosition,
   isMenuContent,
   shouldShowMenuButton,
-} from './FloatingMobileNavbar.utils'
+} from './FloatingMobileToolbar.utils'
 
 describe('isMenuContent', () => {
   it('returns false for null', () => {
@@ -68,12 +68,12 @@ describe('getNextPosition', () => {
   })
 })
 
-describe('getNavbarStyle', () => {
+describe('getToolbarStyle', () => {
   const viewport = { width: 390, height: 844 }
   const navSize = { width: 200, height: 48 }
 
   it('returns style with transform and zIndex', () => {
-    const style = getNavbarStyle({
+    const style = getToolbarStyle({
       position: null,
       navSize,
       isSheetOpen: false,
@@ -86,7 +86,7 @@ describe('getNavbarStyle', () => {
   })
 
   it('uses higher zIndex when sheet open', () => {
-    const style = getNavbarStyle({
+    const style = getToolbarStyle({
       position: null,
       navSize,
       isSheetOpen: true,
