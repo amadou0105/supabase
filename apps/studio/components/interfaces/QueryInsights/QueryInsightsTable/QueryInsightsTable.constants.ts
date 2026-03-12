@@ -41,4 +41,4 @@ export const QUERY_INSIGHTS_EXPLORER_COLUMNS = [
   { id: 'application_name', name: 'Source', description: undefined, minWidth: 200 },
 ] as const
 
-export const NON_SORTABLE_COLUMNS = ['query'] as const
+export const NON_SORTABLE_COLUMNS = [] as const

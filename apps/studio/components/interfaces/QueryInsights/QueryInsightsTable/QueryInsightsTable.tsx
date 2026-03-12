@@ -40,7 +40,7 @@ import TwoOptionToggle from 'components/ui/TwoOptionToggle'
 import { ButtonTooltip } from 'components/ui/ButtonTooltip'
 import { FilterPopover } from 'components/ui/FilterPopover'
 import { FilterPill } from 'components/interfaces/QueryPerformance/components/FilterPill'
-import { parseAsString, useQueryStates } from 'nuqs'
+import { parseAsArrayOf, parseAsString, useQueryStates } from 'nuqs'
 
 import type { QueryPerformanceRow } from '../../QueryPerformance/QueryPerformance.types'
 import { useQueryInsightsIssues } from '../hooks/useQueryInsightsIssues'
@@ -80,7 +80,17 @@ export const QueryInsightsTable = ({
   currentSelectedQuery,
   onCurrentSelectQuery,
 }: QueryInsightsTableProps) => {
-  const [appNameFilter, setAppNameFilter] = useState<string[]>([])
+  const [mode, setMode] = useState<Mode>('triage')
+  const [filter, setFilter] = useState<IssueFilter>('all')
+  const [{ search: urlSearch, sort: urlSortCol, order: urlSortOrder, source: urlSource }, setQueryStates] = useQueryStates({
+    search: parseAsString.withDefault(''),
+    sort: parseAsString,
+    order: parseAsString,
+    source: parseAsArrayOf(parseAsString).withDefault([]),
+  })
+  const [searchQuery, setSearchQuery] = useState(urlSearch || '')
+  const appNameFilter = urlSource
+  const setAppNameFilter = (names: string[]) => setQueryStates({ source: names.length ? names : null })
 
   const appNameOptions = useMemo(() => {
     const names = Array.from(new Set(data.map((r) => r.application_name).filter(Boolean))) as string[]
@@ -93,12 +103,6 @@ export const QueryInsightsTable = ({
   }, [data, appNameFilter])
 
   const { classified, errors, indexIssues, slowQueries } = useQueryInsightsIssues(filteredData)
-  const [mode, setMode] = useState<Mode>('triage')
-  const [filter, setFilter] = useState<IssueFilter>('all')
-  const [{ search: urlSearch }, setQueryStates] = useQueryStates({
-    search: parseAsString.withDefault(''),
-  })
-  const [searchQuery, setSearchQuery] = useState(urlSearch || '')
   const [selectedRow, setSelectedRow] = useState<number>()
   const [selectedTriageRow, setSelectedTriageRow] = useState<number | undefined>()
   const [sheetView, setSheetView] = useState<'details' | 'indexes' | 'explain'>('details')
@@ -108,10 +112,12 @@ export const QueryInsightsTable = ({
   const triageContainerRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [triageContainerWidth, setTriageContainerWidth] = useState(0)
-  const [sort, setSort] = useState<{ column: string; order: 'asc' | 'desc' } | null>({
-    column: 'prop_total_time',
-    order: 'desc',
-  })
+  const sort: { column: string; order: 'asc' | 'desc' } | null =
+    urlSortCol && urlSortOrder && ['asc', 'desc'].includes(urlSortOrder)
+      ? { column: urlSortCol, order: urlSortOrder as 'asc' | 'desc' }
+      : { column: 'prop_total_time', order: 'desc' }
+  const setSort = (config: { column: string; order: 'asc' | 'desc' } | null) =>
+    setQueryStates(config ? { sort: config.column, order: config.order } : { sort: null, order: null })
 
   const [explainResults, setExplainResults] = useState<Record<string, QueryPlanRow[]>>({})
   const [explainLoadingQuery, setExplainLoadingQuery] = useState<string | null>(null)
@@ -160,6 +166,12 @@ export const QueryInsightsTable = ({
 
     if (sort) {
       items.sort((a, b) => {
+        if (sort.column === 'query') {
+          const aDate = a.first_seen ? new Date(a.first_seen).getTime() : 0
+          const bDate = b.first_seen ? new Date(b.first_seen).getTime() : 0
+          return sort.order === 'asc' ? aDate - bDate : bDate - aDate
+        }
+
         const aValue: unknown = a[sort.column as keyof typeof a]
         const bValue: unknown = b[sort.column as keyof typeof b]
 

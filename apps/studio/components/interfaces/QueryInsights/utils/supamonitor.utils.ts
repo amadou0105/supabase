@@ -119,8 +119,10 @@ export function aggregateLogsByQuery(parsedLogs: ParsedLogEntry[]): QueryPerform
     let maxTime = -Infinity
     const rolname = logs[0]?.user_name || ''
     const applicationName = logs[0]?.application_name || ''
+    let firstSeen = logs[0]?.timestamp ?? ''
 
     logs.forEach((log) => {
+      if (log.timestamp && (!firstSeen || log.timestamp < firstSeen)) firstSeen = log.timestamp
       const logCalls = parseInt(String(log.calls ?? 0), 10)
       totalCalls += logCalls
       totalExecTime += parseFloat(String(log.total_exec_time ?? 0))
@@ -153,6 +155,7 @@ export function aggregateLogsByQuery(parsedLogs: ParsedLogEntry[]): QueryPerform
       query,
       rolname,
       applicationName,
+      firstSeen,
       count,
       avgMeanTime,
       avgP95Time,
@@ -183,6 +186,7 @@ export function aggregateLogsByQuery(parsedLogs: ParsedLogEntry[]): QueryPerform
       _total_cache_hits: 0,
       _total_cache_misses: 0,
       _count: stats.count,
+      first_seen: stats.firstSeen,
     })
   })
 

@@ -17,4 +17,5 @@ export interface QueryPerformanceRow {
   _total_cache_hits?: number
   _total_cache_misses?: number
   _count?: number
+  first_seen?: string
 }
