@@ -61,13 +61,9 @@ export const QueryInsights = ({ dateRange }: QueryInsightsProps) => {
   })
 
   const [selectedQuery, setSelectedQuery] = useState<string | null>(null)
-  const [showIntrospection, setShowIntrospection] = useState(false)
 
   const parsedLogs = useMemo(() => parseSupamonitorLogs(logData || []), [logData])
-  const filteredLogs = useMemo(
-    () => filterSystemLogs(parsedLogs, { includeIntrospection: showIntrospection }),
-    [parsedLogs, showIntrospection]
-  )
+  const filteredLogs = useMemo(() => filterSystemLogs(parsedLogs), [parsedLogs])
   const chartData = useMemo(() => transformLogsToChartData(filteredLogs), [filteredLogs])
   const selectedChartData = useMemo(
     () =>
@@ -94,8 +90,6 @@ export const QueryInsights = ({ dateRange }: QueryInsightsProps) => {
         isLoading={isLoading}
         currentSelectedQuery={selectedQuery}
         onCurrentSelectQuery={setSelectedQuery}
-        showIntrospection={showIntrospection}
-        onToggleIntrospection={() => setShowIntrospection((v) => !v)}
       />
     </div>
   )

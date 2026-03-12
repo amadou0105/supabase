@@ -7,8 +7,6 @@ import {
   ChevronDown,
   TextSearch,
   ArrowRight,
-  Eye,
-  EyeOff,
   ExternalLink,
   ScanSearch,
 } from 'lucide-react'
@@ -40,6 +38,8 @@ import { Input } from 'ui-patterns/DataInputs/Input'
 import { GenericSkeletonLoader } from 'ui-patterns/ShimmeringLoader'
 import TwoOptionToggle from 'components/ui/TwoOptionToggle'
 import { ButtonTooltip } from 'components/ui/ButtonTooltip'
+import { FilterPopover } from 'components/ui/FilterPopover'
+import { FilterPill } from 'components/interfaces/QueryPerformance/components/FilterPill'
 import { parseAsString, useQueryStates } from 'nuqs'
 
 import type { QueryPerformanceRow } from '../../QueryPerformance/QueryPerformance.types'
@@ -72,8 +72,6 @@ interface QueryInsightsTableProps {
   isLoading: boolean
   currentSelectedQuery?: string | null
   onCurrentSelectQuery?: (query: string | null) => void
-  showIntrospection?: boolean
-  onToggleIntrospection?: () => void
 }
 
 export const QueryInsightsTable = ({
@@ -81,10 +79,20 @@ export const QueryInsightsTable = ({
   isLoading,
   currentSelectedQuery,
   onCurrentSelectQuery,
-  showIntrospection = false,
-  onToggleIntrospection,
 }: QueryInsightsTableProps) => {
-  const { classified, errors, indexIssues, slowQueries } = useQueryInsightsIssues(data)
+  const [appNameFilter, setAppNameFilter] = useState<string[]>([])
+
+  const appNameOptions = useMemo(() => {
+    const names = Array.from(new Set(data.map((r) => r.application_name).filter(Boolean))) as string[]
+    return names.map((name) => ({ value: name, label: name }))
+  }, [data])
+
+  const filteredData = useMemo(() => {
+    if (appNameFilter.length === 0) return data
+    return data.filter((r) => appNameFilter.includes(r.application_name ?? ''))
+  }, [data, appNameFilter])
+
+  const { classified, errors, indexIssues, slowQueries } = useQueryInsightsIssues(filteredData)
   const [mode, setMode] = useState<Mode>('triage')
   const [filter, setFilter] = useState<IssueFilter>('all')
   const [{ search: urlSearch }, setQueryStates] = useQueryStates({
@@ -862,21 +870,23 @@ export const QueryInsightsTable = ({
               borderOverride="border"
               onClickOption={setMode}
             />
-            <ButtonTooltip
-              tooltip={{
-                content: {
-                  text: showIntrospection ? 'Hide system queries' : 'Show system queries',
-                },
-              }}
-              type={showIntrospection ? 'default' : 'outline'}
-              size="tiny"
-              className={cn(
-                'w-[26px] h-[26px] !p-0',
-                showIntrospection ? 'bg-surface-300' : 'border-dashed'
-              )}
-              icon={showIntrospection ? <Eye size={14} /> : <EyeOff size={14} />}
-              onClick={onToggleIntrospection}
-            />
+            {appNameFilter.length > 0 ? (
+              <FilterPill
+                label="Source"
+                value={appNameFilter.join(', ')}
+                onClear={() => setAppNameFilter([])}
+              />
+            ) : (
+              <FilterPopover
+                name="Source"
+                options={appNameOptions}
+                activeOptions={appNameFilter}
+                valueKey="value"
+                labelKey="label"
+                onSaveFilters={setAppNameFilter}
+                showOnlyButton={false}
+              />
+            )}
             {currentSelectedQuery && (
               <ButtonTooltip
                 tooltip={{
