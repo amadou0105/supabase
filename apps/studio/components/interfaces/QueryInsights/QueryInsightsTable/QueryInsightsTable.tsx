@@ -991,7 +991,6 @@ export const QueryInsightsTable = ({
             type="default"
             size="tiny"
             className="rounded-full shadow-md"
-            // icon={<X className="h-3 w-3" />}
             onClick={() => onCurrentSelectQuery?.(null)}
           >
             Clear query
