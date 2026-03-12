@@ -1,10 +1,9 @@
 'use client'
 
 import { useTrack } from 'lib/telemetry/track'
-import type { ClassifiedError, KnownErrorType } from 'types/api-errors'
 import { ErrorDisplay, SupportFormParams } from 'ui-patterns/ErrorDisplay'
 
-import { ERROR_MAPPINGS } from './error-mappings'
+import { getMappingForError } from './ErrorMatcher.utils'
 
 interface ErrorMatcherProps {
   title: string
@@ -17,12 +16,7 @@ export function ErrorMatcher({ title, error, supportFormParams, className }: Err
   const track = useTrack()
 
   const message = typeof error === 'string' ? error : error.message
-  const errorType =
-    typeof error === 'object' && 'errorType' in error
-      ? (error as ClassifiedError).errorType
-      : undefined
-  const mapping =
-    errorType && errorType in ERROR_MAPPINGS ? ERROR_MAPPINGS[errorType as KnownErrorType] : null
+  const mapping = getMappingForError(error)
   const Troubleshooting = mapping?.Troubleshooting
 
   return (
