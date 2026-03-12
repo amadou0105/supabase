@@ -156,7 +156,7 @@ export const FeaturePreviewModal = () => {
                 </Select>
               </div>
               <div className="h-auto min-h-0 max-h-auto md:max-h-[550px] p-4 pb-0 flex flex-col">
-                <div className="flex h-auto items-center justify-between border-b gap-2 pb-3">
+                <div className="flex items-center justify-between border-b gap-2 pb-3">
                   <p>{selectedFeature?.name}</p>
                   <div className="flex items-center gap-x-2">
                     {selectedFeature?.discussionsUrl !== undefined && (
@@ -175,7 +175,7 @@ export const FeaturePreviewModal = () => {
                     </Button>
                   </div>
                 </div>
-                <div className="h-auto min-h-0 flex-grow overflow-y-scroll pt-3 pb-4">
+                <div className="overflow-y-scroll pt-3 pb-4">
                   {FEATURE_PREVIEW_KEY_TO_CONTENT[selectedFeature?.key ?? '']}
                 </div>
               </div>
