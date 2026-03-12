@@ -46,6 +46,8 @@ export {
   getDeleteOldCronJobRunDetailsByCtidSql,
   getScheduleDeleteCronJobRunDetailsSql,
 } from './sql/studio/database/cron-jobs'
+export { getTableRowsCountSql } from './sql/studio/database/rows'
+export { getLiveTupleEstimate } from './sql/studio/get-live-tuple-estimate'
 
 export default {
   roles,

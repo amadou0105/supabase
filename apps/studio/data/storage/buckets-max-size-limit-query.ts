@@ -1,10 +1,10 @@
-import { getLargestSizeLimitBucketsSqlUnoptimized } from '@supabase/pg-meta'
+import { getLargestSizeLimitBucketsSqlUnoptimized, getLiveTupleEstimate } from '@supabase/pg-meta'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import type { ConnectionVars } from 'data/common.types'
-import { getLiveTupleEstimate, getLiveTupleEstimateKey } from 'data/database/database.sql'
 import { executeSql } from 'data/sql/execute-sql-query'
 import { useCallback } from 'react'
 
+import { getLiveTupleEstimateKey } from '../database/keys'
 import { sqlKeys } from '../sql/keys'
 
 export const THRESHOLD_FOR_AUTO_QUERYING_BUCKET_LIMITS = 10_000

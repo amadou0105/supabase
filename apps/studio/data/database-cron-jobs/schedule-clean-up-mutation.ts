@@ -4,7 +4,7 @@ import { executeSql } from 'data/sql/execute-sql-query'
 import { toast } from 'sonner'
 import type { ResponseError, UseCustomMutationOptions } from 'types'
 
-import { getScheduleDeleteCronJobRunDetailsKey } from './database-cron-jobs.utils'
+import { getScheduleDeleteCronJobRunDetailsKey } from './keys'
 
 export type ScheduleCronJobRunDetailsCleanupVariables = {
   projectRef: string
