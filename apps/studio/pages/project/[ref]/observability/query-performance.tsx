@@ -1,4 +1,5 @@
 import { parseAsArrayOf, parseAsInteger, parseAsJson, parseAsString, useQueryStates } from 'nuqs'
+import { useEffect, useRef } from 'react'
 import { NumericFilter } from 'components/interfaces/Reports/v2/ReportsNumericFilter'
 
 import { useParams } from 'common'
@@ -40,7 +41,8 @@ const QueryPerformanceReport: NextPageWithLayout = () => {
   } = useReportDateRange(REPORT_DATERANGE_HELPER_LABELS.LAST_60_MINUTES)
 
   const [
-    { search: searchQuery, roles, minCalls, totalTimeFilter: totalTimeFilterRaw, indexAdvisor },
+    { search: searchQuery, roles, minCalls, totalTimeFilter: totalTimeFilterRaw, indexAdvisor, page, pageSize },
+    setQueryStates,
   ] = useQueryStates({
     sort: parseAsString,
     order: parseAsString,
@@ -51,6 +53,8 @@ const QueryPerformanceReport: NextPageWithLayout = () => {
       value === null || value === undefined ? null : (value as NumericFilter)
     ),
     indexAdvisor: parseAsString.withDefault('false'),
+    page: parseAsInteger.withDefault(1),
+    pageSize: parseAsInteger.withDefault(20),
   })
 
   const totalTimeFilter = totalTimeFilterRaw ?? null
@@ -76,7 +80,20 @@ const QueryPerformanceReport: NextPageWithLayout = () => {
     minCalls: minCalls ?? undefined,
     minTotalTime,
     filterIndexAdvisor: indexAdvisor === 'true',
+    page: page ?? 1,
+    pageSize: pageSize ?? 20,
   })
+
+  // Reset to page 1 when filters or sort change
+  const isInitialMount = useRef(true)
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false
+      return
+    }
+    setQueryStates({ page: 1 })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery, JSON.stringify(roles), minCalls, JSON.stringify(totalTimeFilterRaw), indexAdvisor, JSON.stringify(sortConfig)])
 
   if (!isLoadingProject && !project) {
     return (
