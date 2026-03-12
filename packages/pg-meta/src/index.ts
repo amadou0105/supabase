@@ -37,6 +37,15 @@ export {
   buildTablePrivilegesSql,
   buildFunctionPrivilegesSql,
 } from './sql/studio/privileges'
+export { getIndexesSQL } from './sql/studio/database/indexes'
+export { getDatabaseExtensionDefaultSchemaSQL } from './sql/studio/database/extensions'
+export {
+  getCronJobsMinimalSql,
+  getCronJobsSql,
+  getJobRunDetailsPageCountSql,
+  getDeleteOldCronJobRunDetailsByCtidSql,
+  getScheduleDeleteCronJobRunDetailsSql,
+} from './sql/studio/database/cron-jobs'
 
 export default {
   roles,
