@@ -276,7 +276,7 @@ export const TableEditorMenu = () => {
 
           {isLoading && <EditorMenuListSkeleton />}
 
-{isError && (
+          {isError && (
             <ErrorMatcher
               title="Failed to load tables"
               error={error ?? 'Failed to load tables'}
