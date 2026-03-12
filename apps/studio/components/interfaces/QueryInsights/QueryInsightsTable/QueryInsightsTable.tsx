@@ -9,6 +9,8 @@ import {
   ArrowRight,
   Eye,
   EyeOff,
+  ExternalLink,
+  ScanSearch,
 } from 'lucide-react'
 import { useRouter } from 'next/router'
 import { useParams } from 'common'
@@ -723,6 +725,7 @@ export const QueryInsightsTable = ({
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-40">
                       <DropdownMenuItem onClick={() => handleGoToLogs()} className="gap-2">
+                        <ExternalLink size={14} />
                         Go to Logs
                       </DropdownMenuItem>
                       <DropdownMenuItem
@@ -732,6 +735,7 @@ export const QueryInsightsTable = ({
                         }}
                         className="gap-2"
                       >
+                        <ScanSearch size={14} />
                         Explain
                       </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -748,6 +752,7 @@ export const QueryInsightsTable = ({
                     extraDropdownItems={
                       <>
                         <DropdownMenuItem onClick={() => handleGoToLogs()} className="gap-2">
+                          <ExternalLink size={14} />
                           Go to Logs
                         </DropdownMenuItem>
                         {row.issueType === 'slow' && (
@@ -758,6 +763,7 @@ export const QueryInsightsTable = ({
                             }}
                             className="gap-2"
                           >
+                            <ScanSearch size={14} />
                             Explain
                           </DropdownMenuItem>
                         )}
@@ -871,6 +877,22 @@ export const QueryInsightsTable = ({
               icon={showIntrospection ? <Eye size={14} /> : <EyeOff size={14} />}
               onClick={onToggleIntrospection}
             />
+            {currentSelectedQuery && (
+              <ButtonTooltip
+                tooltip={{
+                  content: {
+                    text: 'Clear selected query',
+                  },
+                }}
+                type="outline"
+                size="tiny"
+                className="h-[26px] px-2"
+                icon={<X size={14} />}
+                onClick={() => onCurrentSelectQuery?.(null)}
+              >
+                Clear query
+              </ButtonTooltip>
+            )}
           </div>
 
           <div className="flex items-center">
