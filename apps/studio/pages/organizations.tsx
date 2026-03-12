@@ -53,8 +53,8 @@ const OrganizationsPage: NextPageWithLayout = () => {
 
   return (
     <ScaffoldContainer>
-      <PrivacyUpdateBanner />
       <ScaffoldSection isFullWidth className="flex flex-col gap-y-4">
+        <PrivacyUpdateBanner />
         {orgNotFound && (
           <Admonition
             type="destructive"
