@@ -1,4 +1,19 @@
 /**
+ * Fixes backslash-escaped apostrophes in SQL string literals.
+ *
+ * Some LLMs use MySQL-style `\'` escapes in SQL. PostgreSQL (with the default
+ * `standard_conforming_strings = on`) does not treat backslash as an escape
+ * character, so `'We\'ll'` is a syntax error. The correct form is `'We''ll'`.
+ *
+ * `\'` is invalid in every PostgreSQL string context: in regular strings it
+ * breaks parsing, and in `E''` escape strings `''` is equally valid. So a
+ * global replacement is safe.
+ */
+export function fixSqlBackslashEscapes(sql: string): string {
+  return sql.replace(/\\'/g, "''")
+}
+
+/**
  * Selects a key from weighted choices using consistent hashing
  * on an input string.
  *

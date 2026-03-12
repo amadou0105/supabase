@@ -1,5 +1,47 @@
 import { describe, it, expect } from 'vitest'
-import { selectWeightedKey } from './util'
+import { fixSqlBackslashEscapes, selectWeightedKey } from './util'
+
+describe('fixSqlBackslashEscapes', () => {
+  // `\\'` in a TS double-quoted string = literal backslash + apostrophe —
+  // the invalid MySQL-style escape that LLMs sometimes emit.
+
+  it('converts backslash-apostrophe to double-apostrophe', () => {
+    expect(fixSqlBackslashEscapes("INSERT INTO t (c) VALUES ('We\\'ll be in touch')")).toBe(
+      "INSERT INTO t (c) VALUES ('We''ll be in touch')"
+    )
+  })
+
+  it('handles multiple backslash-apostrophes in one string', () => {
+    expect(fixSqlBackslashEscapes("VALUES ('Don\\'t stop, it\\'s fine')")).toBe(
+      "VALUES ('Don''t stop, it''s fine')"
+    )
+  })
+
+  it('handles multiple string literals in one query', () => {
+    expect(fixSqlBackslashEscapes("INSERT INTO t (a, b) VALUES ('We\\'ll', 'It\\'s ready')")).toBe(
+      "INSERT INTO t (a, b) VALUES ('We''ll', 'It''s ready')"
+    )
+  })
+
+  it('leaves already-correct double apostrophes unchanged', () => {
+    const sql = "INSERT INTO t (c) VALUES ('We''ll be in touch')"
+    expect(fixSqlBackslashEscapes(sql)).toBe(sql)
+  })
+
+  it('leaves SQL with no apostrophes unchanged', () => {
+    const sql = 'SELECT 1 + 1'
+    expect(fixSqlBackslashEscapes(sql)).toBe(sql)
+  })
+
+  it('handles the real-world failure case from the original bug report', () => {
+    // Model generated: 'Welcome to our new blog! We\'ll share tutorials and updates here.'
+    const input =
+      "INSERT INTO posts (title, content) VALUES ('Intro', 'Welcome! We\\'ll share tutorials here.')"
+    const expected =
+      "INSERT INTO posts (title, content) VALUES ('Intro', 'Welcome! We''ll share tutorials here.')"
+    expect(fixSqlBackslashEscapes(input)).toBe(expected)
+  })
+})
 
 describe('selectWeightedKey', () => {
   it('should return a valid key from the weights object', async () => {
