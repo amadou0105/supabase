@@ -2299,6 +2299,7 @@ export const local_development: NavMenuConstant = {
       url: undefined,
       items: [
         { name: 'Getting started', url: '/guides/local-development/overview' },
+        { name: 'CLI workflows', url: '/guides/local-development/cli-workflows' },
         {
           name: 'Declarative database schemas',
           url: '/guides/local-development/declarative-database-schemas' as `/${string}`,
