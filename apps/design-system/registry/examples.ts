@@ -1468,13 +1468,7 @@ export const examples: Registry = [
     registryDependencies: ['error-display'],
     files: ['example/error-display-demo.tsx'],
   },
-  {
-    name: 'error-display-no-support',
-    type: 'components:example',
-    registryDependencies: ['error-display'],
-    files: ['example/error-display-no-support.tsx'],
-  },
-  {
+{
     name: 'error-display-with-children',
     type: 'components:example',
     registryDependencies: ['error-display'],
