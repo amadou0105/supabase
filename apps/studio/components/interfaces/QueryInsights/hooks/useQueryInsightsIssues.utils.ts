@@ -4,9 +4,12 @@ import { SLOW_QUERY_THRESHOLD_MS } from '../QueryInsightsHealth/QueryInsightsHea
 import type { IssueType } from '../QueryInsightsHealth/QueryInsightsHealth.types'
 
 export function classifyQuery(row: QueryPerformanceRow): { issueType: IssueType; hint: string } {
-  // undefined means index advisor is still loading — defer classification to avoid
-  // flickering between 'slow' and 'index' as results arrive
+  // undefined means index advisor is still loading — defer index classification only to avoid
+  // flickering between 'slow' and 'index' as results arrive, but still classify slow queries
   if (row.index_advisor_result === undefined) {
+    if (row.mean_time > SLOW_QUERY_THRESHOLD_MS) {
+      return { issueType: 'slow', hint: 'Abnormally slow query detected' }
+    }
     return { issueType: null, hint: '' }
   }
 
