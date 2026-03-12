@@ -1,22 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { PermissionAction } from '@supabase/shared-types/out/constants'
 import { useParams } from 'common'
-import { DiscardChangesConfirmationDialog } from 'components/ui-patterns/Dialogs/DiscardChangesConfirmationDialog'
-import { ButtonTooltip } from 'components/ui/ButtonTooltip'
-import { OrganizationProjectSelector } from 'components/ui/OrganizationProjectSelector'
-import { UpgradePlanButton } from 'components/ui/UpgradePlanButton'
-import { useOrganizationCreateInvitationMutation } from 'data/organization-members/organization-invitation-create-mutation'
-import { useOrganizationRolesV2Query } from 'data/organization-members/organization-roles-query'
-import { useOrganizationMembersQuery } from 'data/organizations/organization-members-query'
-import { useOrgSSOConfigQuery } from 'data/sso/sso-config-query'
-import { useHasAccessToProjectLevelPermissions } from 'data/subscriptions/org-subscription-query'
-import { useCheckEntitlements } from 'hooks/misc/useCheckEntitlements'
-import { doPermissionsCheck, useGetPermissions } from 'hooks/misc/useCheckPermissions'
-import { useIsFeatureEnabled } from 'hooks/misc/useIsFeatureEnabled'
-import { useSelectedOrganizationQuery } from 'hooks/misc/useSelectedOrganization'
-import { useConfirmOnClose } from 'hooks/ui/useConfirmOnClose'
-import { DOCS_URL } from 'lib/constants'
-import { useProfile } from 'lib/profile'
 import { UserPlus } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -43,12 +27,28 @@ import {
   SelectValue_Shadcn_,
   Switch,
 } from 'ui'
-import { Admonition } from 'ui-patterns'
+import { Admonition } from 'ui-patterns/admonition'
 import { FormItemLayout } from 'ui-patterns/form/FormItemLayout/FormItemLayout'
 import * as z from 'zod'
 
 import { useGetRolesManagementPermissions } from './TeamSettings.utils'
+import { DiscardChangesConfirmationDialog } from '@/components/ui-patterns/Dialogs/DiscardChangesConfirmationDialog'
+import { ButtonTooltip } from '@/components/ui/ButtonTooltip'
 import { DocsButton } from '@/components/ui/DocsButton'
+import { OrganizationProjectSelector } from '@/components/ui/OrganizationProjectSelector'
+import { UpgradePlanButton } from '@/components/ui/UpgradePlanButton'
+import { useOrganizationCreateInvitationMutation } from '@/data/organization-members/organization-invitation-create-mutation'
+import { useOrganizationRolesV2Query } from '@/data/organization-members/organization-roles-query'
+import { useOrganizationMembersQuery } from '@/data/organizations/organization-members-query'
+import { useOrgSSOConfigQuery } from '@/data/sso/sso-config-query'
+import { useHasAccessToProjectLevelPermissions } from '@/data/subscriptions/org-subscription-query'
+import { useCheckEntitlements } from '@/hooks/misc/useCheckEntitlements'
+import { doPermissionsCheck, useGetPermissions } from '@/hooks/misc/useCheckPermissions'
+import { useIsFeatureEnabled } from '@/hooks/misc/useIsFeatureEnabled'
+import { useSelectedOrganizationQuery } from '@/hooks/misc/useSelectedOrganization'
+import { useConfirmOnClose } from '@/hooks/ui/useConfirmOnClose'
+import { DOCS_URL } from '@/lib/constants'
+import { useProfile } from '@/lib/profile'
 
 function parseEmails(value: string): string[] {
   return value
@@ -74,7 +74,7 @@ export const InviteMemberButton = () => {
   const { data: allRoles, isSuccess } = useOrganizationRolesV2Query({ slug })
   const orgScopedRoles = allRoles?.org_scoped_roles ?? []
 
-  const { data: ssoConfig } = useOrgSSOConfigQuery({ orgSlug: slug }, { enabled: !!slug })
+  const { data: ssoConfig } = useOrgSSOConfigQuery({ orgSlug: slug })
   const hasSsoProvider = !!ssoConfig && ssoConfig !== null
 
   const defaultValues = {

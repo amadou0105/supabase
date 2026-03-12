@@ -1,39 +1,39 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Trash } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import z from 'zod'
-
-import { ScaffoldContainer, ScaffoldSection } from 'components/layouts/Scaffold'
-import AlertError from 'components/ui/AlertError'
-import { InlineLink } from 'components/ui/InlineLink'
-import { UpgradeToPro } from 'components/ui/UpgradeToPro'
-import { useOrganizationMembersQuery } from 'data/organizations/organization-members-query'
-import { useSSOConfigCreateMutation } from 'data/sso/sso-config-create-mutation'
-import { useSSOConfigDeleteMutation } from 'data/sso/sso-config-delete-mutation'
-import { useOrgSSOConfigQuery } from 'data/sso/sso-config-query'
-import { useSSOConfigUpdateMutation } from 'data/sso/sso-config-update-mutation'
-import { useCheckEntitlements } from 'hooks/misc/useCheckEntitlements'
-import { useSelectedOrganizationQuery } from 'hooks/misc/useSelectedOrganization'
-import { DOCS_URL } from 'lib/constants'
-import { Trash } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   Button,
   Card,
   CardContent,
   CardFooter,
+  Form_Shadcn_,
   FormControl_Shadcn_,
   FormField_Shadcn_,
-  Form_Shadcn_,
   Switch,
 } from 'ui'
-import { TextConfirmModal } from 'components/ui/TextConfirmModalWrapper'
 import { FormItemLayout } from 'ui-patterns/form/FormItemLayout/FormItemLayout'
 import { GenericSkeletonLoader } from 'ui-patterns/ShimmeringLoader'
+import z from 'zod'
+
 import { AttributeMapping } from './AttributeMapping'
 import { JoinOrganizationOnSignup } from './JoinOrganizationOnSignup'
 import { SSODomains } from './SSODomains'
 import { SSOMetadata } from './SSOMetadata'
+import { ScaffoldContainer, ScaffoldSection } from '@/components/layouts/Scaffold'
+import AlertError from '@/components/ui/AlertError'
+import { InlineLink } from '@/components/ui/InlineLink'
+import { TextConfirmModal } from '@/components/ui/TextConfirmModalWrapper'
+import { UpgradeToPro } from '@/components/ui/UpgradeToPro'
+import { useOrganizationMembersQuery } from '@/data/organizations/organization-members-query'
+import { useSSOConfigCreateMutation } from '@/data/sso/sso-config-create-mutation'
+import { useSSOConfigDeleteMutation } from '@/data/sso/sso-config-delete-mutation'
+import { useOrgSSOConfigQuery } from '@/data/sso/sso-config-query'
+import { useSSOConfigUpdateMutation } from '@/data/sso/sso-config-update-mutation'
+import { useCheckEntitlements } from '@/hooks/misc/useCheckEntitlements'
+import { useSelectedOrganizationQuery } from '@/hooks/misc/useSelectedOrganization'
+import { DOCS_URL } from '@/lib/constants'
 
 const FormSchema = z
   .object({
@@ -66,6 +66,19 @@ const FormSchema = z
 
 export type SSOConfigFormSchema = z.infer<typeof FormSchema>
 
+const defaultValues = {
+  enabled: false,
+  domains: [{ value: '' }],
+  metadataXmlUrl: '',
+  metadataXmlFile: '',
+  emailMapping: [{ value: '' }],
+  userNameMapping: [{ value: '' }],
+  firstNameMapping: [{ value: '' }],
+  lastNameMapping: [{ value: '' }],
+  joinOrgOnSignup: false,
+  roleOnJoin: 'Developer',
+}
+
 export const SSOConfig = () => {
   const FORM_ID = 'sso-config-form'
 
@@ -81,26 +94,11 @@ export const SSOConfig = () => {
     error: configError,
   } = useOrgSSOConfigQuery({ orgSlug: organization?.slug }, { enabled: !!organization })
 
-  const { data: members = [] } = useOrganizationMembersQuery(
-    { slug: organization?.slug },
-    { enabled: !!organization?.slug }
-  )
+  const { data: members = [] } = useOrganizationMembersQuery({ slug: organization?.slug })
 
   const ssoMemberCount = members.filter((m) => m.is_sso_user === true).length
   const isSSOProviderNotFound = ssoConfig === null
 
-  const defaultValues = {
-    enabled: false,
-    domains: [{ value: '' }],
-    metadataXmlUrl: '',
-    metadataXmlFile: '',
-    emailMapping: [{ value: '' }],
-    userNameMapping: [{ value: '' }],
-    firstNameMapping: [{ value: '' }],
-    lastNameMapping: [{ value: '' }],
-    joinOrgOnSignup: false,
-    roleOnJoin: 'Developer',
-  }
   const form = useForm<SSOConfigFormSchema>({
     resolver: zodResolver(FormSchema),
     defaultValues,
