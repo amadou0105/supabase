@@ -97,7 +97,7 @@ const QueryPerformanceReport: NextPageWithLayout = () => {
 
 QueryPerformanceReport.getLayout = (page) => (
   <DefaultLayout>
-    <ObservabilityLayout title="Query performance">{page}</ObservabilityLayout>
+    <ObservabilityLayout title="Query Performance">{page}</ObservabilityLayout>
   </DefaultLayout>
 )
 
