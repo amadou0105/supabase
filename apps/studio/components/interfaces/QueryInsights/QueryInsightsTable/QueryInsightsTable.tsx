@@ -118,14 +118,20 @@ export const QueryInsightsTable = ({
   const triageContainerRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [triageContainerWidth, setTriageContainerWidth] = useState(0)
-  const sort: { column: string; order: 'asc' | 'desc' } | null =
-    urlSortCol && urlSortOrder && ['asc', 'desc'].includes(urlSortOrder)
-      ? { column: urlSortCol, order: urlSortOrder as 'asc' | 'desc' }
-      : { column: 'prop_total_time', order: 'desc' }
-  const setSort = (config: { column: string; order: 'asc' | 'desc' } | null) =>
-    setQueryStates(
-      config ? { sort: config.column, order: config.order } : { sort: null, order: null }
-    )
+  const sort = useMemo<{ column: string; order: 'asc' | 'desc' }>(
+    () =>
+      urlSortCol && urlSortOrder && ['asc', 'desc'].includes(urlSortOrder)
+        ? { column: urlSortCol, order: urlSortOrder as 'asc' | 'desc' }
+        : { column: 'prop_total_time', order: 'desc' },
+    [urlSortCol, urlSortOrder]
+  )
+  const setSort = useCallback(
+    (config: { column: string; order: 'asc' | 'desc' } | null) =>
+      setQueryStates(
+        config ? { sort: config.column, order: config.order } : { sort: null, order: null }
+      ),
+    [setQueryStates]
+  )
 
   const [explainResults, setExplainResults] = useState<Record<string, QueryPlanRow[]>>({})
   const [explainLoadingQuery, setExplainLoadingQuery] = useState<string | null>(null)
@@ -524,7 +530,7 @@ export const QueryInsightsTable = ({
       }
       return result
     })
-  }, [sort, timeConsumedWidth])
+  }, [sort, setSort, timeConsumedWidth])
 
   const triageQueryColWidth = useMemo(() => {
     if (!triageContainerWidth) return 380
