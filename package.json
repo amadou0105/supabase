@@ -55,7 +55,7 @@
     "supports-color": "^8.0.0",
     "tailwindcss": "catalog:",
     "tsx": "catalog:",
-    "turbo": "2.3.3",
+    "turbo": "2.8.13",
     "typescript": "catalog:",
     "zod": "catalog:"
   },
@@ -67,13 +67,6 @@
     "pnpm": "10.24",
     "node": ">=22"
   },
-  "keywords": [
-    "postgres",
-    "firebase",
-    "storage",
-    "functions",
-    "database",
-    "auth"
-  ],
+  "keywords": ["postgres", "firebase", "storage", "functions", "database", "auth"],
   "packageManager": "pnpm@10.24.0"
 }
