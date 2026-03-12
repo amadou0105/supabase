@@ -106,7 +106,7 @@ export const useFeaturePreviews = (): FeaturePreview[] => {
     {
       key: LOCAL_STORAGE_KEYS.UI_PREVIEW_FLOATING_MOBILE_TOOLBAR,
       name: 'Floating Mobile Toolbar',
-      discussionsUrl: undefined,
+      discussionsUrl: 'https://github.com/orgs/supabase/discussions/43721',
       enabled: showFloatingMobileToolbar,
       isNew: true,
       isPlatformOnly: false,
