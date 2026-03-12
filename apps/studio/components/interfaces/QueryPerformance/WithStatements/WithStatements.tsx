@@ -1,39 +1,40 @@
+import { LOCAL_STORAGE_KEYS, useParams } from 'common'
+import { PresetHookResult } from 'components/interfaces/Reports/Reports.utils'
+import Pagination from 'components/interfaces/TableGridEditor/SidePanelEditor/RowEditor/ForeignRowSelector/Pagination'
+import { ButtonTooltip } from 'components/ui/ButtonTooltip'
+import { DownloadResultsButton } from 'components/ui/DownloadResultsButton'
+import { useReadReplicasQuery } from 'data/read-replicas/replicas-query'
+import { formatDatabaseID } from 'data/read-replicas/replicas.utils'
+import { executeSql } from 'data/sql/execute-sql-query'
+import { DbQueryHook } from 'hooks/analytics/useDbQuery'
+import { useLocalStorageQuery } from 'hooks/misc/useLocalStorage'
+import { useSelectedProjectQuery } from 'hooks/misc/useSelectedProject'
+import { DOCS_URL, IS_PLATFORM } from 'lib/constants'
+import { getErrorMessage } from 'lib/get-error-message'
+import { RefreshCw, RotateCcw, X } from 'lucide-react'
+import { parseAsInteger, parseAsString, useQueryStates } from 'nuqs'
+import { useEffect, useMemo, useState } from 'react'
+import { toast } from 'sonner'
+import { useDatabaseSelectorStateSnapshot } from 'state/database-selector'
 import {
-  LoadingLine,
-  cn,
   Button,
+  cn,
+  LoadingLine,
   Select_Shadcn_,
   SelectContent_Shadcn_,
   SelectItem_Shadcn_,
   SelectTrigger_Shadcn_,
   SelectValue_Shadcn_,
 } from 'ui'
-import { useState, useEffect, useMemo } from 'react'
-import { X, RefreshCw, RotateCcw } from 'lucide-react'
-import { Markdown } from '../../Markdown'
-import ConfirmationModal from 'ui-patterns/Dialogs/ConfirmationModal'
 import { Admonition } from 'ui-patterns'
-import { useLocalStorageQuery } from 'hooks/misc/useLocalStorage'
-import { LOCAL_STORAGE_KEYS, useParams } from 'common'
-import { useDatabaseSelectorStateSnapshot } from 'state/database-selector'
-import { useSelectedProjectQuery } from 'hooks/misc/useSelectedProject'
-import { DOCS_URL, IS_PLATFORM } from 'lib/constants'
-import { executeSql } from 'data/sql/execute-sql-query'
-import { toast } from 'sonner'
-import { useReadReplicasQuery } from 'data/read-replicas/replicas-query'
-import { formatDatabaseID } from 'data/read-replicas/replicas.utils'
-import { PresetHookResult } from 'components/interfaces/Reports/Reports.utils'
-import { DbQueryHook } from 'hooks/analytics/useDbQuery'
-import { QueryPerformanceMetrics } from '../QueryPerformanceMetrics'
+import ConfirmationModal from 'ui-patterns/Dialogs/ConfirmationModal'
+
+import { Markdown } from '../../Markdown'
+import { captureQueryPerformanceError } from '../QueryPerformance.utils'
 import { QueryPerformanceFilterBar } from '../QueryPerformanceFilterBar'
 import { QueryPerformanceGrid } from '../QueryPerformanceGrid'
+import { QueryPerformanceMetrics } from '../QueryPerformanceMetrics'
 import { transformStatementDataToRows } from './WithStatements.utils'
-import { DownloadResultsButton } from 'components/ui/DownloadResultsButton'
-import { ButtonTooltip } from 'components/ui/ButtonTooltip'
-import { captureQueryPerformanceError } from '../QueryPerformance.utils'
-import { getErrorMessage } from 'lib/get-error-message'
-import { parseAsInteger, parseAsString, useQueryStates } from 'nuqs'
-import Pagination from 'components/interfaces/TableGridEditor/SidePanelEditor/RowEditor/ForeignRowSelector/Pagination'
 
 interface WithStatementsProps {
   queryHitRate: PresetHookResult
@@ -74,7 +75,7 @@ export const WithStatements = ({
     pageSize: parseAsInteger.withDefault(20),
   })
   const resolvedPage = page ?? 1
-  const resolvedPageSize = PAGE_SIZE_OPTIONS.includes(pageSize ?? 20) ? (pageSize ?? 20) : 20
+  const resolvedPageSize = PAGE_SIZE_OPTIONS.includes(pageSize ?? 20) ? pageSize ?? 20 : 20
 
   const handleRefresh = () => {
     queryPerformanceQuery.runQuery()

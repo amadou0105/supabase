@@ -1,11 +1,7 @@
-import { parseAsArrayOf, parseAsInteger, parseAsJson, parseAsString, useQueryStates } from 'nuqs'
-import { useEffect, useRef } from 'react'
-import { NumericFilter } from 'components/interfaces/Reports/v2/ReportsNumericFilter'
-
 import { useParams } from 'common'
 import { useIndexAdvisorStatus } from 'components/interfaces/QueryPerformance/hooks/useIsIndexAdvisorStatus'
-import { useSupamonitorStatus } from 'components/interfaces/QueryPerformance/hooks/useSupamonitorStatus'
 import { useQueryPerformanceSort } from 'components/interfaces/QueryPerformance/hooks/useQueryPerformanceSort'
+import { useSupamonitorStatus } from 'components/interfaces/QueryPerformance/hooks/useSupamonitorStatus'
 import { QueryPerformance } from 'components/interfaces/QueryPerformance/QueryPerformance'
 import {
   PRESET_CONFIG,
@@ -14,6 +10,7 @@ import {
 import { useQueryPerformanceQuery } from 'components/interfaces/Reports/Reports.queries'
 import { Presets } from 'components/interfaces/Reports/Reports.types'
 import { queriesFactory } from 'components/interfaces/Reports/Reports.utils'
+import { NumericFilter } from 'components/interfaces/Reports/v2/ReportsNumericFilter'
 import { LogsDatePicker } from 'components/interfaces/Settings/Logs/Logs.DatePickers'
 import { DefaultLayout } from 'components/layouts/DefaultLayout'
 import ObservabilityLayout from 'components/layouts/ObservabilityLayout/ObservabilityLayout'
@@ -22,6 +19,8 @@ import { DocsButton } from 'components/ui/DocsButton'
 import { useReportDateRange } from 'hooks/misc/useReportDateRange'
 import { useSelectedProjectQuery } from 'hooks/misc/useSelectedProject'
 import { DOCS_URL } from 'lib/constants'
+import { parseAsArrayOf, parseAsInteger, parseAsJson, parseAsString, useQueryStates } from 'nuqs'
+import { useEffect, useRef } from 'react'
 import type { NextPageWithLayout } from 'types'
 import { Admonition } from 'ui-patterns'
 
@@ -41,7 +40,15 @@ const QueryPerformanceReport: NextPageWithLayout = () => {
   } = useReportDateRange(REPORT_DATERANGE_HELPER_LABELS.LAST_60_MINUTES)
 
   const [
-    { search: searchQuery, roles, minCalls, totalTimeFilter: totalTimeFilterRaw, indexAdvisor, page, pageSize },
+    {
+      search: searchQuery,
+      roles,
+      minCalls,
+      totalTimeFilter: totalTimeFilterRaw,
+      indexAdvisor,
+      page,
+      pageSize,
+    },
     setQueryStates,
   ] = useQueryStates({
     sort: parseAsString,
@@ -93,7 +100,14 @@ const QueryPerformanceReport: NextPageWithLayout = () => {
     }
     setQueryStates({ page: 1 })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery, JSON.stringify(roles), minCalls, JSON.stringify(totalTimeFilterRaw), indexAdvisor, JSON.stringify(sortConfig)])
+  }, [
+    searchQuery,
+    JSON.stringify(roles),
+    minCalls,
+    JSON.stringify(totalTimeFilterRaw),
+    indexAdvisor,
+    JSON.stringify(sortConfig),
+  ])
 
   if (!isLoadingProject && !project) {
     return (
