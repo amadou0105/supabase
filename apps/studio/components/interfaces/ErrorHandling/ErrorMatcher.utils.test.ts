@@ -1,4 +1,4 @@
-import { ConnectionTimeoutError, UnknownError } from 'types/api-errors'
+import { ConnectionTimeoutError, UnknownAPIError } from 'types/api-errors'
 import { describe, expect, it } from 'vitest'
 
 import { getMappingForError } from './ErrorMatcher.utils'
@@ -11,8 +11,8 @@ describe('getMappingForError', () => {
     expect(mapping?.id).toBe('connection-timeout')
   })
 
-  it('returns null for UnknownError (no troubleshooting guide)', () => {
-    const error = new UnknownError('something went wrong')
+  it('returns null for UnknownAPIError (no troubleshooting guide)', () => {
+    const error = new UnknownAPIError('something went wrong')
     expect(getMappingForError(error)).toBeNull()
   })
 

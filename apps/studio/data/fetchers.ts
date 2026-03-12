@@ -5,7 +5,7 @@ import { API_URL } from 'lib/constants'
 import { uuidv4 } from 'lib/helpers'
 import createClient from 'openapi-fetch'
 import { ResponseError } from 'types'
-import { UnknownError } from 'types/api-errors'
+import { UnknownAPIError } from 'types/api-errors'
 
 import type { paths } from './api'
 import { ERROR_PATTERNS } from './error-patterns'
@@ -184,7 +184,7 @@ export const handleError = (error: unknown, options: HandleErrorOptions = {}): n
             requestPathname,
             metadata
           )
-        : new UnknownError(
+        : new UnknownAPIError(
             errorMessage,
             errorCode,
             requestId,
@@ -205,7 +205,7 @@ export const handleError = (error: unknown, options: HandleErrorOptions = {}): n
 
   // throw a generic error if we don't know what the error is. The message is intentionally vague because it might show
   // up in the UI.
-  throw new UnknownError(undefined)
+  throw new UnknownAPIError(undefined)
 }
 
 // [Joshen] The methods below are brought over from lib/common/fetch because we still need them

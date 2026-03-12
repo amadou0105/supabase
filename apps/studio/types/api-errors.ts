@@ -18,7 +18,7 @@ export class ConnectionTimeoutError extends ResponseError {
   }
 }
 
-export class UnknownError extends ResponseError {
+export class UnknownAPIError extends ResponseError {
   readonly errorType = 'unknown' as const
 
   constructor(
@@ -33,4 +33,4 @@ export class UnknownError extends ResponseError {
   }
 }
 
-export type ClassifiedError = ConnectionTimeoutError | UnknownError
+export type ClassifiedError = ConnectionTimeoutError | UnknownAPIError
