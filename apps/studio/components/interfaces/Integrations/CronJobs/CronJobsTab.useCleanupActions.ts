@@ -1,10 +1,13 @@
 import {
+  getDeleteOldCronJobRunDetailsByCtidSql,
+  getJobRunDetailsPageCountSql,
+} from '@supabase/pg-meta'
+import {
   CTID_BATCH_PAGE_SIZE,
   getDeleteOldCronJobRunDetailsByCtidKey,
-  getDeleteOldCronJobRunDetailsByCtidSql,
   getJobRunDetailsPageCountKey,
-  getJobRunDetailsPageCountSql,
-} from 'data/database-cron-jobs/database-cron-jobs.sql'
+  validatePageNumber,
+} from 'data/database-cron-jobs/database-cron-jobs.utils'
 import { useExecuteSqlMutation } from 'data/sql/execute-sql-mutation'
 import { useCallback, useRef, useState } from 'react'
 import { toast } from 'sonner'
@@ -109,6 +112,9 @@ export const useCronJobsCleanupActions = ({
 
           const startPage = batch * CTID_BATCH_PAGE_SIZE
           const endPage = Math.min((batch + 1) * CTID_BATCH_PAGE_SIZE, totalPages + 1)
+
+          validatePageNumber(startPage, 'startPage')
+          validatePageNumber(endPage, 'endPage')
 
           setCleanupState({
             status: 'deleting',
