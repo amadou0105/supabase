@@ -9,7 +9,7 @@ run: download transform generate format
 ###############################################################################
 # comment out download.auth.v1 temporarily, we're manually creating the file
 # download: download.api.v1 download.auth.v1 download.storage.v1 download.tsdoc.v2
-download: download.api.v1 download.storage.v1 download.tsdoc.v2
+download: download.api.v1 download.storage.v1 #download.tsdoc.v2
 
 download.api.v1:
 	curl -sS https://api.supabase.com/api/v1-json > $(REPO_DIR)/api_v1_openapi.json
