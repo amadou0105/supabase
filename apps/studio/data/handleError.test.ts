@@ -1,4 +1,4 @@
-import { ConnectionTimeoutError, UnknownAPIError } from 'types/api-errors'
+import { ConnectionTimeoutError, UnknownAPIResponseError } from 'types/api-errors'
 import { ResponseError } from 'types/base'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -46,25 +46,25 @@ describe('handleError — error classification', () => {
   })
 
   describe('unclassified errors', () => {
-    it('throws UnknownAPIError for unmatched messages', () => {
+    it('throws UnknownAPIResponseError for unmatched messages', () => {
       const err = throwAndCatch({ message: 'something went wrong' })
-      expect(err).toBeInstanceOf(UnknownAPIError)
+      expect(err).toBeInstanceOf(UnknownAPIResponseError)
       expect(err).toBeInstanceOf(ResponseError)
     })
 
-    it('throws UnknownAPIError for empty message', () => {
+    it('throws UnknownAPIResponseError for empty message', () => {
       const err = throwAndCatch({ message: '' })
-      expect(err).toBeInstanceOf(UnknownAPIError)
+      expect(err).toBeInstanceOf(UnknownAPIResponseError)
     })
 
-    it('throws UnknownAPIError for null', () => {
+    it('throws UnknownAPIResponseError for null', () => {
       const err = throwAndCatch(null)
-      expect(err).toBeInstanceOf(UnknownAPIError)
+      expect(err).toBeInstanceOf(UnknownAPIResponseError)
     })
 
-    it('throws UnknownAPIError for non-object', () => {
+    it('throws UnknownAPIResponseError for non-object', () => {
       const err = throwAndCatch('raw string error')
-      expect(err).toBeInstanceOf(UnknownAPIError)
+      expect(err).toBeInstanceOf(UnknownAPIResponseError)
     })
   })
 
