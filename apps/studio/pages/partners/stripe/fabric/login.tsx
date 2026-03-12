@@ -85,7 +85,7 @@ const StripeFabricLoginPage = () => {
       ? 'Organization Linked'
       : 'Organization Created'
   const successDescription = isReauth
-    ? `Your Stripe account is connected to ${linkedOrg?.name}.`
+    ? null
     : isLinking
       ? 'Your Supabase organization has been linked to your Stripe account.'
       : 'Your Supabase organization has been created and linked to your Stripe account.'
@@ -101,7 +101,7 @@ const StripeFabricLoginPage = () => {
         ) : isConfirmed ? (
           <>
             <h2 className="py-2 text-lg font-medium">{successTitle}</h2>
-            <p className="text-foreground-light">{successDescription}</p>
+            {successDescription && <p className="text-foreground-light">{successDescription}</p>}
             <p className="pt-4 text-sm text-foreground-lighter">You can close this window.</p>
           </>
         ) : isPending ? (
@@ -136,7 +136,7 @@ const StripeFabricLoginPage = () => {
               <>
                 <p className="mt-4 text-sm text-foreground-light text-center">
                   Your organization <strong>{linkedOrg.name}</strong> is already linked to your
-                  Stripe account. Approve to continue.
+                  Stripe account.
                 </p>
                 <div className="py-6">
                   <Button
@@ -145,7 +145,7 @@ const StripeFabricLoginPage = () => {
                     disabled={isConfirming}
                     onClick={() => handleApprove()}
                   >
-                    Approve
+                    Continue
                   </Button>
                 </div>
               </>
