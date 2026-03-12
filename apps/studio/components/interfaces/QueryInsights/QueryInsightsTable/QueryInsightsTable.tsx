@@ -1,71 +1,71 @@
-import { useMemo, useState, useRef, useCallback, useEffect } from 'react'
+import { useParams } from 'common'
+import type { QueryPlanRow } from 'components/interfaces/ExplainVisualizer/ExplainVisualizer.types'
+import { FilterPill } from 'components/interfaces/QueryPerformance/components/FilterPill'
+import { SIDEBAR_KEYS } from 'components/layouts/ProjectLayout/LayoutSidebar/LayoutSidebarProvider'
+import { AiAssistantDropdown } from 'components/ui/AiAssistantDropdown'
+import { ButtonTooltip } from 'components/ui/ButtonTooltip'
+import { FilterPopover } from 'components/ui/FilterPopover'
+import TwoOptionToggle from 'components/ui/TwoOptionToggle'
+import { useExecuteSqlMutation } from 'data/sql/execute-sql-mutation'
+import { wrapWithRollback } from 'data/sql/utils/transaction'
+import { useSelectedProjectQuery } from 'hooks/misc/useSelectedProject'
 import {
-  Search,
-  X,
   ArrowDown,
+  ArrowRight,
   ArrowUp,
   ChevronDown,
-  TextSearch,
-  ArrowRight,
   ExternalLink,
   ScanSearch,
+  Search,
+  TextSearch,
+  X,
 } from 'lucide-react'
 import { useRouter } from 'next/router'
-import { useParams } from 'common'
+import { parseAsArrayOf, parseAsString, useQueryStates } from 'nuqs'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 // eslint-disable-next-line no-restricted-imports
 import DataGrid, { Column, DataGridHandle, Row } from 'react-data-grid'
+import { useAiAssistantStateSnapshot } from 'state/ai-assistant-state'
+import { useSidebarManagerSnapshot } from 'state/sidebar-manager-state'
 import {
   Button,
+  cn,
   CodeBlock,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
   Tabs_Shadcn_,
   TabsList_Shadcn_,
   TabsTrigger_Shadcn_,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-  cn,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
 } from 'ui'
-import { InfoTooltip } from 'ui-patterns/info-tooltip'
-import { SIDEBAR_KEYS } from 'components/layouts/ProjectLayout/LayoutSidebar/LayoutSidebarProvider'
-import { useAiAssistantStateSnapshot } from 'state/ai-assistant-state'
-import { useSidebarManagerSnapshot } from 'state/sidebar-manager-state'
 import { Input } from 'ui-patterns/DataInputs/Input'
+import { InfoTooltip } from 'ui-patterns/info-tooltip'
 import { GenericSkeletonLoader } from 'ui-patterns/ShimmeringLoader'
-import TwoOptionToggle from 'components/ui/TwoOptionToggle'
-import { ButtonTooltip } from 'components/ui/ButtonTooltip'
-import { FilterPopover } from 'components/ui/FilterPopover'
-import { FilterPill } from 'components/interfaces/QueryPerformance/components/FilterPill'
-import { parseAsArrayOf, parseAsString, useQueryStates } from 'nuqs'
 
+import { buildQueryInsightFixPrompt } from '../../QueryPerformance/QueryPerformance.ai'
+import { QUERY_PERFORMANCE_ROLE_DESCRIPTION } from '../../QueryPerformance/QueryPerformance.constants'
 import type { QueryPerformanceRow } from '../../QueryPerformance/QueryPerformance.types'
 import { useQueryInsightsIssues } from '../hooks/useQueryInsightsIssues'
-import type { Mode, IssueFilter } from './QueryInsightsTable.types'
-import {
-  getQueryType,
-  getTableName,
-  getColumnName,
-  formatDuration,
-} from './QueryInsightsTable.utils'
+import type { ClassifiedQuery } from '../QueryInsightsHealth/QueryInsightsHealth.types'
+import { QueryInsightsDetailSheet } from './QueryInsightsDetailSheet'
 import {
   ISSUE_DOT_COLORS,
   ISSUE_ICONS,
-  QUERY_INSIGHTS_EXPLORER_COLUMNS,
   NON_SORTABLE_COLUMNS,
+  QUERY_INSIGHTS_EXPLORER_COLUMNS,
 } from './QueryInsightsTable.constants'
-import { buildQueryInsightFixPrompt } from '../../QueryPerformance/QueryPerformance.ai'
-import { QUERY_PERFORMANCE_ROLE_DESCRIPTION } from '../../QueryPerformance/QueryPerformance.constants'
-import { useExecuteSqlMutation } from 'data/sql/execute-sql-mutation'
-import { useSelectedProjectQuery } from 'hooks/misc/useSelectedProject'
-import { wrapWithRollback } from 'data/sql/utils/transaction'
-import type { QueryPlanRow } from 'components/interfaces/ExplainVisualizer/ExplainVisualizer.types'
-import type { ClassifiedQuery } from '../QueryInsightsHealth/QueryInsightsHealth.types'
-import { QueryInsightsDetailSheet } from './QueryInsightsDetailSheet'
-import { AiAssistantDropdown } from 'components/ui/AiAssistantDropdown'
+import type { IssueFilter, Mode } from './QueryInsightsTable.types'
+import {
+  formatDuration,
+  getColumnName,
+  getQueryType,
+  getTableName,
+} from './QueryInsightsTable.utils'
 
 interface QueryInsightsTableProps {
   data: QueryPerformanceRow[]
@@ -234,7 +234,7 @@ export const QueryInsightsTable = ({
   )
 
   const handleGoToLogs = useCallback(() => {
-    router.push(`/project/${ref}/logs?log_type=postgres`)
+    router.push(`/project/${ref}/logs/postgres-logs`)
   }, [router, ref])
 
   const handleAiSuggestedFix = useCallback(
@@ -913,22 +913,6 @@ export const QueryInsightsTable = ({
                 showOnlyButton={false}
               />
             )}
-            {currentSelectedQuery && (
-              <ButtonTooltip
-                tooltip={{
-                  content: {
-                    text: 'Clear selected query',
-                  },
-                }}
-                type="outline"
-                size="tiny"
-                className="h-[26px] px-2"
-                icon={<X size={14} />}
-                onClick={() => onCurrentSelectQuery?.(null)}
-              >
-                Clear query
-              </ButtonTooltip>
-            )}
           </div>
 
           <div className="flex items-center">
@@ -990,7 +974,29 @@ export const QueryInsightsTable = ({
         </div>
       </div>
 
-      <div ref={scrollContainerRef} className="flex-1 min-h-0 flex flex-col overflow-hidden">
+      <div
+        ref={scrollContainerRef}
+        className="relative flex-1 min-h-0 flex flex-col overflow-hidden"
+      >
+        <div
+          className={[
+            'absolute bottom-8 left-0 right-0 flex justify-center z-10 pointer-events-none',
+            'transition-all duration-200',
+            currentSelectedQuery
+              ? 'opacity-100 translate-y-0 pointer-events-auto'
+              : 'opacity-0 translate-y-4 pointer-events-none',
+          ].join(' ')}
+        >
+          <Button
+            type="default"
+            size="tiny"
+            className="rounded-full shadow-md"
+            // icon={<X className="h-3 w-3" />}
+            onClick={() => onCurrentSelectQuery?.(null)}
+          >
+            Clear query
+          </Button>
+        </div>
         {isLoading ? (
           <div className="px-6 py-4">
             <GenericSkeletonLoader />
