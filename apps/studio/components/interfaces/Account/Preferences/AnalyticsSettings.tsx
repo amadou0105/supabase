@@ -35,7 +35,7 @@ export const PrivacyUpdateBanner = () => {
         <Badge variant="default" className="mr-2">
           NOTICE
         </Badge>
-        Privacy Policy Update – Effective March 12, 2026
+        Privacy Policy Update – Effective March 16, 2026
       </AlertTitle_Shadcn_>
       <AlertDescription_Shadcn_>
         We've updated our{' '}
@@ -43,7 +43,7 @@ export const PrivacyUpdateBanner = () => {
           Privacy Policy
         </a>{' '}
         to clarify our use of analytics, cookies, and advertising audience management tools. By
-        continuing to use Supabase after March 12, you agree to the new terms. Questions? Contact{' '}
+        continuing to use Supabase after March 16, you agree to the new terms. Questions? Contact{' '}
         <a href="mailto:privacy@supabase.com" target="_blank" className="text hover:text-brand">
           our team
         </a>
