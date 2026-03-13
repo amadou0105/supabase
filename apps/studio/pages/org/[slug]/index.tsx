@@ -52,7 +52,7 @@ const ProjectsPage: NextPageWithLayout = () => {
 
 ProjectsPage.getLayout = (page) => (
   <DefaultLayout>
-    <OrganizationLayout>
+    <OrganizationLayout title="Projects">
       <PageLayout title="Projects">{page}</PageLayout>
     </OrganizationLayout>
   </DefaultLayout>
